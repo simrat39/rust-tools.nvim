@@ -35,3 +35,6 @@ Please configure [`nvim-lspconfig for rust`](https://github.com/neovim/nvim-lspc
 
 #### Parent Module
 ![parent module](./images/parent_module.gif)
+
+#### Join Lines
+![join lines](./images/join_lines.gif)
