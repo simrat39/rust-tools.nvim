@@ -6,6 +6,7 @@ local function setupCommands()
    vim.cmd("command! " .. "RustOpenCargo " .. ":lua require'rust-tools.open_cargo_toml'.open_cargo_toml()")
    vim.cmd("command! " .. "RustParentModule " .. ":lua require'rust-tools.parent_module'.parent_module()")
    vim.cmd("command! " .. "RustJoinLines " .. ":lua require'rust-tools.join_lines'.join_lines()")
+   vim.cmd("command! " .. "RustRunnables " .. ":lua require'rust-tools.runnables'.runnables()")
 end
 
 function M.setup()
