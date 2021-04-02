@@ -6,7 +6,7 @@ local vim = vim
 -- file
 function M.setup()
     vim.api.nvim_command('augroup InlayHints')
-    vim.api.nvim_command('autocmd BufEnter,BufWritePost *.rs :lua require"rust-tools.inlay_hints".set_inlay_hints()')
+    vim.api.nvim_command('autocmd BufEnter,BufWinEnter,TabEnter *.rs :lua require"rust-tools.inlay_hints".set_inlay_hints()')
     vim.api.nvim_command('augroup END')
 end
 
