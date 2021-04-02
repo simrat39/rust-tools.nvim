@@ -55,7 +55,7 @@ function M.handler(_, _, result, _, _, _)
         local name = t.name
         local text = "// Recursive expansion of the " .. name .. " macro"
         table.insert(ret, text)
-        table.insert(ret, "// " .. string.rep("=", string.len(text)))
+        table.insert(ret, "// " .. string.rep("=", string.len(text) - 3))
         table.insert(ret, "")
 
         local expansion = t.expansion
