@@ -28,7 +28,10 @@ Please configure [`nvim-lspconfig for rust`](https://github.com/neovim/nvim-lspc
 ![inlay hints](./images/inlay_hints.png)
 
 #### Expand Macros Recursively 
-![inlay hints](./images/expand_macros_recursively.gif)
+![expand macros](./images/expand_macros_recursively.gif)
 
-#### Open Cargo.toml 
-![inlay hints](./images/open_cargo_toml.gif)
+#### Open Cargo.toml
+![open cargo](./images/open_cargo_toml.gif)
+
+#### Parent Module
+![parent module](./images/parent_module.gif)
