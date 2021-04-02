@@ -3,18 +3,13 @@ local vim = vim
 
 local M = {}
 
--- Sends the request to rust-analyzer to get cargo.tomls location and open it
-function M.expand_macro()
-    vim.lsp.buf_request(0, "rust-analyzer/expandMacro", M.get_params(), M.handler)
-end
-
-function M.get_params()
+local function get_params()
     return vim.lsp.util.make_position_params()
 end
 
 local latest_buf_id = nil
 
-function M.handler(_, _, result, _, _, _)
+local function handler(_, _, result, _, _, _)
     -- echo a message when result is nil (meaning no macro under cursor) and
     -- exit
     if result == nil then
@@ -74,6 +69,11 @@ function M.handler(_, _, result, _, _, _)
 
     -- make the new buffer smaller
     vim.cmd('vertical resize -25')
+end
+
+-- Sends the request to rust-analyzer to get cargo.tomls location and open it
+function M.expand_macro()
+    vim.lsp.buf_request(0, "rust-analyzer/expandMacro", get_params(), handler)
 end
 
 return M
