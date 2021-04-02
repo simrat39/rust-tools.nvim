@@ -10,6 +10,7 @@ function M.setup()
     vim.api.nvim_command('augroup END')
 end
 
+-- Sends the request to rust-analyzer to get the inlay hints and handle them
 function M.set_inlay_hints()
     vim.lsp.buf_request(0, "rust-analyzer/inlayHints", M.get_params(), M.handler)
 end
