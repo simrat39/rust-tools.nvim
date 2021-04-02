@@ -27,6 +27,9 @@ Please configure [`nvim-lspconfig for rust`](https://github.com/neovim/nvim-lspc
 #### Inlay Hints
 ![inlay hints](./images/inlay_hints.png)
 
+#### Runnables
+![runnables](./images/runnables.gif)
+
 #### Expand Macros Recursively 
 ![expand macros](./images/expand_macros_recursively.gif)
 
