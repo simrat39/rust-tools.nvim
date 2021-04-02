@@ -10,12 +10,7 @@ function M.setup()
     vim.api.nvim_command('augroup END')
 end
 
--- Sends the request to rust-analyzer to get the inlay hints and handle them
-function M.set_inlay_hints()
-    vim.lsp.buf_request(0, "rust-analyzer/inlayHints", M.get_params(), M.handler)
-end
-
-function M.get_params()
+local function get_params()
     return {
         textDocument = vim.lsp.util.make_text_document_params(),
     }
@@ -23,7 +18,7 @@ end
 
 local namespace = vim.api.nvim_create_namespace("rust-analyzer/inlayHints")
 
-function M.handler(_, _, result, _, bufnr, _)
+local function handler(_, _, result, _, bufnr, _)
     -- clear namespace which clears the virtual text as well
     vim.api.nvim_buf_clear_namespace(0, namespace, 0, -1)
 
@@ -40,6 +35,11 @@ function M.handler(_, _, result, _, bufnr, _)
             vim.api.nvim_buf_set_virtual_text(bufnr, namespace, line, {{"-> " .. label, "Comment"}}, {})
         end
     end
+end
+
+-- Sends the request to rust-analyzer to get the inlay hints and handle them
+function M.set_inlay_hints()
+    vim.lsp.buf_request(0, "rust-analyzer/inlayHints", get_params(), handler)
 end
 
 return M
