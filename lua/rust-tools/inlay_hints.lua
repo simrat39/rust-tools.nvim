@@ -78,7 +78,6 @@ local function parseHints(result)
 end
 
 local function handler(_, _, result, _, bufnr, _)
-    print(vim.inspect(result))
     -- clear namespace which clears the virtual text as well
     vim.api.nvim_buf_clear_namespace(0, namespace, 0, -1)
 

@@ -30,6 +30,9 @@ Please configure [`nvim-lspconfig for rust`](https://github.com/neovim/nvim-lspc
 #### Runnables
 ![runnables](./images/runnables.gif)
 
+#### Hover Actions
+![hover actions](./images/hover_actions.gif)
+
 #### Expand Macros Recursively 
 ![expand macros](./images/expand_macros_recursively.gif)
 
