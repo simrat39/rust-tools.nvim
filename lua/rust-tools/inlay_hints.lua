@@ -18,22 +18,113 @@ end
 
 local namespace = vim.api.nvim_create_namespace("rust-analyzer/inlayHints")
 
+-- parses the result into a easily parsable format
+-- example:
+--{
+--  ["12"] = { {
+--      kind = "TypeHint",
+--      label = "String"
+--    } },
+--  ["13"] = { {
+--      kind = "TypeHint",
+--      label = "usize"
+--    } },
+--  ["15"] = { {
+--      kind = "ParameterHint",
+--      label = "styles"
+--    }, {
+--      kind = "ParameterHint",
+--      label = "len"
+--    } },
+--  ["7"] = { {
+--      kind = "ChainingHint",
+--      label = "Result<String, VarError>"
+--    }, {
+--      kind = "ParameterHint",
+--      label = "key"
+--    } },
+--  ["8"] = { {
+--      kind = "ParameterHint",
+--      label = "op"
+--    } }
+--}
+--
+local function parseHints(result)
+    local map = {}
+
+    for _, value in pairs(result) do
+        local line = tostring(value.range["end"].line)
+        for _, value_other in pairs(result) do
+            local line_other = tostring(value_other.range["end"].line)
+            local kind_other = value_other.kind
+            local label_other = value_other.label
+
+            if map[line_other] ~= nil then
+                if line == line_other then
+                    for _, value_inside in pairs(map[line_other]) do
+                       if value_inside.label == label_other then
+                           goto continue
+                        end
+                    end
+                    table.insert(map[line_other], {label=label_other, kind=kind_other})
+                end
+            else
+                map[line_other] = {{label=label_other, kind=kind_other}}
+            end
+            ::continue::
+        end
+    end
+    return map
+end
+
 local function handler(_, _, result, _, bufnr, _)
+    print(vim.inspect(result))
     -- clear namespace which clears the virtual text as well
     vim.api.nvim_buf_clear_namespace(0, namespace, 0, -1)
 
-    for _, value in pairs(result) do
-        local kind = value.kind
-        local label = value.label
-        local line = value.range["end"].line
+    local ret = parseHints(result)
 
-        -- neovim virtual text does not support putting stuff inside the text,
-        -- only at the end, which renders parameter hints useless (i think
-        -- atleast)
-        -- TODO: Make pre arrow thingy configurable
-        if kind ~= "ParameterHint" then
-            vim.api.nvim_buf_set_virtual_text(bufnr, namespace, line, {{"-> " .. label, "Comment"}}, {})
+    for key, value in pairs(ret) do
+        local virt_text = ""
+        local line = tonumber(key)
+
+        local param_hints = {}
+        local other_hints = {}
+
+        -- segregate paramter hints and other hints
+        for _, value_inner in ipairs(value) do
+            if value_inner.kind == "ParameterHint" then
+               table.insert(param_hints, value_inner.label)
+            else
+               table.insert(other_hints, value_inner.label)
+            end
         end
+
+        -- show parameter hints inside brackets with commas and a thin arrow
+        if not vim.tbl_isempty(param_hints) then
+            virt_text = virt_text .. "<- ("
+            for i, value_inner_inner in ipairs(param_hints) do
+               virt_text = virt_text .. value_inner_inner
+               if i ~= #param_hints then
+                  virt_text = virt_text .. ", "
+               end
+            end
+            virt_text = virt_text .. ") "
+        end
+
+        -- show other hints with commas and a thicc arrow
+        if not vim.tbl_isempty(other_hints) then
+            virt_text = virt_text .. "=> "
+            for i, value_inner_inner in ipairs(other_hints) do
+               virt_text = virt_text .. value_inner_inner
+               if i ~= #other_hints then
+                  virt_text = virt_text .. ", "
+               end
+            end
+        end
+
+        -- set the virtual text
+        vim.api.nvim_buf_set_virtual_text(bufnr, namespace, line, {{virt_text, "Comment"}}, {})
     end
 end
 
