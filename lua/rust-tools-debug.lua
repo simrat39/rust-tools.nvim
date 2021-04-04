@@ -16,7 +16,7 @@ local function setupCommands()
 end
 
 function D.setup()
-   setupCommands()
+    setupCommands()
 end
 
 return D

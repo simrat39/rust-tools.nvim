@@ -54,24 +54,13 @@ local function parseHints(result)
 
     for _, value in pairs(result) do
         local line = tostring(value.range["end"].line)
-        for _, value_other in pairs(result) do
-            local line_other = tostring(value_other.range["end"].line)
-            local kind_other = value_other.kind
-            local label_other = value_other.label
+        local label = value.label
+        local kind = value.kind
 
-            if map[line_other] ~= nil then
-                if line == line_other then
-                    for _, value_inside in pairs(map[line_other]) do
-                       if value_inside.label == label_other then
-                           goto continue
-                        end
-                    end
-                    table.insert(map[line_other], {label=label_other, kind=kind_other})
-                end
-            else
-                map[line_other] = {{label=label_other, kind=kind_other}}
-            end
-            ::continue::
+        if map[line] ~= nil then
+           table.insert(map[line], {label=label, kind=kind})
+        else
+            map[line] = {{label=label, kind=kind}}
         end
     end
     return map
