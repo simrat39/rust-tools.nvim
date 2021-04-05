@@ -13,11 +13,14 @@ end
 
 local latest_buf_id = nil
 
-local function getOptions(result, withTitle)
+local function getOptions(result, withTitle, withIndex)
     local option_strings = withTitle and {"Runnables: "} or {}
 
     for i, runnable in ipairs(result) do
-       table.insert(option_strings, string.format("%d: %s", i, runnable.label))
+        local str = withIndex
+                    and string.format("%d: %s", i, runnable.label)
+                    or runnable.label
+        table.insert(option_strings, str)
     end
 
     return option_strings
@@ -64,7 +67,7 @@ end
 
 local function handler(_, _, result, _, _, _)
     -- get the choice from the user
-    local choice = vim.fn.inputlist(getOptions(result, true))
+    local choice = vim.fn.inputlist(getOptions(result, true, true))
 
     run_command(choice, result)
 
@@ -78,7 +81,7 @@ local function get_telescope_handler(opts)
     local action_state = require('telescope.actions.state')
 
     return function (_, _, results)
-        local choices = getOptions(results, false)
+        local choices = getOptions(results, false, false)
 
         local function attach_mappings(bufnr, map)
             local function on_select()
