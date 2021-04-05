@@ -1,5 +1,6 @@
 -- ?? helps with all the warnings spam
 local vim = vim
+local utils = require('rust-tools.utils.utils')
 
 local M = {}
 
@@ -22,6 +23,7 @@ local function parse_lines(t)
 
     local name = t.name
     local text = "// Recursive expansion of the " .. name .. " macro"
+    table.insert(ret, "// " .. string.rep("=", string.len(text) - 3))
     table.insert(ret, text)
     table.insert(ret, "// " .. string.rep("=", string.len(text) - 3))
     table.insert(ret, "")
@@ -34,11 +36,6 @@ local function parse_lines(t)
     return ret
 end
 
--- creates a buffer and gives back its buffer number
-local function create_buf()
-    return vim.api.nvim_create_buf(true, true)
-end
-
 local function handler(_, _, result, _, _, _)
     -- echo a message when result is nil (meaning no macro under cursor) and
     -- exit
@@ -49,17 +46,13 @@ local function handler(_, _, result, _, _, _)
 
     -- check if a buffer with the latest id is already open, if it is then
     -- delete it and continue
-    if latest_buf_id ~= nil then
-        vim.api.nvim_buf_delete(latest_buf_id, {})
-    end
+    utils.delete_buf(latest_buf_id)
 
     -- create a new buffer
-    latest_buf_id = create_buf()
+    latest_buf_id = vim.api.nvim_create_buf(true, true)
 
     -- split the window to create a new buffer and set it to our window
-    vim.cmd('vsplit')
-    local win = vim.api.nvim_get_current_win()
-    vim.api.nvim_win_set_buf(win, latest_buf_id)
+    utils.split(true, latest_buf_id)
 
     -- set filetpe to rust for syntax highlighting
     vim.api.nvim_buf_set_option(latest_buf_id, "filetype" ,"rust")
@@ -69,7 +62,7 @@ local function handler(_, _, result, _, _, _)
     vim.api.nvim_buf_set_lines(latest_buf_id, 0, 0, false, parse_lines(result))
 
     -- make the new buffer smaller
-    vim.cmd('vertical resize -25')
+    utils.resize(true, "-25")
 end
 
 -- Sends the request to rust-analyzer to get cargo.tomls location and open it
