@@ -15,6 +15,8 @@ local function setupCommands()
    vim.cmd("command! " .. "DRustHoverActions " .. ":lua require'rust-tools-debug'.R('rust-tools.hover_actions').hover_actions()")
    vim.cmd("command! " .. "DRustMoveItemDown " .. ":lua require'rust-tools-debug'.R('rust-tools.move_item').move_item()")
    vim.cmd("command! " .. "DRustMoveItemUp " .. ":lua require'rust-tools-debug'.R('rust-tools.move_item').move_item(true)")
+   vim.cmd("command! " .. "DRustRunnables " .. ":lua require'rust-tools-debug'.R('rust-tools.runnables').runnables()")
+   vim.cmd("command! " .. "DRustRunnablesTelescope " .. ":lua require'rust-tools-debug'.R('rust-tools.runnables').runnables_telescope(require('telescope.themes').get_dropdown({}))")
 end
 
 function D.setup()

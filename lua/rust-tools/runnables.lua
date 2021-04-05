@@ -13,8 +13,8 @@ end
 
 local latest_buf_id = nil
 
-local function getOptions(result)
-    local option_strings = {"Runnables: "}
+local function getOptions(result, withTitle)
+    local option_strings = withTitle and {"Runnables: "} or {}
 
     for i, runnable in ipairs(result) do
        table.insert(option_strings, string.format("%d: %s", i, runnable.label))
@@ -31,10 +31,7 @@ local function getCommand(c, results)
     return ret
 end
 
-local function handler(_, _, result, _, _, _)
-    -- get the choice from the user
-    local choice = vim.fn.inputlist(getOptions(result))
-
+local function run_command(choice, result)
     -- do nothing if choice is too high or too low
     if choice < 1 or choice > #result then
        return
@@ -65,9 +62,59 @@ local function handler(_, _, result, _, _, _)
     vim.api.nvim_buf_attach(latest_buf_id, false, {on_detach = onDetach})
 end
 
+local function handler(_, _, result, _, _, _)
+    -- get the choice from the user
+    local choice = vim.fn.inputlist(getOptions(result, true))
+
+    run_command(choice, result)
+
+end
+
+local function get_telescope_handler(opts)
+    local pickers = require('telescope.pickers')
+    local finders = require('telescope.finders')
+    local sorters = require('telescope.sorters')
+    local actions = require('telescope.actions')
+    local action_state = require('telescope.actions.state')
+
+    return function (_, _, results)
+        local choices = getOptions(results, false)
+
+        local function attach_mappings(bufnr, map)
+            local function on_select()
+                local choice = action_state.get_selected_entry().index
+
+                actions.close(bufnr)
+                run_command(choice, results)
+            end
+
+            map('n', '<CR>', on_select)
+            map('i', '<CR>', on_select)
+
+            -- Additional mappings don't push the item to the tagstack.
+            return true
+        end
+
+        pickers.new(opts or {} ,{
+            prompt_title = "Runnables",
+            finder = finders.new_table({
+                results = choices,
+            }),
+            sorter = sorters.get_generic_fuzzy_sorter(),
+            previewer = nil,
+            attach_mappings = attach_mappings,
+        }):find()
+    end
+end
+
 -- Sends the request to rust-analyzer to get the runnables and handles them
 function M.runnables()
     vim.lsp.buf_request(0, "experimental/runnables", get_params(), handler)
+end
+
+-- Same thing but with telescope.nvim
+function M.runnables_telescope(opts)
+    vim.lsp.buf_request(0, "experimental/runnables", get_params(), get_telescope_handler(opts))
 end
 
 return M
