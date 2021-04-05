@@ -28,9 +28,23 @@ end
 
 local function getCommand(c, results)
     local ret = " "
-    for _, value in ipairs(results[c].args.cargoArgs) do
-       ret = ret .. value .. " "
+    local args = results[c].args
+
+    for _, value in ipairs(args.cargoArgs) do
+        ret = ret .. value .. " "
     end
+
+    for _, value in ipairs(args.cargoExtraArgs) do
+        ret = ret .. value .. " "
+    end
+
+    if not vim.tbl_isempty(args.executableArgs) then
+        ret = ret .. "-- "
+        for _, value in ipairs(args.executableArgs) do
+        ret = ret .. value .. " "
+        end
+    end
+
     return ret
 end
 
