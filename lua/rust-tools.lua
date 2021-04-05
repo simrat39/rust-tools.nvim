@@ -1,3 +1,5 @@
+local vim = vim
+
 local M = {}
 
 local function setupCommands()
@@ -8,6 +10,8 @@ local function setupCommands()
    vim.cmd("command! " .. "RustJoinLines " .. ":lua require'rust-tools.join_lines'.join_lines()")
    vim.cmd("command! " .. "RustRunnables " .. ":lua require'rust-tools.runnables'.runnables()")
    vim.cmd("command! " .. "RustHoverActions " .. ":lua require'rust-tools.hover_actions'.hover_actions()")
+   vim.cmd("command! " .. "RustMoveItemDown " .. ":lua require'rust-tools.move_item'.move_item()")
+   vim.cmd("command! " .. "RustMoveItemUp " .. ":lua require'rust-tools.move_item'.move_item(true)")
 end
 
 function M.setup()
