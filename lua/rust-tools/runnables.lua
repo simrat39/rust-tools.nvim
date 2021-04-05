@@ -1,5 +1,6 @@
 -- ?? helps with all the warnings spam
 local vim = vim
+local utils = require('rust-tools.utils.utils')
 
 local M = {}
 
@@ -39,27 +40,18 @@ local function handler(_, _, result, _, _, _)
        return
     end
 
-    -- creates a buffer and gives back its buffer number
-    local function create_buf()
-        return vim.api.nvim_create_buf(false, false)
-    end
-
     -- check if a buffer with the latest id is already open, if it is then
     -- delete it and continue
-    if latest_buf_id ~= nil then
-        vim.api.nvim_buf_delete(latest_buf_id, {force=true})
-    end
+    utils.delete_buf(latest_buf_id)
 
     -- create the new buffer
-    latest_buf_id = create_buf()
+    latest_buf_id = vim.api.nvim_create_buf(false, true)
 
     -- split the window to create a new buffer and set it to our window
-    vim.cmd('split')
-    local win = vim.api.nvim_get_current_win()
-    vim.api.nvim_win_set_buf(win, latest_buf_id)
+    utils.split(false, latest_buf_id)
 
     -- make the new buffer smaller
-    vim.cmd('resize -5')
+    utils.resize(false, "-5")
 
     local command = "cargo" .. getCommand(choice, result)
     -- run the command
