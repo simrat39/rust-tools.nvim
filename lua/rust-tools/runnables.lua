@@ -67,6 +67,9 @@ local function run_command(choice, result)
     -- make the new buffer smaller
     utils.resize(false, "-5")
 
+    -- close the buffer when escape is pressed :)
+    vim.api.nvim_buf_set_keymap(latest_buf_id, "n", "<Esc>", ":q<CR>", {})
+
     local command = "cargo" .. getCommand(choice, result)
     -- run the command
     vim.fn.termopen(command)
@@ -84,7 +87,6 @@ local function handler(_, _, result, _, _, _)
     local choice = vim.fn.inputlist(getOptions(result, true, true))
 
     run_command(choice, result)
-
 end
 
 local function get_telescope_handler(opts)
