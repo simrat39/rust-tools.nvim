@@ -3,11 +3,16 @@ local vim = vim
 local M = {}
 
 -- Takes a table and converts it into a long string
--- The table cannot contain another table else things will go wack
 local function table_to_long_str(t)
    local ret = "{"
    for key, value in pairs(t) do
-      ret = ret .. tostring(key) .. "=" .. tostring(value) .. ","
+      ret = ret .. tostring(key) .. "="
+      -- recursively handle nested tables
+      if type(value) == 'table' then
+         ret = ret .. table_to_long_str(value) .. ","
+      else
+        ret = ret .. tostring(value) .. ","
+      end
    end
    ret = ret .. "}"
    return ret
