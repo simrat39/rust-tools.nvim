@@ -14,7 +14,9 @@ local function table_to_long_str(t)
 end
 
 local function setupCommands(opts)
-    vim.cmd("command! " .. "RustSetInlayHints " .. ":lua require'rust-tools.inlay_hints'.set_inlay_hints()")
+    local inlay_hints_opts = table_to_long_str(opts.inlay_hints or {})
+    vim.cmd("command! " .. "RustSetInlayHints " .. ":lua require'rust-tools.inlay_hints'.set_inlay_hints(" .. inlay_hints_opts .. ")")
+
     vim.cmd("command! " .. "RustExpandMacro " .. ":lua require'rust-tools.expand_macro'.expand_macro()")
     vim.cmd("command! " .. "RustOpenCargo " .. ":lua require'rust-tools.open_cargo_toml'.open_cargo_toml()")
     vim.cmd("command! " .. "RustParentModule " .. ":lua require'rust-tools.parent_module'.parent_module()")
@@ -39,7 +41,7 @@ function M.setup(opts)
     if opts.autoSetHints == nil then opts.autoSetHints = true end
 
     if opts.autoSetHints then
-        require'rust-tools.inlay_hints'.setup_autocmd()
+        require'rust-tools.inlay_hints'.setup_autocmd(table_to_long_str(opts.inlay_hints or {}))
     end
 
     setupCommands(opts)

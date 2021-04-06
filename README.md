@@ -46,6 +46,13 @@ local opts = {
         use_telescope = true
         -- rest of the opts are forwarded to telescope
     },
+    -- All opts that go into inlay hints (scroll down a bit) can also go here,
+    -- these apply to the default RustSetInlayHints command
+    inlay_hints = {
+        -- wheter to show parameter hints with the inlay hints or not
+        -- default: true
+        show_parameter_hints = true,
+    },
 }
 
 require('rust-tools').setup(opts)
@@ -72,7 +79,13 @@ RustRunnablesTelescope
 ```lua
 -- Command:
 -- RustSetInlayHints
-require('rust-tools.inlay_hints').set_inlay_hints()
+local opts = {
+    -- whether to show parameter hints with the inlay hints or not
+    -- default: true
+    show_parameter_hints = true,
+}
+
+require('rust-tools.inlay_hints').set_inlay_hints(opts)
 ```
 
 #### Runnables
