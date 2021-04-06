@@ -4,7 +4,7 @@ local vim = vim
 
 -- Update inlay hints when opening a new buffer and when writing a buffer to a
 -- file
-function M.setup()
+function M.setup_autocmd()
     vim.api.nvim_command('augroup InlayHints')
     vim.api.nvim_command('autocmd BufEnter,BufWritePost *.rs :lua require"rust-tools.inlay_hints".set_inlay_hints()')
     vim.api.nvim_command('augroup END')

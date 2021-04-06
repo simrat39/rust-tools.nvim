@@ -16,8 +16,8 @@ local function setupCommands()
 end
 
 function M.setup()
-   require'rust-tools.inlay_hints'.setup()
-   setupCommands()
+    require'rust-tools.inlay_hints'.setup_autocmd()
+    setupCommands()
 end
 
 return M
