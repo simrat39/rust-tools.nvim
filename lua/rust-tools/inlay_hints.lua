@@ -52,6 +52,9 @@ local namespace = vim.api.nvim_create_namespace("rust-analyzer/inlayHints")
 local function parseHints(result)
     local map = {}
 
+    if type(result) ~= 'table' then
+        return {}
+    end
     for _, value in pairs(result) do
         local line = tostring(value.range["end"].line)
         local label = value.label
