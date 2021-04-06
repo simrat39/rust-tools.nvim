@@ -38,6 +38,14 @@ local opts = {
     -- the hints or just run :RustSetInlayHints.
     -- default: true
     autoSetHints = true,
+    -- All opts that go into runnables (scroll down a bit) can also go here,
+    -- these apply to the default RustRunnables command
+    runnables = {
+        -- whether to use telescope for selection menu or not
+        -- default: true
+        use_telescope = true
+        -- rest of the opts are forwarded to telescope
+    },
 }
 
 require('rust-tools').setup(opts)
