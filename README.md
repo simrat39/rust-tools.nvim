@@ -2,10 +2,6 @@
 Extra rust tools for writing applications in neovim using the native lsp.
 This plugin adds extra functionality over rust analyzer. The features mirror VsCode.
 
-# Inspiration
-
-This plugin draws inspiration from [`akinsho/flutter-tools.nvim`](https://github.com/akinsho/flutter-tools.nvim)
-
 ## Prerequisites
 
 - `neovim 0.5+` (nightly)
@@ -83,6 +79,23 @@ require('rust-tools.runnables').runnables()
 -- RustRunnablesTelescope
 require('rust-tools.runnables').runnables_telescope(require('telescope.themes').get_dropdown({}))
 ```
+#### Expand Macros Recursively 
+![expand macros](./images/expand_macros_recursively.gif)
+```lua
+-- Command:
+-- RustExpandMacro  
+require'rust-tools.expand_macro'.expand_macro()
+```
+
+#### Move Item Up/Down
+![move items](./images/move_item.gif)
+```lua
+-- Command:
+-- RustMoveItemUp    
+-- RustMoveItemDown    
+local up = true -- true = move up, false = move down
+require'rust-tools.move_item'.move_item(up)
+```
 
 #### Hover Actions
 ![hover actions](./images/hover_actions.gif)
@@ -102,14 +115,6 @@ nvim_lsp.rust_analyzer.setup({
 -- Command:
 -- RustHoverActions 
 require'rust-tools.hover_actions'.hover_actions()
-```
-
-#### Expand Macros Recursively 
-![expand macros](./images/expand_macros_recursively.gif)
-```lua
--- Command:
--- RustExpandMacro  
-require'rust-tools.expand_macro'.expand_macro()
 ```
 
 #### Open Cargo.toml
@@ -135,3 +140,7 @@ require'rust-tools.parent_module'.parent_module()
 -- RustJoinLines  
 require'rust-tools.join_lines'.join_lines()
 ```
+
+## Inspiration
+
+This plugin draws inspiration from [`akinsho/flutter-tools.nvim`](https://github.com/akinsho/flutter-tools.nvim)
