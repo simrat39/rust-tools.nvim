@@ -47,7 +47,6 @@ require('rust-tools').setup(opts)
 ```vim
 RustSetInlayHints
 RustRunnables
-RustRunnablesTelescope
 RustExpandMacro
 RustOpenCargo 
 RustParentModule
@@ -55,6 +54,9 @@ RustJoinLines
 RustHoverActions
 RustMoveItemDown
 RustMoveItemUp
+
+" Deprecated
+RustRunnablesTelescope
 ```
 
 #### Inlay Hints
@@ -70,8 +72,16 @@ require('rust-tools.inlay_hints').set_inlay_hints()
 ```lua
 -- Command:
 -- RustRunnables
-require('rust-tools.runnables').runnables()
+local opts = {
+    -- whether to use telescope for selection menu or not
+    -- default: true
+    use_telescope = true
+    -- rest of the opts are forwarded to telescope
+}
+require('rust-tools.runnables').runnables(opts)
 
+-- DEPRECATED !!!
+-- The command above automatically detects if telescope is installed and uses that by default
 -- Needs telescope.nvim
 -- The theme part is optional
 --
