@@ -82,14 +82,14 @@ local function run_command(choice, result)
     vim.api.nvim_buf_attach(latest_buf_id, false, {on_detach = onDetach})
 end
 
-local function handler(_, _, result, _, _, _)
+function M.handler(_, _, result, _, _, _)
     -- get the choice from the user
     local choice = vim.fn.inputlist(getOptions(result, true, true))
 
     run_command(choice, result)
 end
 
-local function get_telescope_handler(opts)
+function M.get_telescope_handler(opts)
     local pickers = require('telescope.pickers')
     local finders = require('telescope.finders')
     local sorters = require('telescope.sorters')
@@ -130,25 +130,8 @@ end
 -- The opts provided here are forwarded to telescope, other than use_telescope
 -- which is used to check whether we want to use telescope or the vanilla vim
 -- way for input
-function M.runnables(opts)
-    opts = opts or {}
-    if opts.use_telescope == nil then opts.use_telescope = true end
-
-    -- if the user has both telescope installed and option set to use telescope
-    if pcall(require, 'telescope') and opts.use_telescope then
-        vim.lsp.buf_request(0, "experimental/runnables", get_params(), get_telescope_handler(opts))
-        return
-    end
-    -- fallback to the vanilla method incase telescope is not installed or the
-    -- user doesn't want to use it
-    vim.lsp.buf_request(0, "experimental/runnables", get_params(), handler)
-end
-
--- Same thing but with telescope.nvim
-function M.runnables_telescope(opts)
-    print("This function is deprecated, please see :RustRunnables")
-    M.runnables(opts)
-    -- vim.lsp.buf_request(0, "experimental/runnables", get_params(), get_telescope_handler(opts))
+function M.runnables()
+    vim.lsp.buf_request(0, "experimental/runnables", get_params())
 end
 
 return M

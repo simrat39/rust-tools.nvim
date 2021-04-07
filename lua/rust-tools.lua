@@ -26,7 +26,7 @@ local function setup_commands(server_opts, tools_opts)
       },
       RustRunnables = {
          function()
-            require('rust-tools.runnables').runnables(tools_opts.runnables or {})
+            require('rust-tools.runnables').runnables()
          end,
          -- TODO: Add description.
       },
@@ -47,12 +47,19 @@ local function setup_commands(server_opts, tools_opts)
    })
 end
 
+local function setup_handlers(server_opts)
+   server_opts.handlers = vim.tbl_extend('force', server_opts.handlers or {}, {
+      ['experimental/runnables'] = require('rust-tools.runnables').handler,
+   })
+end
+
    function M.setup(opts)
       opts = opts or {}
       local server_opts = opts.server or {}
       local tools_opts = opts.tools or {}
 
       setup_commands(server_opts, tools_opts)
+      setup_handlers(server_opts)
 
       require('lspconfig').rust_analyzer.setup(server_opts)
    end
