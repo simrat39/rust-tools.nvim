@@ -75,7 +75,7 @@ RustRunnablesTelescope
 ```
 
 #### Inlay Hints
-![inlay hints](./images/inlay_hints.png)
+![inlay hints](https://github.com/simrat39/rust-tools-demos/raw/master/inlay_hints.png)
 ```lua
 -- Command:
 -- RustSetInlayHints
@@ -89,7 +89,7 @@ require('rust-tools.inlay_hints').set_inlay_hints(opts)
 ```
 
 #### Runnables
-![runnables](./images/runnables.gif)
+![runnables](https://github.com/simrat39/rust-tools-demos/raw/master/runnables.gif)
 ```lua
 -- Command:
 -- RustRunnables
@@ -111,7 +111,7 @@ require('rust-tools.runnables').runnables(opts)
 require('rust-tools.runnables').runnables_telescope(require('telescope.themes').get_dropdown({}))
 ```
 #### Expand Macros Recursively 
-![expand macros](./images/expand_macros_recursively.gif)
+![expand macros](https://github.com/simrat39/rust-tools-demos/raw/master/expand_macros_recursively.gif)
 ```lua
 -- Command:
 -- RustExpandMacro  
@@ -119,7 +119,7 @@ require'rust-tools.expand_macro'.expand_macro()
 ```
 
 #### Move Item Up/Down
-![move items](./images/move_item.gif)
+![move items](https://github.com/simrat39/rust-tools-demos/raw/master/move_item.gif)
 ```lua
 -- Command:
 -- RustMoveItemUp    
@@ -129,7 +129,7 @@ require'rust-tools.move_item'.move_item(up)
 ```
 
 #### Hover Actions
-![hover actions](./images/hover_actions.gif)
+![hover actions](https://github.com/simrat39/rust-tools-demos/raw/master/hover_actions.gif)
 ```lua
 -- this needs the experimental hoverActions capability set
 -- while configuring your rust-analyzer:
@@ -149,7 +149,7 @@ require'rust-tools.hover_actions'.hover_actions()
 ```
 
 #### Open Cargo.toml
-![open cargo](./images/open_cargo_toml.gif)
+![open cargo](https://github.com/simrat39/rust-tools-demos/raw/master/open_cargo_toml.gif)
 ```lua
 -- Command:
 -- RustOpenCargo
@@ -157,7 +157,7 @@ require'rust-tools.open_cargo_toml'.open_cargo_toml()
 ```
 
 #### Parent Module
-![parent module](./images/parent_module.gif)
+![parent module](https://github.com/simrat39/rust-tools-demos/raw/master/parent_module.gif)
 ```lua
 -- Command:
 -- RustParentModule 
@@ -165,7 +165,7 @@ require'rust-tools.parent_module'.parent_module()
 ```
 
 #### Join Lines
-![join lines](./images/join_lines.gif)
+![join lines](https://github.com/simrat39/rust-tools-demos/raw/master/join_lines.gif)
 ```lua
 -- Command:
 -- RustJoinLines  
