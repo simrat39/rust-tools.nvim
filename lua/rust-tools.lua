@@ -43,8 +43,8 @@ end
 
 function M.setup(opts)
     opts = opts or {}
-    if opts.autoSetHints == nil then opts.autoSetHints = true end
 
+    if opts.autoSetHints == nil then opts.autoSetHints = true end
     if opts.autoSetHints then
         require'rust-tools.inlay_hints'.setup_autocmd(table_to_long_str(opts.inlay_hints or {}))
     end
