@@ -1,6 +1,6 @@
 # rust-tools.nvim
 Extra rust tools for writing applications in neovim using the native lsp.
-This plugin adds extra functionality over rust analyzer. The features mirror VsCode.
+This plugin adds extra functionality over rust analyzer.
 
 ## Prerequisites
 
@@ -25,9 +25,7 @@ Plug 'nvim-telescope/telescope.nvim'
 
 # Configuration + Functionality
 
-Please configure [`nvim-lspconfig for rust`](https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#rust_analyzer) before using this plugin.
-
-This plugin is more of WYSIWYG right now but more configuration options will slowly be added.
+This plugin automatically sets up nvim-lspconfig for rust_analyzer for you, so there is no need to do that manually
 
 ### Initial setup
 ```lua
@@ -38,6 +36,10 @@ local opts = {
     -- the hints or just run :RustSetInlayHints.
     -- default: true
     autoSetHints = true,
+    -- whether to show hover actions inside the hover window
+    -- this overrides the default hover handler so something like lspsaga.nvim's hover would be overriden by this
+    -- default: true
+    hover_with_actions = true,
     -- All opts that go into runnables (scroll down a bit) can also go here,
     -- these apply to the default RustRunnables command
     runnables = {
@@ -53,6 +55,10 @@ local opts = {
         -- default: true
         show_parameter_hints = true,
     },
+    -- all the opts to send to nvim-lspconfig
+    -- these override the defaults set by rust-tools.nvim
+    -- see https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG md#rust_analyzer
+    lsp_opts = {},
 }
 
 require('rust-tools').setup(opts)
