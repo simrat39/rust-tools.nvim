@@ -1,4 +1,5 @@
 local vim = vim
+local nvim_lsp = require'lspconfig'
 
 local M = {}
 
@@ -40,15 +41,46 @@ local function setupCommands(opts)
     vim.cmd("command! " .. "RustMoveItemUp " .. ":lua require'rust-tools.move_item'.move_item(true)")
 end
 
+local function setup_lsp(opts)
+    local lsp_opts = opts.lsp_opts or {}
+
+    local capabilities = vim.lsp.protocol.make_client_capabilities()
+    capabilities.textDocument.completion.completionItem.snippetSupport = true
+
+    capabilities.experimental = {}
+    capabilities.experimental.hoverActions = true
+
+    local handlers = {}
+
+    if opts.hover_with_actions == nil then opts.hover_with_actions = true end
+    if opts.hover_with_actions then
+        handlers = {
+            ["textDocument/hover"] = require'rust-tools.hover_actions'.handler
+        }
+    end
+
+    local custom_opts = {
+        capabilities = capabilities,
+        handlers = handlers,
+    }
+
+    local final_lsp_opts = vim.tbl_deep_extend("force", custom_opts, lsp_opts)
+    nvim_lsp.rust_analyzer.setup(final_lsp_opts)
+end
 
 function M.setup(opts)
     opts = opts or {}
 
+    -- setup rust analyzer
+    setup_lsp(opts)
+
+    -- enable automatic inlay hints
     if opts.autoSetHints == nil then opts.autoSetHints = true end
     if opts.autoSetHints then
         require'rust-tools.inlay_hints'.setup_autocmd(table_to_long_str(opts.inlay_hints or {}))
     end
 
+    -- setup user commands
     setupCommands(opts)
 end
 
