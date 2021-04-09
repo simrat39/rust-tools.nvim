@@ -16,7 +16,7 @@ return telescope.register_extension({
       })
 
       server_opts.commands = vim.tbl_extend('force', server_opts.commands or {}, {
-         RustHoverActions = {
+         RustAnalyzerHoverActions = {
             function()
                local make_handler = require('rust-tools.hover_actions').make_telescope_handler
 
