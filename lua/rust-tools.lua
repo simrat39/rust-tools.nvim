@@ -73,7 +73,7 @@ local function setup_handlers(lsp_opts, tool_opts)
         custom_handlers["textDocument/hover"] = require('rust-tools.hover_actions').handler
     end
 
-    lsp_opts.handlers = vim.tbl_deep_extend("force", lsp_opts.handlers or {}, custom_handlers)
+    lsp_opts.handlers = vim.tbl_deep_extend("force", custom_handlers, lsp_opts.handlers or {})
 end
 
 local function setup_capabilities(lsp_opts)
@@ -82,7 +82,7 @@ local function setup_capabilities(lsp_opts)
     capabilities.experimental = {
         hoverActions = true,
     }
-    lsp_opts.capabilities = capabilities
+    lsp_opts.capabilities = vim.tbl_deep_extend("force", capabilities, lsp_opts.capabilities or {})
 end
 
 local function setup_lsp(lsp_opts)

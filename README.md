@@ -30,7 +30,7 @@ This plugin automatically sets up nvim-lspconfig for rust_analyzer for you, so t
 ### Initial setup
 ```lua
 local opts = {
-    tool_opts = { -- rust-tools options
+    tools = { -- rust-tools options
         -- automatically set inlay hints (type hints)
         -- There is an issue due to which the hints are not applied on the first
         -- opened file. For now, write to the file to trigger a reapplication of
@@ -60,7 +60,7 @@ local opts = {
     -- all the opts to send to nvim-lspconfig
     -- these override the defaults set by rust-tools.nvim
     -- see https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#rust_analyzer
-    lsp_opts = {}, -- rust-analyer options
+    server = {}, -- rust-analyer options
 }
 
 require('rust-tools').setup(opts)
