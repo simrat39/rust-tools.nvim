@@ -7,7 +7,7 @@ local vim = vim
 -- opts is a string representation of the table of options
 function M.setup_autocmd(opts)
     vim.api.nvim_command('augroup InlayHints')
-    vim.api.nvim_command('autocmd BufEnter,BufWritePost *.rs :lua require"rust-tools.inlay_hints".set_inlay_hints(' .. opts .. ')')
+    vim.api.nvim_command('autocmd InsertLeave,BufEnter,BufWinEnter,TabEnter,BufWritePost *.rs :lua require"rust-tools.inlay_hints".set_inlay_hints(' .. opts .. ')')
     vim.api.nvim_command('augroup END')
 end
 
