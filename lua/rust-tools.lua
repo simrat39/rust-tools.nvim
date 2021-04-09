@@ -20,7 +20,7 @@ local function table_to_long_str(t)
 end
 
 local function setupCommands(lsp_opts, tool_opts)
-    local runnables_opts = tool_opts.runnable_opts or {}
+    local runnables_opts = tool_opts.runnables or {}
     -- Setup the dropdown theme if telescope is installed
     if pcall(require, 'telescope') then
         runnables_opts = require('telescope.themes').get_dropdown(runnables_opts)
