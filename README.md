@@ -28,6 +28,11 @@ Plug 'nvim-telescope/telescope.nvim'
 This plugin automatically sets up nvim-lspconfig for rust_analyzer for you, so there is no need to do that manually
 
 ### Initial setup
+
+<b>Small breaking change</b>
+All rust-tools options now go in the opts.tools table
+All rust-analyzer options now go in the opts.server table
+
 ```lua
 local opts = {
     tools = { -- rust-tools options
@@ -37,18 +42,22 @@ local opts = {
         -- the hints or just run :RustSetInlayHints.
         -- default: true
         autoSetHints = true,
+
         -- whether to show hover actions inside the hover window
         -- this overrides the default hover handler so something like lspsaga.nvim's hover would be overriden by this
         -- default: true
         hover_with_actions = true,
+
         -- All opts that go into runnables (scroll down a bit) can also go here,
         -- these apply to the default RustRunnables command
         runnables = {
             -- whether to use telescope for selection menu or not
             -- default: true
             use_telescope = true
+
             -- rest of the opts are forwarded to telescope
         },
+
         -- All opts that go into inlay hints (scroll down a bit) can also go here,
         -- these apply to the default RustSetInlayHints command
         inlay_hints = {
@@ -57,6 +66,7 @@ local opts = {
             show_parameter_hints = true,
         },
     },
+
     -- all the opts to send to nvim-lspconfig
     -- these override the defaults set by rust-tools.nvim
     -- see https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#rust_analyzer
