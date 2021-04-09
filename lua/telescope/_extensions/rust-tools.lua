@@ -8,11 +8,15 @@ return telescope.register_extension({
             telescope = {},
             no_results_message = 'No hover actions found',
          },
+         runnables = {
+            telescope = {},
+            no_results_message = 'No runnables found',
+         },
       })
       local server_opts = require('lspconfig').rust_analyzer
 
       server_opts.handlers = vim.tbl_extend('force', server_opts.handlers or {}, {
-         ['experimental/runnables'] = get_runnables_telescope_handler(tools_opts),
+         ['experimental/runnables'] = get_runnables_telescope_handler(tools_opts.runnables),
       })
 
       server_opts.commands = vim.tbl_extend('force', server_opts.commands or {}, {

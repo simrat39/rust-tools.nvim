@@ -99,6 +99,11 @@ function M.get_telescope_handler(opts)
     return function (_, _, results)
         local choices = getOptions(results, false, false)
 
+        if vim.tbl_isempty(choices) then
+            print(opts.no_results_message)
+            return
+        end
+
         local function attach_mappings(bufnr, map)
             local function on_select()
                 local choice = action_state.get_selected_entry().index
@@ -114,7 +119,7 @@ function M.get_telescope_handler(opts)
             return true
         end
 
-        pickers.new(opts or {} ,{
+        pickers.new(opts.telescope or {} ,{
             prompt_title = "Runnables",
             finder = finders.new_table({
                 results = choices,
