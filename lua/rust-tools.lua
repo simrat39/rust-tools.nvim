@@ -31,7 +31,9 @@ local function setup_commands(server_opts, tools_opts)
          -- TODO: Add description.
       },
       RustHoverActions = {
-         require('rust-tools.hover_actions').hover_actions
+         function()
+            require('rust-tools.hover_actions').hover_actions()
+         end,
          -- TODO: Add description.
       },
       RustMoveItemDown = {
