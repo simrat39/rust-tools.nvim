@@ -134,14 +134,17 @@ function M.runnables(opts)
     opts = opts or {}
     if opts.use_telescope == nil then opts.use_telescope = true end
 
+    -- this is the handler which is actually used, hence its the used handler
+    local used_handler = handler
+
     -- if the user has both telescope installed and option set to use telescope
     if pcall(require, 'telescope') and opts.use_telescope then
-        vim.lsp.buf_request(0, "experimental/runnables", get_params(), get_telescope_handler(opts))
-        return
+        used_handler = get_telescope_handler(opts)
     end
+
     -- fallback to the vanilla method incase telescope is not installed or the
     -- user doesn't want to use it
-    vim.lsp.buf_request(0, "experimental/runnables", get_params(), handler)
+    vim.lsp.buf_request(0, "experimental/runnables", get_params(), used_handler)
 end
 
 -- Same thing but with telescope.nvim
