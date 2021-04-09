@@ -32,14 +32,8 @@ This plugin is more of WYSIWYG right now but more configuration options will slo
 ### Initial setup
 ```lua
 local opts = {
-    -- automatically set inlay hints (type hints)
-    -- There is an issue due to which the hints are not applied on the first
-    -- opened file. For now, write to the file to trigger a reapplication of
-    -- the hints or just run :RustSetInlayHints.
-    -- default: true
-    autoSetHints = true,
     -- All opts that go into runnables (scroll down a bit) can also go here,
-    -- these apply to the default RustRunnables command
+    -- these apply to the default RustAnalyzerRunnables command
     runnables = {
         -- whether to use telescope for selection menu or not
         -- default: true
@@ -47,7 +41,7 @@ local opts = {
         -- rest of the opts are forwarded to telescope
     },
     -- All opts that go into inlay hints (scroll down a bit) can also go here,
-    -- these apply to the default RustSetInlayHints command
+    -- these apply to the default RustAnalyzerSetInlayHints command
     inlay_hints = {
         -- wheter to show parameter hints with the inlay hints or not
         -- default: true
@@ -55,30 +49,84 @@ local opts = {
     },
 }
 
-require('rust-tools').setup(opts)
+-- Call this in place of `require('lspconfig').rust_analyzer.setup`.
+require('rust-tools').setup({
+    server = {}, -- rust_analyzer options go here
+    tools = {    -- rust-tools options go here
+        -- All opts that go into inlay hints (scroll down a bit) can also go here,
+        -- these apply to the default RustAnalyzerSetInlayHints command
+        inlay_hints = {
+            -- wheter to show parameter hints with the inlay hints or not
+            -- default: true
+            show_parameter_hints = true,
+        },
+    },
+})
+```
+
+## Telescope extension
+To use this plug-in with Telescope, load the `rust-tools` extension:
+```lua
+local telescope = require('telescope')
+
+telescope.setup({
+    extensions = {
+        -- These are the default settings!
+        ['rust-tools'] = {
+            runnables = {
+                telescope = {},
+                no_results_message = 'No runnables found',
+            },
+            hover_actions = {
+                telescope = {},
+                no_results_message = 'No runnables found',
+            },
+        },
+    },
+})
+
+telescope.load_extension('rust-tools')
+```
+
+One cool configuration is to use a dropdown for Telescope results:
+```lua
+local telescope = require('telescope')
+local dropdown_theme = require('telescope.themes').get_dropdown({})
+
+telescope.setup({
+    extensions = {
+        ['rust-tools'] = {
+            runnables = {
+                telescope = dropdown_theme,
+            },
+            hover_actions = {
+                telescope = dropdown_theme,
+            },
+        },
+    },
+})
+
+telescope.load_extension('rust-tools')
 ```
 
 ## Commands
 ```vim
-RustSetInlayHints
-RustRunnables
-RustExpandMacro
-RustOpenCargo 
-RustParentModule
-RustJoinLines
-RustHoverActions
-RustMoveItemDown
-RustMoveItemUp
-
-" Deprecated
-RustRunnablesTelescope
+RustAnalyzerSetInlayHints
+RustAnalyzerRunnables
+RustAnalyzerExpandMacro
+RustAnalyzerOpenCargo 
+RustAnalyzerParentModule
+RustAnalyzerJoinLines
+RustAnalyzerHoverActions
+RustAnalyzerMoveItemDown
+RustAnalyzerMoveItemUp
 ```
 
 #### Inlay Hints
 ![inlay hints](./images/inlay_hints.png)
 ```lua
 -- Command:
--- RustSetInlayHints
+-- RustAnalyzerSetInlayHints
 local opts = {
     -- whether to show parameter hints with the inlay hints or not
     -- default: true
@@ -92,7 +140,7 @@ require('rust-tools.inlay_hints').set_inlay_hints(opts)
 ![runnables](./images/runnables.gif)
 ```lua
 -- Command:
--- RustRunnables
+-- RustAnalyzerRunnables
 local opts = {
     -- whether to use telescope for selection menu or not
     -- default: true
@@ -100,21 +148,13 @@ local opts = {
     -- rest of the opts are forwarded to telescope
 }
 require('rust-tools.runnables').runnables(opts)
-
--- DEPRECATED !!!
--- The command above automatically detects if telescope is installed and uses that by default
--- Needs telescope.nvim
--- The theme part is optional
---
--- Command:
--- RustRunnablesTelescope
-require('rust-tools.runnables').runnables_telescope(require('telescope.themes').get_dropdown({}))
 ```
+
 #### Expand Macros Recursively 
 ![expand macros](./images/expand_macros_recursively.gif)
 ```lua
 -- Command:
--- RustExpandMacro  
+-- RustAnalyzerExpandMacro  
 require'rust-tools.expand_macro'.expand_macro()
 ```
 
@@ -122,8 +162,8 @@ require'rust-tools.expand_macro'.expand_macro()
 ![move items](./images/move_item.gif)
 ```lua
 -- Command:
--- RustMoveItemUp    
--- RustMoveItemDown    
+-- RustAnalyzerMoveItemUp    
+-- RustAnalyzerMoveItemDown    
 local up = true -- true = move up, false = move down
 require'rust-tools.move_item'.move_item(up)
 ```
@@ -144,7 +184,7 @@ nvim_lsp.rust_analyzer.setup({
 ------------------------------------------------------------------
 -- Actual call
 -- Command:
--- RustHoverActions 
+-- RustAnalyzerHoverActions 
 require'rust-tools.hover_actions'.hover_actions()
 ```
 
@@ -152,7 +192,7 @@ require'rust-tools.hover_actions'.hover_actions()
 ![open cargo](./images/open_cargo_toml.gif)
 ```lua
 -- Command:
--- RustOpenCargo
+-- RustAnalyzerOpenCargo
 require'rust-tools.open_cargo_toml'.open_cargo_toml()
 ```
 
@@ -160,7 +200,7 @@ require'rust-tools.open_cargo_toml'.open_cargo_toml()
 ![parent module](./images/parent_module.gif)
 ```lua
 -- Command:
--- RustParentModule 
+-- RustAnalyzerParentModule 
 require'rust-tools.parent_module'.parent_module()
 ```
 
@@ -168,7 +208,7 @@ require'rust-tools.parent_module'.parent_module()
 ![join lines](./images/join_lines.gif)
 ```lua
 -- Command:
--- RustJoinLines  
+-- RustAnalyzerJoinLines  
 require'rust-tools.join_lines'.join_lines()
 ```
 
