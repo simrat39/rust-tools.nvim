@@ -30,35 +30,37 @@ This plugin automatically sets up nvim-lspconfig for rust_analyzer for you, so t
 ### Initial setup
 ```lua
 local opts = {
-    -- automatically set inlay hints (type hints)
-    -- There is an issue due to which the hints are not applied on the first
-    -- opened file. For now, write to the file to trigger a reapplication of
-    -- the hints or just run :RustSetInlayHints.
-    -- default: true
-    autoSetHints = true,
-    -- whether to show hover actions inside the hover window
-    -- this overrides the default hover handler so something like lspsaga.nvim's hover would be overriden by this
-    -- default: true
-    hover_with_actions = true,
-    -- All opts that go into runnables (scroll down a bit) can also go here,
-    -- these apply to the default RustRunnables command
-    runnables = {
-        -- whether to use telescope for selection menu or not
+    tool_opts = { -- rust-tools options
+        -- automatically set inlay hints (type hints)
+        -- There is an issue due to which the hints are not applied on the first
+        -- opened file. For now, write to the file to trigger a reapplication of
+        -- the hints or just run :RustSetInlayHints.
         -- default: true
-        use_telescope = true
-        -- rest of the opts are forwarded to telescope
-    },
-    -- All opts that go into inlay hints (scroll down a bit) can also go here,
-    -- these apply to the default RustSetInlayHints command
-    inlay_hints = {
-        -- wheter to show parameter hints with the inlay hints or not
+        autoSetHints = true,
+        -- whether to show hover actions inside the hover window
+        -- this overrides the default hover handler so something like lspsaga.nvim's hover would be overriden by this
         -- default: true
-        show_parameter_hints = true,
+        hover_with_actions = true,
+        -- All opts that go into runnables (scroll down a bit) can also go here,
+        -- these apply to the default RustRunnables command
+        runnables = {
+            -- whether to use telescope for selection menu or not
+            -- default: true
+            use_telescope = true
+            -- rest of the opts are forwarded to telescope
+        },
+        -- All opts that go into inlay hints (scroll down a bit) can also go here,
+        -- these apply to the default RustSetInlayHints command
+        inlay_hints = {
+            -- wheter to show parameter hints with the inlay hints or not
+            -- default: true
+            show_parameter_hints = true,
+        },
     },
     -- all the opts to send to nvim-lspconfig
     -- these override the defaults set by rust-tools.nvim
-    -- see https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG md#rust_analyzer
-    lsp_opts = {},
+    -- see https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#rust_analyzer
+    lsp_opts = {}, -- rust-analyer options
 }
 
 require('rust-tools').setup(opts)
@@ -75,9 +77,6 @@ RustJoinLines
 RustHoverActions
 RustMoveItemDown
 RustMoveItemUp
-
-" Deprecated
-RustRunnablesTelescope
 ```
 
 #### Inlay Hints
@@ -111,9 +110,6 @@ require('rust-tools.runnables').runnables(opts)
 -- The command above automatically detects if telescope is installed and uses that by default
 -- Needs telescope.nvim
 -- The theme part is optional
---
--- Command:
--- RustRunnablesTelescope
 require('rust-tools.runnables').runnables_telescope(require('telescope.themes').get_dropdown({}))
 ```
 #### Expand Macros Recursively 

@@ -19,69 +19,94 @@ local function table_to_long_str(t)
    return ret
 end
 
-local function setupCommands(opts)
-    local inlay_hints_opts = table_to_long_str(opts.inlay_hints or {})
-    vim.cmd("command! " .. "RustSetInlayHints " .. ":lua require'rust-tools.inlay_hints'.set_inlay_hints(" .. inlay_hints_opts .. ")")
-
-    vim.cmd("command! " .. "RustExpandMacro " .. ":lua require'rust-tools.expand_macro'.expand_macro()")
-    vim.cmd("command! " .. "RustOpenCargo " .. ":lua require'rust-tools.open_cargo_toml'.open_cargo_toml()")
-    vim.cmd("command! " .. "RustParentModule " .. ":lua require'rust-tools.parent_module'.parent_module()")
-    vim.cmd("command! " .. "RustJoinLines " .. ":lua require'rust-tools.join_lines'.join_lines()")
-
-    local runnable_opts = table_to_long_str(opts.runnables or {})
-    vim.cmd("command! " .. "RustRunnables " .. ":lua require'rust-tools.runnables'.runnables(" .. runnable_opts .. ")")
+local function setupCommands(lsp_opts, tool_opts)
+    local runnables_opts = tool_opts.runnable_opts or {}
     -- Setup the dropdown theme if telescope is installed
     if pcall(require, 'telescope') then
-        vim.cmd("command! " .. "RustRunnables " .. ":lua require'rust-tools.runnables'.runnables(require('telescope.themes').get_dropdown(" .. runnable_opts .. "))")
+        runnables_opts = require('telescope.themes').get_dropdown(runnables_opts)
     end
 
-    vim.cmd("command! " .. "RustRunnablesTelescope " .. ":lua require('rust-tools.runnables').runnables_telescope(require('telescope.themes').get_dropdown({}))")
-    vim.cmd("command! " .. "RustHoverActions " .. ":lua require'rust-tools.hover_actions'.hover_actions()")
-    vim.cmd("command! " .. "RustMoveItemDown " .. ":lua require'rust-tools.move_item'.move_item()")
-    vim.cmd("command! " .. "RustMoveItemUp " .. ":lua require'rust-tools.move_item'.move_item(true)")
+    lsp_opts.commands = vim.tbl_deep_extend("force", lsp_opts.commands or {}, {
+        RustSetInlayHints = {
+            function ()
+                require('rust-tools.inlay_hints').set_inlay_hints(tool_opts.inlay_hints or {})
+            end
+        },
+        RustExpandMacro = {
+            require('rust-tools.expand_macro').expand_macro
+        },
+        RustOpenCargo = {
+            require('rust-tools.open_cargo_toml').open_cargo_toml
+        },
+        RustParentModule = {
+            require('rust-tools.parent_module').parent_module
+        },
+        RustJoinLines = {
+            require('rust-tools.join_lines').join_lines
+        },
+        RustRunnables = {
+            function ()
+                require('rust-tools.runnables').runnables(runnables_opts)
+            end
+        },
+        RustHoverActions = {
+            require('rust-tools.hover_actions').hover_actions
+        },
+        RustMoveItemDown = {
+            function ()
+                require('rust-tools.move_item').move_item()
+            end
+        },
+        RustMoveItemUp = {
+            function ()
+                require('rust-tools.move_item').move_item(true)
+            end
+        },
+    })
 end
 
-local function setup_lsp(opts)
-    local lsp_opts = opts.lsp_opts or {}
+local function setup_handlers(lsp_opts, tool_opts)
+    local custom_handlers = {}
 
-    local capabilities = vim.lsp.protocol.make_client_capabilities()
-    capabilities.textDocument.completion.completionItem.snippetSupport = true
-
-    capabilities.experimental = {}
-    capabilities.experimental.hoverActions = true
-
-    local handlers = {}
-
-    if opts.hover_with_actions == nil then opts.hover_with_actions = true end
-    if opts.hover_with_actions then
-        handlers = {
-            ["textDocument/hover"] = require'rust-tools.hover_actions'.handler
-        }
+    if tool_opts.hover_with_actions == nil then tool_opts.hover_with_actions = true end
+    if tool_opts.hover_with_actions then
+        custom_handlers["textDocument/hover"] = require('rust-tools.hover_actions').handler
     end
 
-    local custom_opts = {
-        capabilities = capabilities,
-        handlers = handlers,
-    }
+    lsp_opts.handlers = vim.tbl_deep_extend("force", lsp_opts.handlers or {}, custom_handlers)
+end
 
-    local final_lsp_opts = vim.tbl_deep_extend("force", custom_opts, lsp_opts)
-    nvim_lsp.rust_analyzer.setup(final_lsp_opts)
+local function setup_capabilities(lsp_opts)
+    local capabilities = vim.lsp.protocol.make_client_capabilities()
+    capabilities.textDocument.completion.completionItem.snippetSupport = true
+    capabilities.experimental = {
+        hoverActions = true,
+    }
+    lsp_opts.capabilities = capabilities
+end
+
+local function setup_lsp(lsp_opts)
+    nvim_lsp.rust_analyzer.setup(lsp_opts)
 end
 
 function M.setup(opts)
     opts = opts or {}
+    local tool_opts = opts.tools or {}
+    local lsp_opts = opts.server or {}
 
+    setup_capabilities(lsp_opts)
+    -- setup handlers
+    setup_handlers(lsp_opts, tool_opts)
+    -- setup user commands
+    setupCommands(lsp_opts, tool_opts)
     -- setup rust analyzer
-    setup_lsp(opts)
+    setup_lsp(lsp_opts)
 
     -- enable automatic inlay hints
     if opts.autoSetHints == nil then opts.autoSetHints = true end
     if opts.autoSetHints then
-        require'rust-tools.inlay_hints'.setup_autocmd(table_to_long_str(opts.inlay_hints or {}))
+        require'rust-tools.inlay_hints'.setup_autocmd(table_to_long_str(tool_opts.inlay_hints or {}))
     end
-
-    -- setup user commands
-    setupCommands(opts)
 end
 
 return M
