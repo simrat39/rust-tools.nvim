@@ -22,6 +22,7 @@ end
 local function setupCommands(opts)
     local inlay_hints_opts = table_to_long_str(opts.inlay_hints or {})
     vim.cmd("command! " .. "RustSetInlayHints " .. ":lua require'rust-tools.inlay_hints'.set_inlay_hints(" .. inlay_hints_opts .. ")")
+    vim.cmd("command! " .. "RustToggleInlayHints " .. ":lua require'rust-tools.inlay_hints'.toggle_inlay_hints(" .. inlay_hints_opts .. ")")
 
     vim.cmd("command! " .. "RustExpandMacro " .. ":lua require'rust-tools.expand_macro'.expand_macro()")
     vim.cmd("command! " .. "RustOpenCargo " .. ":lua require'rust-tools.open_cargo_toml'.open_cargo_toml()")

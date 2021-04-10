@@ -130,4 +130,15 @@ function M.set_inlay_hints(opts)
     vim.lsp.buf_request(0, "rust-analyzer/inlayHints", get_params(), get_handler(opts))
 end
 
+local toggled = false
+
+function M.toggle_inlay_hints(opts)
+    if toggled then
+        vim.api.nvim_buf_clear_namespace(0, namespace, 0, -1)
+    else
+        M.set_inlay_hints(opts)
+    end
+    toggled = not toggled
+end
+
 return M
