@@ -54,6 +54,8 @@ local function handler(_, _, result, _, _, _)
     -- split the window to create a new buffer and set it to our window
     utils.split(true, latest_buf_id)
 
+    -- delete buffer after closing the window
+    vim.api.nvim_buf_set_option(latest_buf_id, "bufhidden", "delete")
     -- set filetpe to rust for syntax highlighting
     vim.api.nvim_buf_set_option(latest_buf_id, "filetype" ,"rust")
     -- set the file name to [EXPANSION].rs ( copying vscode )
