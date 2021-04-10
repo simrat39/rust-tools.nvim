@@ -78,9 +78,19 @@ end
 
 local function setup_capabilities(lsp_opts)
     local capabilities = vim.lsp.protocol.make_client_capabilities()
+    -- snippets
     capabilities.textDocument.completion.completionItem.snippetSupport = true
+    -- send actions with hover request
     capabilities.experimental = {
         hoverActions = true,
+    }
+    -- enable auto-import
+    capabilities.textDocument.completion.completionItem.resolveSupport = {
+        properties = {
+          'documentation',
+          'detail',
+          'additionalTextEdits',
+        }
     }
     lsp_opts.capabilities = vim.tbl_deep_extend("force", capabilities, lsp_opts.capabilities or {})
 end
