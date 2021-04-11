@@ -32,6 +32,9 @@ local function setupCommands(lsp_opts, tool_opts)
                 require('rust-tools.inlay_hints').set_inlay_hints(tool_opts.inlay_hints or {})
             end
         },
+        RustDisableInlayHints = {
+            require('rust-tools.inlay_hints').disable_inlay_hints
+        },
         RustExpandMacro = {
             require('rust-tools.expand_macro').expand_macro
         },

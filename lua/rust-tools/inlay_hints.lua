@@ -74,8 +74,8 @@ local function get_handler(opts)
     if opts.show_parameter_hints == nil then opts.show_parameter_hints = true end
 
     return function(_, _, result, _, bufnr, _)
-        -- clear namespace which clears the virtual text as well
-        vim.api.nvim_buf_clear_namespace(0, namespace, 0, -1)
+        -- clean it up at first
+        M.disable_inlay_hints()
 
         local ret = parseHints(result)
 
@@ -122,6 +122,11 @@ local function get_handler(opts)
             vim.api.nvim_buf_set_virtual_text(bufnr, namespace, line, {{virt_text, "Comment"}}, {})
         end
     end
+end
+
+function M.disable_inlay_hints()
+    -- clear namespace which clears the virtual text as well
+    vim.api.nvim_buf_clear_namespace(0, namespace, 0, -1)
 end
 
 -- Sends the request to rust-analyzer to get the inlay hints and handle them
