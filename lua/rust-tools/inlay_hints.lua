@@ -18,6 +18,8 @@ local function get_params()
 end
 
 local namespace = vim.api.nvim_create_namespace("rust-analyzer/inlayHints")
+-- whether the hints are enabled or not
+local enabled = nil
 
 -- parses the result into a easily parsable format
 -- example:
@@ -120,8 +122,19 @@ local function get_handler(opts)
 
             -- set the virtual text
             vim.api.nvim_buf_set_virtual_text(bufnr, namespace, line, {{virt_text, "Comment"}}, {})
+            -- update state
+            enabled = true
         end
     end
+end
+
+function M.toggle_inlay_hints(opts)
+    if enabled then
+        M.disable_inlay_hints()
+    else
+        M.set_inlay_hints(opts or {})
+    end
+    enabled = not enabled
 end
 
 function M.disable_inlay_hints()
