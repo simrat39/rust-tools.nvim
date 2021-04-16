@@ -74,6 +74,8 @@ end
 
 local function get_handler(opts)
     if opts.show_parameter_hints == nil then opts.show_parameter_hints = true end
+    if opts.parameter_hints_prefix == nil then opts.parameter_hints_prefix = "<- " end
+    if opts.other_hints_prefix == nil then opts.other_hints_prefix = "=> " end
 
     return function(_, _, result, _, bufnr, _)
         -- clean it up at first
@@ -99,7 +101,7 @@ local function get_handler(opts)
 
             -- show parameter hints inside brackets with commas and a thin arrow
             if not vim.tbl_isempty(param_hints) and opts.show_parameter_hints then
-                virt_text = virt_text .. "<- ("
+                virt_text = virt_text .. opts.parameter_hints_prefix .. "("
                 for i, value_inner_inner in ipairs(param_hints) do
                    virt_text = virt_text .. value_inner_inner
                    if i ~= #param_hints then
@@ -111,7 +113,7 @@ local function get_handler(opts)
 
             -- show other hints with commas and a thicc arrow
             if not vim.tbl_isempty(other_hints) then
-                virt_text = virt_text .. "=> "
+                virt_text = virt_text .. opts.other_hints_prefix
                 for i, value_inner_inner in ipairs(other_hints) do
                    virt_text = virt_text .. value_inner_inner
                    if i ~= #other_hints then
