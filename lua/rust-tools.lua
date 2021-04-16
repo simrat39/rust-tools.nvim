@@ -114,8 +114,8 @@ function M.setup(opts)
     setup_lsp(lsp_opts)
 
     -- enable automatic inlay hints
-    if opts.autoSetHints == nil then opts.autoSetHints = true end
-    if opts.autoSetHints then
+    if tool_opts.autoSetHints == nil then tool_opts.autoSetHints = true end
+    if tool_opts.autoSetHints then
         require'rust-tools.inlay_hints'.setup_autocmd(
             table_to_long_str(tool_opts.inlay_hints or {}))
     end
