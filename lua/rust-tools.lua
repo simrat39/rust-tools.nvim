@@ -21,7 +21,6 @@ local function table_to_long_str(t)
         end
     end
     ret = ret .. "}"
-    print(ret)
     return ret
 end
 
