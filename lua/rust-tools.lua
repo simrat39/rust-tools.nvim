@@ -1,42 +1,16 @@
 local vim = vim
 local nvim_lsp = require 'lspconfig'
+local config = require 'rust-tools.config'
 
 local M = {}
 
--- Takes a table and converts it into a long string
-local function table_to_long_str(t)
-    local ret = "{"
-    for key, value in pairs(t) do
-        ret = ret .. tostring(key) .. "="
-        -- recursively handle nested tables
-        if type(value) == 'table' then
-            ret = ret .. table_to_long_str(value) .. ","
-        else
-            -- Add surrounding quotes if we have a string
-            if type(value) == 'string' then
-                ret = ret .. "\"" .. tostring(value) .. "\"" .. ","
-                else
-                ret = ret .. tostring(value) .. ","
-            end
-        end
-    end
-    ret = ret .. "}"
-    return ret
-end
-
-local function setupCommands(lsp_opts, tool_opts)
-    local runnables_opts = tool_opts.runnables or {}
-    -- Setup the dropdown theme if telescope is installed
-    if pcall(require, 'telescope') then
-        runnables_opts =
-            require('telescope.themes').get_dropdown(runnables_opts)
-    end
+local function setupCommands()
+    local lsp_opts = config.options.server
 
     lsp_opts.commands = vim.tbl_deep_extend("force", lsp_opts.commands or {}, {
         RustSetInlayHints = {
             function()
-                require('rust-tools.inlay_hints').set_inlay_hints(
-                    tool_opts.inlay_hints or {})
+                require('rust-tools.inlay_hints').set_inlay_hints()
             end
         },
         RustDisableInlayHints = {
@@ -44,8 +18,7 @@ local function setupCommands(lsp_opts, tool_opts)
         },
         RustToggleInlayHints = {
             function()
-                require('rust-tools.inlay_hints').toggle_inlay_hints(
-                    tool_opts.inlay_hints or {})
+                require('rust-tools.inlay_hints').toggle_inlay_hints()
             end
         },
         RustExpandMacro = {require('rust-tools.expand_macro').expand_macro},
@@ -53,9 +26,7 @@ local function setupCommands(lsp_opts, tool_opts)
         RustParentModule = {require('rust-tools.parent_module').parent_module},
         RustJoinLines = {require('rust-tools.join_lines').join_lines},
         RustRunnables = {
-            function()
-                require('rust-tools.runnables').runnables(runnables_opts)
-            end
+            function() require('rust-tools.runnables').runnables() end
         },
         RustHoverActions = {require('rust-tools.hover_actions').hover_actions},
         RustMoveItemDown = {
@@ -69,7 +40,9 @@ local function setupCommands(lsp_opts, tool_opts)
     })
 end
 
-local function setup_handlers(lsp_opts, tool_opts)
+local function setup_handlers()
+    local lsp_opts = config.options.server
+    local tool_opts = config.options.tools
     local custom_handlers = {}
 
     if tool_opts.hover_with_actions == nil then
@@ -84,7 +57,8 @@ local function setup_handlers(lsp_opts, tool_opts)
                                             lsp_opts.handlers or {})
 end
 
-local function setup_capabilities(lsp_opts)
+local function setup_capabilities()
+    local lsp_opts = config.options.server
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     -- snippets
     capabilities.textDocument.completion.completionItem.snippetSupport = true
@@ -97,26 +71,22 @@ local function setup_capabilities(lsp_opts)
                                                 lsp_opts.capabilities or {})
 end
 
-local function setup_lsp(lsp_opts) nvim_lsp.rust_analyzer.setup(lsp_opts) end
+local function setup_lsp() nvim_lsp.rust_analyzer.setup(config.options.server) end
 
 function M.setup(opts)
-    opts = opts or {}
-    local tool_opts = opts.tools or {}
-    local lsp_opts = opts.server or {}
+    config.setup(opts)
 
-    setup_capabilities(lsp_opts)
+    setup_capabilities()
     -- setup handlers
-    setup_handlers(lsp_opts, tool_opts)
+    setup_handlers()
     -- setup user commands
-    setupCommands(lsp_opts, tool_opts)
+    setupCommands()
     -- setup rust analyzer
-    setup_lsp(lsp_opts)
+    setup_lsp()
 
     -- enable automatic inlay hints
-    if tool_opts.autoSetHints == nil then tool_opts.autoSetHints = true end
-    if tool_opts.autoSetHints then
-        require'rust-tools.inlay_hints'.setup_autocmd(
-            table_to_long_str(tool_opts.inlay_hints or {}))
+    if config.options.tools.autoSetHints then
+        require'rust-tools.inlay_hints'.setup_autocmd()
     end
 end
 

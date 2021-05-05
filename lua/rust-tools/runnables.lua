@@ -1,6 +1,7 @@
 -- ?? helps with all the warnings spam
 local vim = vim
 local utils = require('rust-tools.utils.utils')
+local config = require 'rust-tools.config'
 
 local M = {}
 
@@ -130,9 +131,8 @@ end
 -- The opts provided here are forwarded to telescope, other than use_telescope
 -- which is used to check whether we want to use telescope or the vanilla vim
 -- way for input
-function M.runnables(opts)
-    opts = opts or {}
-    if opts.use_telescope == nil then opts.use_telescope = true end
+function M.runnables()
+    local opts = config.options.tools.runnables
 
     -- this is the handler which is actually used, hence its the used handler
     local used_handler = handler
@@ -148,9 +148,9 @@ function M.runnables(opts)
 end
 
 -- Same thing but with telescope.nvim
-function M.runnables_telescope(opts)
+function M.runnables_telescope()
     print("This function is deprecated, please see :RustRunnables")
-    M.runnables(opts)
+    M.runnables()
     -- vim.lsp.buf_request(0, "experimental/runnables", get_params(), get_telescope_handler(opts))
 end
 

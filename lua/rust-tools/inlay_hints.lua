@@ -1,20 +1,20 @@
 local M = {}
 -- ?? helps with all the warnings spam
 local vim = vim
+local config = require 'rust-tools.config'
 
 -- Update inlay hints when opening a new buffer and when writing a buffer to a
 -- file
 -- opts is a string representation of the table of options
-function M.setup_autocmd(opts)
+function M.setup_autocmd()
     vim.api.nvim_command('augroup InlayHints')
-    vim.api.nvim_command('autocmd InsertLeave,BufEnter,BufWinEnter,TabEnter,BufWritePost *.rs :lua require"rust-tools.inlay_hints".set_inlay_hints(' .. opts .. ')')
+    vim.api.nvim_command(
+        'autocmd InsertLeave,BufEnter,BufWinEnter,TabEnter,BufWritePost *.rs :lua require"rust-tools.inlay_hints".set_inlay_hints()')
     vim.api.nvim_command('augroup END')
 end
 
 local function get_params()
-    return {
-        textDocument = vim.lsp.util.make_text_document_params(),
-    }
+    return {textDocument = vim.lsp.util.make_text_document_params()}
 end
 
 local namespace = vim.api.nvim_create_namespace("rust-analyzer/inlayHints")
@@ -23,7 +23,7 @@ local enabled = nil
 
 -- parses the result into a easily parsable format
 -- example:
---{
+-- {
 --  ["12"] = { {
 --      kind = "TypeHint",
 --      label = "String"
@@ -50,32 +50,28 @@ local enabled = nil
 --      kind = "ParameterHint",
 --      label = "op"
 --    } }
---}
+-- }
 --
 local function parseHints(result)
     local map = {}
 
-    if type(result) ~= 'table' then
-        return {}
-    end
+    if type(result) ~= 'table' then return {} end
     for _, value in pairs(result) do
         local line = tostring(value.range["end"].line)
         local label = value.label
         local kind = value.kind
 
         if map[line] ~= nil then
-           table.insert(map[line], {label=label, kind=kind})
+            table.insert(map[line], {label = label, kind = kind})
         else
-            map[line] = {{label=label, kind=kind}}
+            map[line] = {{label = label, kind = kind}}
         end
     end
     return map
 end
 
-local function get_handler(opts)
-    if opts.show_parameter_hints == nil then opts.show_parameter_hints = true end
-    if opts.parameter_hints_prefix == nil then opts.parameter_hints_prefix = "<- " end
-    if opts.other_hints_prefix == nil then opts.other_hints_prefix = "=> " end
+local function get_handler()
+    local opts = config.options.tools.inlay_hints
 
     return function(_, _, result, _, bufnr, _)
         -- clean it up at first
@@ -93,9 +89,9 @@ local function get_handler(opts)
             -- segregate paramter hints and other hints
             for _, value_inner in ipairs(value) do
                 if value_inner.kind == "ParameterHint" then
-                   table.insert(param_hints, value_inner.label)
+                    table.insert(param_hints, value_inner.label)
                 else
-                   table.insert(other_hints, value_inner.label)
+                    table.insert(other_hints, value_inner.label)
                 end
             end
 
@@ -103,10 +99,10 @@ local function get_handler(opts)
             if not vim.tbl_isempty(param_hints) and opts.show_parameter_hints then
                 virt_text = virt_text .. opts.parameter_hints_prefix .. "("
                 for i, value_inner_inner in ipairs(param_hints) do
-                   virt_text = virt_text .. value_inner_inner
-                   if i ~= #param_hints then
-                      virt_text = virt_text .. ", "
-                   end
+                    virt_text = virt_text .. value_inner_inner
+                    if i ~= #param_hints then
+                        virt_text = virt_text .. ", "
+                    end
                 end
                 virt_text = virt_text .. ") "
             end
@@ -115,26 +111,27 @@ local function get_handler(opts)
             if not vim.tbl_isempty(other_hints) then
                 virt_text = virt_text .. opts.other_hints_prefix
                 for i, value_inner_inner in ipairs(other_hints) do
-                   virt_text = virt_text .. value_inner_inner
-                   if i ~= #other_hints then
-                      virt_text = virt_text .. ", "
-                   end
+                    virt_text = virt_text .. value_inner_inner
+                    if i ~= #other_hints then
+                        virt_text = virt_text .. ", "
+                    end
                 end
             end
 
             -- set the virtual text
-            vim.api.nvim_buf_set_virtual_text(bufnr, namespace, line, {{virt_text, "Comment"}}, {})
+            vim.api.nvim_buf_set_virtual_text(bufnr, namespace, line,
+                                              {{virt_text, "Comment"}}, {})
             -- update state
             enabled = true
         end
     end
 end
 
-function M.toggle_inlay_hints(opts)
+function M.toggle_inlay_hints()
     if enabled then
         M.disable_inlay_hints()
     else
-        M.set_inlay_hints(opts or {})
+        M.set_inlay_hints()
     end
     enabled = not enabled
 end
@@ -145,9 +142,9 @@ function M.disable_inlay_hints()
 end
 
 -- Sends the request to rust-analyzer to get the inlay hints and handle them
-function M.set_inlay_hints(opts)
-    opts = opts or {}
-    vim.lsp.buf_request(0, "rust-analyzer/inlayHints", get_params(), get_handler(opts))
+function M.set_inlay_hints()
+    vim.lsp.buf_request(0, "rust-analyzer/inlayHints", get_params(),
+                        get_handler())
 end
 
 return M
