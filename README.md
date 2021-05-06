@@ -73,6 +73,21 @@ local opts = {
             -- default: "=>"
             other_hints_prefix  = "=>",
         },
+
+        hover_actions = {
+            -- the border that is used for the hover window
+            -- see vim.api.nvim_open_win()
+            border = {
+              {"╭", "FloatBorder"},
+              {"─", "FloatBorder"},
+              {"╮", "FloatBorder"},
+              {"│", "FloatBorder"},
+              {"╯", "FloatBorder"},
+              {"─", "FloatBorder"},
+              {"╰", "FloatBorder"},
+              {"│", "FloatBorder"}
+            },
+        }
     },
 
     -- all the opts to send to nvim-lspconfig

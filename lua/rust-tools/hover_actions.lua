@@ -1,6 +1,7 @@
 -- ?? helps with all the warnings spam
 local vim = vim
 local util = vim.lsp.util
+local config = require('rust-tools.config')
 
 local M = {}
 
@@ -72,16 +73,7 @@ function M.handler(_, method, result, _, _, _)
           return
         end
         local bufnr, winnr = util.fancy_floating_markdown(markdown_lines, {
-             border = {
-               {"┌", "FloatBorder"},
-               {"─", "FloatBorder"},
-               {"┐", "FloatBorder"},
-               {"│", "FloatBorder"},
-               {"┘", "FloatBorder"},
-               {"─", "FloatBorder"},
-               {"└", "FloatBorder"},
-               {"│", "FloatBorder"}
-             }
+             border = config.options.tools.hover_actions.border
         })
         util.close_preview_autocmd({"CursorMoved", "BufHidden", "InsertCharPre"}, winnr)
 
