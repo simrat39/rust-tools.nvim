@@ -29,10 +29,6 @@ This plugin automatically sets up nvim-lspconfig for rust_analyzer for you, so t
 
 ### Initial setup
 
-<b>Small breaking change</b>
-All rust-tools options now go in the opts.tools table
-All rust-analyzer options now go in the opts.server table
-
 ```lua
 local opts = {
     tools = { -- rust-tools options
@@ -44,12 +40,10 @@ local opts = {
         autoSetHints = true,
 
         -- whether to show hover actions inside the hover window
-        -- this overrides the default hover handler so something like lspsaga.nvim's hover would be overriden by this
+        -- this overrides the default hover handler
         -- default: true
         hover_with_actions = true,
 
-        -- All opts that go into runnables (scroll down a bit) can also go here,
-        -- these apply to the default RustRunnables command
         runnables = {
             -- whether to use telescope for selection menu or not
             -- default: true
@@ -58,8 +52,6 @@ local opts = {
             -- rest of the opts are forwarded to telescope
         },
 
-        -- All opts that go into inlay hints (scroll down a bit) can also go here,
-        -- these apply to the default RustSetInlayHints command
         inlay_hints = {
             -- wheter to show parameter hints with the inlay hints or not
             -- default: true
@@ -133,27 +125,13 @@ RustMoveItemUp
 -- RustSetInlayHints
 -- RustDisableInlayHints 
 -- RustToggleInlayHints 
-local opts = {
-    -- whether to show parameter hints with the inlay hints or not
-    -- default: true
-    show_parameter_hints = true,
-
-    -- prefix for parameter hints
-    -- default: "<-"
-    parameter_hints_prefix = "<-",
-
-    -- prefix for all the other hints (type, chaining)
-    -- default: "=>"
-    other_hints_prefix  = "=>",
-}
 
 -- set inlay hints
-require('rust-tools.inlay_hints').set_inlay_hints(opts)
+require('rust-tools.inlay_hints').set_inlay_hints()
 -- disable inlay hints
 require('rust-tools.inlay_hints').disable_inlay_hints()
 -- toggle inlay hints
--- applies the opts if enabling inlay hints
-require('rust-tools.inlay_hints').toggle_inlay_hints(opts)
+require('rust-tools.inlay_hints').toggle_inlay_hints()
 ```
 
 #### Runnables
@@ -161,19 +139,7 @@ require('rust-tools.inlay_hints').toggle_inlay_hints(opts)
 ```lua
 -- Command:
 -- RustRunnables
-local opts = {
-    -- whether to use telescope for selection menu or not
-    -- default: true
-    use_telescope = true
-    -- rest of the opts are forwarded to telescope
-}
-require('rust-tools.runnables').runnables(opts)
-
--- DEPRECATED !!!
--- The command above automatically detects if telescope is installed and uses that by default
--- Needs telescope.nvim
--- The theme part is optional
-require('rust-tools.runnables').runnables_telescope(require('telescope.themes').get_dropdown({}))
+require('rust-tools.runnables').runnables()
 ```
 #### Expand Macros Recursively 
 ![expand macros](https://github.com/simrat39/rust-tools-demos/raw/master/expand_macros_recursively.gif)
@@ -196,18 +162,6 @@ require'rust-tools.move_item'.move_item(up)
 #### Hover Actions
 ![hover actions](https://github.com/simrat39/rust-tools-demos/raw/master/hover_actions.gif)
 ```lua
--- this needs the experimental hoverActions capability set
--- while configuring your rust-analyzer:
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-
-capabilities.experimental = {}
-capabilities.experimental.hoverActions = true
-
-nvim_lsp.rust_analyzer.setup({
-    capabilities = capabilities,
-})
-------------------------------------------------------------------
--- Actual call
 -- Command:
 -- RustHoverActions 
 require'rust-tools.hover_actions'.hover_actions()
