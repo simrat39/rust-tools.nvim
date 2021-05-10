@@ -119,8 +119,11 @@ local function get_handler()
             end
 
             -- set the virtual text
-            vim.api.nvim_buf_set_virtual_text(bufnr, namespace, line,
-                                              {{virt_text, "Comment"}}, {})
+            vim.api.nvim_buf_set_extmark(bufnr, namespace, line, 0, {
+                virt_text_pos = "eol",
+                virt_text = {{virt_text, "Comment"}}
+            });
+
             -- update state
             enabled = true
         end
