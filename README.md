@@ -72,6 +72,12 @@ local opts = {
             -- prefix for all the other hints (type, chaining)
             -- default: "=>"
             other_hints_prefix  = "=>",
+
+            -- whether to align to the extreme right or not
+            right_align = false,
+
+            -- padding from the right if right_align is true
+            right_align_padding = 7,
         },
 
         hover_actions = {
