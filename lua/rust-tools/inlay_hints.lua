@@ -78,10 +78,25 @@ local function get_handler()
         M.disable_inlay_hints()
 
         local ret = parseHints(result)
+        local max_len = -1
+
+        for key, _ in pairs(ret) do
+            local line = tonumber(key)
+            local current_line_len = string.len(
+                                         vim.api.nvim_buf_get_lines(bufnr, line,
+                                                                    line + 1,
+                                                                    false)[1])
+            max_len = math.max(max_len, current_line_len)
+        end
 
         for key, value in pairs(ret) do
             local virt_text = ""
             local line = tonumber(key)
+
+            local current_line_len = string.len(
+                                         vim.api.nvim_buf_get_lines(bufnr, line,
+                                                                    line + 1,
+                                                                    false)[1])
 
             local param_hints = {}
             local other_hints = {}
@@ -119,13 +134,23 @@ local function get_handler()
             end
 
             if config.options.tools.inlay_hints.right_align then
-               virt_text = virt_text .. string.rep(" ", config.options.tools.inlay_hints.right_align_padding)
+                virt_text = virt_text ..
+                                string.rep(" ", config.options.tools.inlay_hints
+                                               .right_align_padding)
+            end
+
+            if config.options.tools.inlay_hints.max_len_align then
+                virt_text = string.rep(" ", max_len - current_line_len +
+                                           config.options.tools.inlay_hints
+                                               .max_len_align_padding) ..
+                                virt_text
             end
 
             -- set the virtual text
             vim.api.nvim_buf_set_extmark(bufnr, namespace, line, 0, {
-                virt_text_pos = config.options.tools.inlay_hints.right_align and "right_align" or "eol",
-                virt_text = {{virt_text, "Comment"}},
+                virt_text_pos = config.options.tools.inlay_hints.right_align and
+                    "right_align" or "eol",
+                virt_text = {{virt_text, "Comment"}}
             });
 
             -- update state

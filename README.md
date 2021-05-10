@@ -73,6 +73,12 @@ local opts = {
             -- default: "=>"
             other_hints_prefix  = "=>",
 
+            -- whether to align to the lenght of the longest line in the file
+            max_len_align = false,
+
+            -- padding from the left if max_len_align is true
+            max_len_align_padding = 1,
+
             -- whether to align to the extreme right or not
             right_align = false,
 
