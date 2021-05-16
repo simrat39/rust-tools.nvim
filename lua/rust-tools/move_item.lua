@@ -1,5 +1,6 @@
 -- ?? helps with all the warnings spam
 local vim = vim
+local utils = require('rust-tools.utils.utils')
 
 local M = {}
 
@@ -14,7 +15,8 @@ end
 -- move it baby
 local function handler(_, _, result, _, _, _)
     if result == nil then return end
-    vim.lsp.util.apply_text_document_edit(result)
+    utils.snippet_text_edits_to_text_edits(result)
+    vim.lsp.util.apply_text_edits(result)
 end
 
 -- Sends the request to rust-analyzer to move the item and handle the response

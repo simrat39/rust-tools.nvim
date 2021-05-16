@@ -3,9 +3,7 @@ local vim = vim
 local M = {}
 
 function M.delete_buf(bufnr)
-    if bufnr ~= nil then
-        vim.api.nvim_buf_delete(bufnr, {force=true})
-    end
+    if bufnr ~= nil then vim.api.nvim_buf_delete(bufnr, {force = true}) end
 end
 
 function M.split(vertical, bufnr)
@@ -17,10 +15,18 @@ function M.split(vertical, bufnr)
 end
 
 function M.resize(vertical, amount)
-   local cmd = vertical and "vertical resize " or "resize"
-   cmd = cmd .. amount
+    local cmd = vertical and "vertical resize " or "resize"
+    cmd = cmd .. amount
 
-   vim.cmd(cmd)
+    vim.cmd(cmd)
+end
+
+function M.snippet_text_edits_to_text_edits(spe)
+    for _, value in ipairs(spe) do
+        if value.newText ~= nil then
+            value.newText = string.gsub(value.newText, "%$%d", "");
+        end
+    end
 end
 
 return M
