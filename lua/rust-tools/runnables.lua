@@ -31,6 +31,10 @@ local function getCommand(c, results)
     local ret = " "
     local args = results[c].args
 
+    local dir = args.workspaceRoot;
+
+    ret = string.format("cd %s && cargo ", dir)
+
     for _, value in ipairs(args.cargoArgs) do
         ret = ret .. value .. " "
     end
@@ -71,7 +75,8 @@ local function run_command(choice, result)
     -- close the buffer when escape is pressed :)
     vim.api.nvim_buf_set_keymap(latest_buf_id, "n", "<Esc>", ":q<CR>", {})
 
-    local command = "cargo" .. getCommand(choice, result)
+    local command = getCommand(choice, result)
+
     -- run the command
     vim.fn.termopen(command)
 
