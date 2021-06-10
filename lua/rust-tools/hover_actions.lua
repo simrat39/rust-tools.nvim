@@ -83,11 +83,11 @@ function M.handler(_, _, result, _, _, _)
     vim.api.nvim_buf_attach(bufnr, false,
                             {on_detach = function() M._state.winnr = nil end})
 
-    -- syntax highlighting
-    vim.api.nvim_buf_set_option(bufnr, "filetype", "rust")
-
     --- stop here if there are no possible actions
     if result.actions == nil then return end
+
+    -- syntax highlighting
+    vim.api.nvim_buf_set_option(bufnr, "filetype", "rust")
 
     -- update the state
     M._state.commands = result.actions[1].commands
