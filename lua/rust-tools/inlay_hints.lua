@@ -74,6 +74,8 @@ local function get_handler()
     local opts = config.options.tools.inlay_hints
 
     return function(_, _, result, _, bufnr, _)
+        if (vim.api.nvim_get_current_buf() ~= bufnr) then return end;
+
         -- clean it up at first
         M.disable_inlay_hints()
 
@@ -82,21 +84,24 @@ local function get_handler()
 
         for key, _ in pairs(ret) do
             local line = tonumber(key)
-            local current_line_len = string.len(
-                                         vim.api.nvim_buf_get_lines(bufnr, line,
-                                                                    line + 1,
-                                                                    false)[1])
-            max_len = math.max(max_len, current_line_len)
+            local current_line = vim.api.nvim_buf_get_lines(bufnr, line,
+                                                            line + 1, false)[1]
+            if (current_line) then
+                local current_line_len = string.len(current_line)
+                max_len = math.max(max_len, current_line_len)
+            end
         end
 
         for key, value in pairs(ret) do
             local virt_text = ""
             local line = tonumber(key)
 
-            local current_line_len = string.len(
-                                         vim.api.nvim_buf_get_lines(bufnr, line,
-                                                                    line + 1,
-                                                                    false)[1])
+            local current_line = vim.api.nvim_buf_get_lines(bufnr, line,
+                                                            line + 1, false)[1]
+
+            if (not current_line) then goto continue end
+
+            local current_line_len = string.len(current_line)
 
             local param_hints = {}
             local other_hints = {}
@@ -155,6 +160,8 @@ local function get_handler()
 
             -- update state
             enabled = true
+
+            ::continue::
         end
     end
 end
