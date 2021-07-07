@@ -16,8 +16,7 @@ local defaults = {
         -- default: true
         hover_with_actions = true,
 
-        -- All opts that go into runnables (scroll down a bit) can also go here,
-        -- these apply to the default RustRunnables command
+        -- These apply to the default RustRunnables command
         runnables = {
             -- whether to use telescope for selection menu or not
             -- default: true
@@ -26,8 +25,7 @@ local defaults = {
             -- rest of the opts are forwarded to telescope
         },
 
-        -- All opts that go into inlay hints (scroll down a bit) can also go here,
-        -- these apply to the default RustSetInlayHints command
+        -- These apply to the default RustSetInlayHints command
         inlay_hints = {
             -- wheter to show parameter hints with the inlay hints or not
             -- default: true
@@ -51,22 +49,22 @@ local defaults = {
             right_align = false,
 
             -- padding from the right if right_align is true
-            right_align_padding = 7,
+            right_align_padding = 7
         },
 
         hover_actions = {
             -- the border that is used for the hover window
             -- see vim.api.nvim_open_win()
             border = {
-              {"╭", "FloatBorder"},
-              {"─", "FloatBorder"},
-              {"╮", "FloatBorder"},
-              {"│", "FloatBorder"},
-              {"╯", "FloatBorder"},
-              {"─", "FloatBorder"},
-              {"╰", "FloatBorder"},
-              {"│", "FloatBorder"}
+                {"╭", "FloatBorder"}, {"─", "FloatBorder"},
+                {"╮", "FloatBorder"}, {"│", "FloatBorder"},
+                {"╯", "FloatBorder"}, {"─", "FloatBorder"},
+                {"╰", "FloatBorder"}, {"│", "FloatBorder"}
             },
+
+            -- whether the hover action window gets automatically focused
+            -- default: false
+            auto_focus = false
         }
     },
 

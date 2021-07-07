@@ -71,6 +71,10 @@ function M.handler(_, _, result, _, _, _)
         close_events = {"CursorMoved", "BufHidden", "InsertCharPre"}
     })
 
+    if config.options.tools.hover_actions.auto_focus then
+        vim.api.nvim_set_current_win(winnr)
+    end
+
     if M._state.winnr ~= nil then return end
 
     -- update the window number here so that we can map escape to close even
