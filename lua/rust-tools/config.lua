@@ -16,6 +16,10 @@ local defaults = {
         -- default: true
         hover_with_actions = true,
 
+        -- wheter the hover action window get automatic focus
+        -- default: false
+        hover_action_automatic_focus = false,
+
         -- All opts that go into runnables (scroll down a bit) can also go here,
         -- these apply to the default RustRunnables command
         runnables = {

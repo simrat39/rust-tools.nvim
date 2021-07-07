@@ -70,8 +70,10 @@ function M.handler(_, _, result, _, _, _)
         focus_id = "rust-tools-hover-actions",
         close_events = {"CursorMoved", "BufHidden", "InsertCharPre"}
     })
-    
-    vim.api.nvim_set_current_win(winnr)
+
+    if config.options.tools.hover_action_automatic_focus then
+        vim.api.nvim_set_current_win(winnr)
+    end
 
     if M._state.winnr ~= nil then return end
 

@@ -43,6 +43,10 @@ local opts = {
         -- this overrides the default hover handler
         -- default: true
         hover_with_actions = true,
+        
+        -- wheter the hover action window get automatic focus
+        -- default: false
+        hover_action_automatic_focus = false,
 
         runnables = {
             -- whether to use telescope for selection menu or not
