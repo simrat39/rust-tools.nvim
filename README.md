@@ -4,7 +4,7 @@ This plugin adds extra functionality over rust analyzer.
 
 ## Prerequisites
 
-- `neovim 0.5+` (nightly)
+- `neovim 0.5+`
 - `nvim-lspconfig`
 - `rust-analyzer`
 
