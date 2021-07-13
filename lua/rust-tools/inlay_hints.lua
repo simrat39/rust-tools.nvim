@@ -155,7 +155,7 @@ local function get_handler()
             vim.api.nvim_buf_set_extmark(bufnr, namespace, line, 0, {
                 virt_text_pos = config.options.tools.inlay_hints.right_align and
                     "right_align" or "eol",
-                virt_text = {{virt_text, "Comment"}}
+                virt_text = {{virt_text, config.options.tools.inlay_hints.highlight}}
             });
 
             -- update state
