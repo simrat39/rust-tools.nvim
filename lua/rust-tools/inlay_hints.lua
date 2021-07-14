@@ -74,7 +74,7 @@ local function get_handler()
     local opts = config.options.tools.inlay_hints
 
     return function(_, _, result, _, bufnr, _)
-        if (vim.api.nvim_get_current_buf() ~= bufnr) then return end;
+        if (vim.api.nvim_get_current_buf() ~= bufnr) then return end
 
         -- clean it up at first
         M.disable_inlay_hints()
@@ -99,69 +99,71 @@ local function get_handler()
             local current_line = vim.api.nvim_buf_get_lines(bufnr, line,
                                                             line + 1, false)[1]
 
-            if (not current_line) then goto continue end
+            if (current_line) then
+                local current_line_len = string.len(current_line)
 
-            local current_line_len = string.len(current_line)
+                local param_hints = {}
+                local other_hints = {}
 
-            local param_hints = {}
-            local other_hints = {}
-
-            -- segregate paramter hints and other hints
-            for _, value_inner in ipairs(value) do
-                if value_inner.kind == "ParameterHint" then
-                    table.insert(param_hints, value_inner.label)
-                else
-                    table.insert(other_hints, value_inner.label)
-                end
-            end
-
-            -- show parameter hints inside brackets with commas and a thin arrow
-            if not vim.tbl_isempty(param_hints) and opts.show_parameter_hints then
-                virt_text = virt_text .. opts.parameter_hints_prefix .. "("
-                for i, value_inner_inner in ipairs(param_hints) do
-                    virt_text = virt_text .. value_inner_inner
-                    if i ~= #param_hints then
-                        virt_text = virt_text .. ", "
+                -- segregate paramter hints and other hints
+                for _, value_inner in ipairs(value) do
+                    if value_inner.kind == "ParameterHint" then
+                        table.insert(param_hints, value_inner.label)
+                    else
+                        table.insert(other_hints, value_inner.label)
                     end
                 end
-                virt_text = virt_text .. ") "
-            end
 
-            -- show other hints with commas and a thicc arrow
-            if not vim.tbl_isempty(other_hints) then
-                virt_text = virt_text .. opts.other_hints_prefix
-                for i, value_inner_inner in ipairs(other_hints) do
-                    virt_text = virt_text .. value_inner_inner
-                    if i ~= #other_hints then
-                        virt_text = virt_text .. ", "
+                -- show parameter hints inside brackets with commas and a thin arrow
+                if not vim.tbl_isempty(param_hints) and
+                    opts.show_parameter_hints then
+                    virt_text = virt_text .. opts.parameter_hints_prefix .. "("
+                    for i, value_inner_inner in ipairs(param_hints) do
+                        virt_text = virt_text .. value_inner_inner
+                        if i ~= #param_hints then
+                            virt_text = virt_text .. ", "
+                        end
+                    end
+                    virt_text = virt_text .. ") "
+                end
+
+                -- show other hints with commas and a thicc arrow
+                if not vim.tbl_isempty(other_hints) then
+                    virt_text = virt_text .. opts.other_hints_prefix
+                    for i, value_inner_inner in ipairs(other_hints) do
+                        virt_text = virt_text .. value_inner_inner
+                        if i ~= #other_hints then
+                            virt_text = virt_text .. ", "
+                        end
                     end
                 end
+
+                if config.options.tools.inlay_hints.right_align then
+                    virt_text = virt_text ..
+                                    string.rep(" ", config.options.tools
+                                                   .inlay_hints
+                                                   .right_align_padding)
+                end
+
+                if config.options.tools.inlay_hints.max_len_align then
+                    virt_text = string.rep(" ", max_len - current_line_len +
+                                               config.options.tools.inlay_hints
+                                                   .max_len_align_padding) ..
+                                    virt_text
+                end
+
+                -- set the virtual text
+                vim.api.nvim_buf_set_extmark(bufnr, namespace, line, 0, {
+                    virt_text_pos = config.options.tools.inlay_hints.right_align and
+                        "right_align" or "eol",
+                    virt_text = {
+                        {virt_text, config.options.tools.inlay_hints.highlight}
+                    }
+                });
+
+                -- update state
+                enabled = true
             end
-
-            if config.options.tools.inlay_hints.right_align then
-                virt_text = virt_text ..
-                                string.rep(" ", config.options.tools.inlay_hints
-                                               .right_align_padding)
-            end
-
-            if config.options.tools.inlay_hints.max_len_align then
-                virt_text = string.rep(" ", max_len - current_line_len +
-                                           config.options.tools.inlay_hints
-                                               .max_len_align_padding) ..
-                                virt_text
-            end
-
-            -- set the virtual text
-            vim.api.nvim_buf_set_extmark(bufnr, namespace, line, 0, {
-                virt_text_pos = config.options.tools.inlay_hints.right_align and
-                    "right_align" or "eol",
-                virt_text = {{virt_text, config.options.tools.inlay_hints.highlight}}
-            });
-
-            -- update state
-            enabled = true
-
-            ::continue::
         end
     end
 end
