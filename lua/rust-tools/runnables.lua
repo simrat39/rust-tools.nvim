@@ -33,7 +33,7 @@ local function getCommand(c, results)
 
     local dir = args.workspaceRoot;
 
-    ret = string.format("cd %s && cargo ", dir)
+    ret = string.format("cd '%s' && cargo ", dir)
 
     for _, value in ipairs(args.cargoArgs) do
         ret = ret .. value .. " "
