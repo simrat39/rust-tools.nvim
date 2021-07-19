@@ -118,7 +118,15 @@ RustJoinLines
 RustHoverActions
 RustMoveItemDown
 RustMoveItemUp
+RustStartStandaloneServerForBuffer 
 ```
+
+#### Standalone File Support
+rust-tools supports rust analyzer for standalone files (not in a cargo project).
+The language server is automatically started when you start a rust file which is
+not in a cargo file (nvim abc.rs). If you want to attach some other buffer to
+the standalone client (after opening nvim and switching to a new rust file),
+then use the ```RustStartStandaloneServerForBuffer``` command.
 
 #### Inlay Hints
 ![inlay hints](https://github.com/simrat39/rust-tools-demos/raw/master/inlay_hints.png)

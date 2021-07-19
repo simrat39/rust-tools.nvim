@@ -1,6 +1,8 @@
 local vim = vim
 local nvim_lsp = require 'lspconfig'
 local config = require 'rust-tools.config'
+local utils = require('rust-tools.utils.utils')
+local lspconfig_utils = require('lspconfig.util')
 
 local M = {}
 
@@ -73,6 +75,25 @@ end
 
 local function setup_lsp() nvim_lsp.rust_analyzer.setup(config.options.server) end
 
+local function get_root_dir()
+    local fname = vim.api.nvim_buf_get_name(0)
+    local cargo_crate_dir = lspconfig_utils.root_pattern 'Cargo.toml'(fname)
+    local cmd = 'cargo metadata --no-deps --format-version 1'
+    if cargo_crate_dir ~= nil then
+        cmd = cmd .. ' --manifest-path ' ..
+                  lspconfig_utils.path.join(cargo_crate_dir, 'Cargo.toml')
+    end
+    local cargo_metadata = vim.fn.system(cmd)
+    local cargo_workspace_dir = nil
+    if vim.v.shell_error == 0 then
+        cargo_workspace_dir =
+            vim.fn.json_decode(cargo_metadata)['workspace_root']
+    end
+    return cargo_workspace_dir or cargo_crate_dir or
+               lspconfig_utils.root_pattern 'rust-project.json'(fname) or
+               lspconfig_utils.find_git_ancestor(fname)
+end
+
 function M.setup(opts)
     config.setup(opts)
 
@@ -87,6 +108,10 @@ function M.setup(opts)
     -- enable automatic inlay hints
     if config.options.tools.autoSetHints then
         require'rust-tools.inlay_hints'.setup_autocmd()
+    end
+
+    if utils.is_bufnr_rust(0) and (get_root_dir() == nil) then
+        require('rust-tools.standalone').start_standalone_client(config.options.server.handlers)
     end
 end
 

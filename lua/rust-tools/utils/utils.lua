@@ -29,4 +29,8 @@ function M.snippet_text_edits_to_text_edits(spe)
     end
 end
 
+function M.is_bufnr_rust(bufnr)
+    return vim.api.nvim_buf_get_option(bufnr, 'ft') == 'rust'
+end
+
 return M
