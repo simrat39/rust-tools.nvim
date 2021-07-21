@@ -111,7 +111,7 @@ function M.setup(opts)
     end
 
     if utils.is_bufnr_rust(0) and (get_root_dir() == nil) then
-        require('rust-tools.standalone').start_standalone_client(config.options.server.handlers)
+        require('rust-tools.standalone').start_standalone_client()
     end
 end
 

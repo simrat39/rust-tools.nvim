@@ -2,7 +2,7 @@ local ra_config = require 'rust-tools.config'
 
 local M = {}
 
-function M.start_standalone_client(handlers)
+function M.start_standalone_client()
     local config = {
         root_dir = require('lspconfig.util').path.dirname(
             vim.api.nvim_buf_get_name(0)),
@@ -30,7 +30,7 @@ function M.start_standalone_client(handlers)
             vim.cmd "delcommand RustMoveItemDown"
             vim.cmd "delcommand RustMoveItemUp"
         end,
-        handlers = handlers
+        handlers = ra_config.options.server.handlers,
     }
 
     vim.lsp.start_client(config)
