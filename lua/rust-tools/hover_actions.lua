@@ -1,13 +1,14 @@
 -- ?? helps with all the warnings spam
 local vim = vim
 local util = vim.lsp.util
+local runnables = require('rust-tools.runnables')
 local config = require('rust-tools.config')
 
 local M = {}
 
 local function get_params() return vim.lsp.util.make_position_params() end
 
-M._state = {winnr = nil, commands = nil, ttype = nil}
+M._state = {winnr = nil, commands = nil}
 
 -- run the command under the cursor, if the thing under the cursor is not the
 -- command then do nothing
@@ -16,13 +17,15 @@ function M._run_command()
 
     if line > #M._state.commands then return end
 
+    local action = M._state.commands[line]
+
     M._close_hover()
-    if M._state.ttype == "rust-analyzer.gotoLocation" then
-        vim.lsp.util.jump_to_location(M._state.commands[line].arguments[1])
-    else
-        if M._state.ttype == "rust-analyzer.showReferences" then
-            vim.lsp.buf.implementation()
-        end
+    if action.command == "rust-analyzer.gotoLocation" then
+        vim.lsp.util.jump_to_location(action.arguments[1])
+    elseif action.command == "rust-analyzer.showReferences" then
+        vim.lsp.buf.implementation()
+    elseif action.command == "rust-analyzer.runSingle" then
+        runnables.run_command(1, action.arguments)
     end
 end
 
@@ -39,9 +42,11 @@ local function parse_commands()
         if value.command == "rust-analyzer.gotoLocation" then
             table.insert(prompt, string.format("%d. Go to %s (%s)", i,
                                                value.title, value.tooltip))
-        else
+        elseif value.command == "rust-analyzer.showReferences" then
             table.insert(prompt,
                          string.format("%d. %s", i, "Go to " .. value.title))
+        else
+            table.insert(prompt, string.format("%d. %s", i, value.title))
         end
     end
     table.insert(prompt, "")
@@ -95,7 +100,6 @@ function M.handler(_, _, result, _, _, _)
 
     -- update the state
     M._state.commands = result.actions[1].commands
-    M._state.ttype = M._state.commands[1].command
 
     local prompt = parse_commands()
 
@@ -126,10 +130,6 @@ function M.handler(_, _, result, _, _, _)
     vim.api.nvim_win_set_cursor(winnr, {1, 0})
     -- run the command under the cursor
     vim.api.nvim_buf_set_keymap(bufnr, "n", "<CR>",
-                                ":lua require'rust-tools.hover_actions'._run_command()<CR>",
-                                {})
-    -- muscle memory
-    vim.api.nvim_buf_set_keymap(bufnr, "n", "gd",
                                 ":lua require'rust-tools.hover_actions'._run_command()<CR>",
                                 {})
     -- close on escape
