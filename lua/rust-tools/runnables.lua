@@ -92,7 +92,7 @@ local function handler(_, _, result, _, _, _)
     -- get the choice from the user
     local choice = vim.fn.inputlist(getOptions(result, true, true))
 
-    run_command(choice, result)
+    M.run_command(choice, result)
 end
 
 local function get_telescope_handler(opts)
@@ -110,7 +110,7 @@ local function get_telescope_handler(opts)
                 local choice = action_state.get_selected_entry().index
 
                 actions.close(bufnr)
-                run_command(choice, results)
+                M.run_command(choice, results)
             end
 
             map('n', '<CR>', on_select)
