@@ -20,6 +20,9 @@ Plug 'simrat39/rust-tools.nvim'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
+
+" Debugging (needs plenary from above as well)
+Plug "mfussenegger/nvim-dap"
 ```
 <b>Look at the configuration information below to get started.</b>
 
@@ -27,7 +30,7 @@ Plug 'nvim-telescope/telescope.nvim'
 
 This plugin automatically sets up nvim-lspconfig for rust_analyzer for you, so there is no need to do that manually
 
-### Initial setup
+## Initial setup
 
 ```lua
 local opts = {
@@ -121,14 +124,33 @@ RustMoveItemUp
 RustStartStandaloneServerForBuffer 
 ```
 
-#### Standalone File Support
+## Standalone File Support
 rust-tools supports rust analyzer for standalone files (not in a cargo project).
 The language server is automatically started when you start a rust file which is
 not in a cargo file (nvim abc.rs). If you want to attach some other buffer to
 the standalone client (after opening nvim and switching to a new rust file),
 then use the ```RustStartStandaloneServerForBuffer``` command.
 
-#### Inlay Hints
+## Debugging
+
+Depends on:
+1. [nvim-dap](https://github.com/mfussenegger/nvim-dap)
+2. [lldb-vscode](https://lldb.llvm.org/) (Comes with an installation of lldb)
+3. [plenary.nvim](https://github.com/nvim-lua/plenary.nvim)
+ 
+rust-tools supports debugging with the help of rust-analyzer. Note that the plugin does not setup nvim-dap for you, but it has its own internal configuration, so if you want a seperate debugging config then you can do it the normal way.
+
+Currently, rust-tools support debugging through the hover actions:
+
+Put your cursor on the main function, enter the hover actions menu and select the debug option to debug the entire application.
+
+Put your cursor on any test module or function, enter the hover actions menu and select the debug option to debug the certain test. 
+
+Future support for code lenses and telescope/runnables is also planned.
+
+## Demos
+
+### Inlay Hints
 ![inlay hints](https://github.com/simrat39/rust-tools-demos/raw/master/inlay_hints.png)
 ```lua
 -- Command:
@@ -144,14 +166,14 @@ require('rust-tools.inlay_hints').disable_inlay_hints()
 require('rust-tools.inlay_hints').toggle_inlay_hints()
 ```
 
-#### Runnables
+### Runnables
 ![runnables](https://github.com/simrat39/rust-tools-demos/raw/master/runnables.gif)
 ```lua
 -- Command:
 -- RustRunnables
 require('rust-tools.runnables').runnables()
 ```
-#### Expand Macros Recursively 
+### Expand Macros Recursively 
 ![expand macros](https://github.com/simrat39/rust-tools-demos/raw/master/expand_macros_recursively.gif)
 ```lua
 -- Command:
@@ -159,7 +181,7 @@ require('rust-tools.runnables').runnables()
 require'rust-tools.expand_macro'.expand_macro()
 ```
 
-#### Move Item Up/Down
+### Move Item Up/Down
 ![move items](https://github.com/simrat39/rust-tools-demos/raw/master/move_item.gif)
 ```lua
 -- Command:
@@ -169,7 +191,7 @@ local up = true -- true = move up, false = move down
 require'rust-tools.move_item'.move_item(up)
 ```
 
-#### Hover Actions
+### Hover Actions
 ![hover actions](https://github.com/simrat39/rust-tools-demos/raw/master/hover_actions.gif)
 ```lua
 -- Command:
@@ -177,7 +199,7 @@ require'rust-tools.move_item'.move_item(up)
 require'rust-tools.hover_actions'.hover_actions()
 ```
 
-#### Open Cargo.toml
+### Open Cargo.toml
 ![open cargo](https://github.com/simrat39/rust-tools-demos/raw/master/open_cargo_toml.gif)
 ```lua
 -- Command:
@@ -185,7 +207,7 @@ require'rust-tools.hover_actions'.hover_actions()
 require'rust-tools.open_cargo_toml'.open_cargo_toml()
 ```
 
-#### Parent Module
+### Parent Module
 ![parent module](https://github.com/simrat39/rust-tools-demos/raw/master/parent_module.gif)
 ```lua
 -- Command:
@@ -193,7 +215,7 @@ require'rust-tools.open_cargo_toml'.open_cargo_toml()
 require'rust-tools.parent_module'.parent_module()
 ```
 
-#### Join Lines
+### Join Lines
 ![join lines](https://github.com/simrat39/rust-tools-demos/raw/master/join_lines.gif)
 ```lua
 -- Command:

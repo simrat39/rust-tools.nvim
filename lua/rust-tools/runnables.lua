@@ -8,7 +8,7 @@ local M = {}
 local function get_params()
     return {
         textDocument = vim.lsp.util.make_text_document_params(),
-        position = nil, -- get em all
+        position = nil -- get em all
     }
 end
 
@@ -18,9 +18,8 @@ local function getOptions(result, withTitle, withIndex)
     local option_strings = withTitle and {"Runnables: "} or {}
 
     for i, runnable in ipairs(result) do
-        local str = withIndex
-                    and string.format("%d: %s", i, runnable.label)
-                    or runnable.label
+        local str = withIndex and string.format("%d: %s", i, runnable.label) or
+                        runnable.label
         table.insert(option_strings, str)
     end
 
@@ -35,18 +34,14 @@ local function getCommand(c, results)
 
     ret = string.format("cd '%s' && cargo ", dir)
 
-    for _, value in ipairs(args.cargoArgs) do
-        ret = ret .. value .. " "
-    end
+    for _, value in ipairs(args.cargoArgs) do ret = ret .. value .. " " end
 
-    for _, value in ipairs(args.cargoExtraArgs) do
-        ret = ret .. value .. " "
-    end
+    for _, value in ipairs(args.cargoExtraArgs) do ret = ret .. value .. " " end
 
     if not vim.tbl_isempty(args.executableArgs) then
         ret = ret .. "-- "
         for _, value in ipairs(args.executableArgs) do
-        ret = ret .. value .. " "
+            ret = ret .. value .. " "
         end
     end
 
@@ -55,9 +50,7 @@ end
 
 function M.run_command(choice, result)
     -- do nothing if choice is too high or too low
-    if choice < 1 or choice > #result then
-       return
-    end
+    if choice < 1 or choice > #result then return end
 
     -- check if a buffer with the latest id is already open, if it is then
     -- delete it and continue
@@ -82,9 +75,7 @@ function M.run_command(choice, result)
 
     -- when the buffer is closed, set the latest buf id to nil else there are
     -- some edge cases with the id being sit but a buffer not being open
-    local function onDetach(_, _)
-       latest_buf_id = nil
-    end
+    local function onDetach(_, _) latest_buf_id = nil end
     vim.api.nvim_buf_attach(latest_buf_id, false, {on_detach = onDetach})
 end
 
@@ -102,7 +93,7 @@ local function get_telescope_handler(opts)
     local actions = require('telescope.actions')
     local action_state = require('telescope.actions.state')
 
-    return function (_, _, results)
+    return function(_, _, results)
         local choices = getOptions(results, false, false)
 
         local function attach_mappings(bufnr, map)
@@ -120,14 +111,12 @@ local function get_telescope_handler(opts)
             return true
         end
 
-        pickers.new(opts or {} ,{
+        pickers.new(opts or {}, {
             prompt_title = "Runnables",
-            finder = finders.new_table({
-                results = choices,
-            }),
+            finder = finders.new_table({results = choices}),
             sorter = sorters.get_generic_fuzzy_sorter(),
             previewer = nil,
-            attach_mappings = attach_mappings,
+            attach_mappings = attach_mappings
         }):find()
     end
 end

@@ -26,6 +26,8 @@ function M._run_command()
         vim.lsp.buf.implementation()
     elseif action.command == "rust-analyzer.runSingle" then
         runnables.run_command(1, action.arguments)
+    elseif action.command == "rust-analyzer.debugSingle" then
+        require'rust-tools.dap'.start(action.arguments[1].args)
     end
 end
 

@@ -3,6 +3,7 @@ local nvim_lsp = require 'lspconfig'
 local config = require 'rust-tools.config'
 local utils = require('rust-tools.utils.utils')
 local lspconfig_utils = require('lspconfig.util')
+local rt_dap = require('rust-tools.dap')
 
 local M = {}
 
@@ -112,6 +113,10 @@ function M.setup(opts)
 
     if utils.is_bufnr_rust(0) and (get_root_dir() == nil) then
         require('rust-tools.standalone').start_standalone_client()
+    end
+
+    if pcall(require, 'dap') then
+        rt_dap.setup_adapter()
     end
 end
 
