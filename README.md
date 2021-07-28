@@ -209,6 +209,7 @@ require'rust-tools.move_item'.move_item(up)
 
 ### Hover Actions
 ![hover actions](https://github.com/simrat39/rust-tools-demos/raw/master/hover_actions.gif)
+Note: To activate hover actions, run the command twice (or your hover keymap if you have ```hover_with_actions``` set to true AND are using ```vim.lsp.buf.hover()```). This will move you into the window, then press enter on the selection you want. Alternatively, you can set ```auto_focus``` to true in your config and you will automatically enter the hover actions window.
 ```lua
 -- Command:
 -- RustHoverActions 
