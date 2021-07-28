@@ -162,6 +162,10 @@ Future support for code lenses and telescope/runnables is also planned.
 
 ## Demos
 
+### Debugging
+![debugging](https://github.com/simrat39/rust-tools-demos/raw/master/rust-tools-debug.gif)
+Read what I wrote above smh
+
 ### Inlay Hints
 ![inlay hints](https://github.com/simrat39/rust-tools-demos/raw/master/inlay_hints.png)
 ```lua
