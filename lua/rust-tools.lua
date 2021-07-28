@@ -31,6 +31,9 @@ local function setupCommands()
         RustRunnables = {
             function() require('rust-tools.runnables').runnables() end
         },
+        RustDebuggables = {
+            function() require('rust-tools.debuggables').debuggables() end
+        },
         RustHoverActions = {require('rust-tools.hover_actions').hover_actions},
         RustMoveItemDown = {
             function() require('rust-tools.move_item').move_item() end

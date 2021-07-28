@@ -25,6 +25,14 @@ local defaults = {
             -- rest of the opts are forwarded to telescope
         },
 
+        debuggables = {
+            -- whether to use telescope for selection menu or not
+            -- default: true
+            use_telescope = true
+
+            -- rest of the opts are forwarded to telescope
+        },
+
         -- These apply to the default RustSetInlayHints command
         inlay_hints = {
             -- wheter to show parameter hints with the inlay hints or not

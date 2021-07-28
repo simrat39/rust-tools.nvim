@@ -47,8 +47,15 @@ local opts = {
         -- default: true
         hover_with_actions = true,
 
-        -- These apply to the default RustRunnables command
         runnables = {
+            -- whether to use telescope for selection menu or not
+            -- default: true
+            use_telescope = true
+
+            -- rest of the opts are forwarded to telescope
+        },
+
+        debuggables = {
             -- whether to use telescope for selection menu or not
             -- default: true
             use_telescope = true
@@ -122,6 +129,7 @@ RustHoverActions
 RustMoveItemDown
 RustMoveItemUp
 RustStartStandaloneServerForBuffer 
+RustDebuggables
 ```
 
 ## Standalone File Support
@@ -140,8 +148,12 @@ Depends on:
  
 rust-tools supports debugging with the help of rust-analyzer. Note that the plugin does not setup nvim-dap for you, but it has its own internal configuration, so if you want a seperate debugging config then you can do it the normal way.
 
-Currently, rust-tools support debugging through the hover actions:
+Currently, rust-tools support debugging in two different ways:
 
+### RustDebuggables
+Similar to ```RustRunnables```, this command provides a list of targets that can be debugged, from specific tests to the entire project. Just run the command and chose your target, and the debugging will begin.
+
+### Hover actions
 Put your cursor on the main function, enter the hover actions menu and select the debug option to debug the entire application.
 
 Put your cursor on any test module or function, enter the hover actions menu and select the debug option to debug the certain test. 
