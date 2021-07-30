@@ -32,7 +32,9 @@ local function setupCommands()
             function() require('rust-tools.runnables').runnables() end
         },
         RustDebuggables = {
-            function() require('rust-tools.debuggables').debuggables() end
+            function()
+                require('rust-tools.debuggables').debuggables()
+            end
         },
         RustHoverActions = {require('rust-tools.hover_actions').hover_actions},
         RustMoveItemDown = {
@@ -66,13 +68,27 @@ end
 local function setup_capabilities()
     local lsp_opts = config.options.server
     local capabilities = vim.lsp.protocol.make_client_capabilities()
+
     -- snippets
     capabilities.textDocument.completion.completionItem.snippetSupport = true
+
     -- send actions with hover request
     capabilities.experimental = {hoverActions = true}
+
     -- enable auto-import
     capabilities.textDocument.completion.completionItem.resolveSupport =
         {properties = {'documentation', 'detail', 'additionalTextEdits'}}
+
+    -- rust analyzer goodies
+    capabilities.experimental.commands =
+        {
+            commands = {
+                "rust-analyzer.runSingle", "rust-analyzer.debugSingle",
+                "rust-analyzer.showReferences", "rust-analyzer.gotoLocation",
+                "editor.action.triggerParameterHints"
+            }
+        }
+
     lsp_opts.capabilities = vim.tbl_deep_extend("force", capabilities,
                                                 lsp_opts.capabilities or {})
 end
@@ -118,9 +134,7 @@ function M.setup(opts)
         require('rust-tools.standalone').start_standalone_client()
     end
 
-    if pcall(require, 'dap') then
-        rt_dap.setup_adapter()
-    end
+    if pcall(require, 'dap') then rt_dap.setup_adapter() end
 end
 
 return M
