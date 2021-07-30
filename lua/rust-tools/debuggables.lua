@@ -10,12 +10,29 @@ local function get_params()
     }
 end
 
+local function build_label(args)
+    local ret = ""
+    for _, value in ipairs(args.cargoArgs) do ret = ret .. value .. " " end
+
+    for _, value in ipairs(args.cargoExtraArgs) do ret = ret .. value .. " " end
+
+    if not vim.tbl_isempty(args.executableArgs) then
+        ret = ret .. "-- "
+        for _, value in ipairs(args.executableArgs) do
+            ret = ret .. value .. " "
+        end
+    end
+    return ret
+end
+
 local function getOptions(result, withTitle, withIndex)
     local option_strings = withTitle and {"Debuggables: "} or {}
 
     for i, debuggable in ipairs(result) do
-        local str = withIndex and string.format("%d: %s", i, debuggable.label) or
-                        debuggable.label
+        local label = build_label(debuggable.args)
+        local str =
+            withIndex and string.format("%d: %s", i, label) or
+                label
         table.insert(option_strings, str)
     end
 
@@ -30,14 +47,28 @@ end
 -- rust-analyzer doesn't actually support giving a list of debuggable targets,
 -- so work around that by manually removing non debuggable targets (only cargo
 -- check for now).
-local function sanitize_non_debuggables(result)
-    return vim.tbl_filter(function (value)
-       return is_valid_test(value.args)
-    end, result)
+-- This function also makes it so that the debuggable commands are more
+-- debugging friendly. For example, we move cargo run to cargo build, and cargo
+-- test to cargo test --no-run.
+local function sanitize_results_for_debugging(result)
+    local ret = {}
+
+    ret = vim.tbl_filter(function(value) return is_valid_test(value.args) end,
+                         result)
+
+    for i, value in ipairs(ret) do
+        if value.args.cargoArgs[1] == "run" then
+            ret[i].args.cargoArgs[1] = "build"
+        elseif value.args.cargoArgs[1] == "test" then
+            table.insert(ret[i].args.cargoArgs, 2, "--no-run")
+        end
+    end
+
+    return ret
 end
 
 local function handler(_, _, result)
-    result = sanitize_non_debuggables(result)
+    result = sanitize_results_for_debugging(result)
 
     -- get the choice from the user
     local choice = vim.fn.inputlist(getOptions(result, true, true))
@@ -53,9 +84,8 @@ local function get_telescope_handler(opts)
     local action_state = require('telescope.actions.state')
 
     return function(_, _, results)
-        results = sanitize_non_debuggables(results)
+        results = sanitize_results_for_debugging(results)
         local choices = getOptions(results, false, false)
-
         local function attach_mappings(bufnr, map)
             local function on_select()
                 local choice = action_state.get_selected_entry().index
