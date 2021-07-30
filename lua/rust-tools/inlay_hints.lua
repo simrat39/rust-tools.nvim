@@ -7,9 +7,16 @@ local config = require 'rust-tools.config'
 -- file
 -- opts is a string representation of the table of options
 function M.setup_autocmd()
+
+    local events = "BufEnter,BufWinEnter,TabEnter,BufWritePost"
+    if config.options.tools.inlay_hints.only_current_line then
+        events = string.format("%s,%s", events, config.options.tools.inlay_hints
+                                   .only_current_line_autocmd)
+    end
+
     vim.api.nvim_command('augroup InlayHints')
     vim.api.nvim_command(
-        'autocmd InsertLeave,BufEnter,BufWinEnter,TabEnter,BufWritePost *.rs :lua require"rust-tools.inlay_hints".set_inlay_hints()')
+        'autocmd ' .. events .. ' *.rs :lua require"rust-tools.inlay_hints".set_inlay_hints()')
     vim.api.nvim_command('augroup END')
 end
 
@@ -54,17 +61,27 @@ local enabled = nil
 --
 local function parseHints(result)
     local map = {}
+    local only_current_line = config.options.tools.inlay_hints.only_current_line
 
     if type(result) ~= 'table' then return {} end
     for _, value in pairs(result) do
         local line = tostring(value.range["end"].line)
         local label = value.label
         local kind = value.kind
+        local current_line = vim.api.nvim_win_get_cursor(0)[1]
 
-        if map[line] ~= nil then
-            table.insert(map[line], {label = label, kind = kind})
+        local function add_line()
+            if map[line] ~= nil then
+                table.insert(map[line], {label = label, kind = kind})
+            else
+                map[line] = {{label = label, kind = kind}}
+            end
+        end
+
+        if only_current_line then
+            if line == tostring(current_line - 1) then add_line() end
         else
-            map[line] = {{label = label, kind = kind}}
+            add_line()
         end
     end
     return map
