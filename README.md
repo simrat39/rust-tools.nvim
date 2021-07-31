@@ -22,7 +22,7 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 
 " Debugging (needs plenary from above as well)
-Plug "mfussenegger/nvim-dap"
+Plug 'mfussenegger/nvim-dap'
 ```
 <b>Look at the configuration information below to get started.</b>
 
