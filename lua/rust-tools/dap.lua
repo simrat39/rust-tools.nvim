@@ -35,17 +35,17 @@ end
 function M.start(args)
     if not pcall(require, 'dap') then
         scheduled_error("nvim-dap not found.")
-        goto end_func
+        return
     end
 
     if not pcall(require, 'plenary.job') then
         scheduled_error("plenary not found.")
-        goto end_func
+        return
     end
 
     if vim.fn.executable("lldb-vscode") == 0 then
         scheduled_error("lldb-vscode not found. Please install lldb.")
-        goto end_func
+        return
     end
 
     local dap = require('dap')
@@ -92,15 +92,12 @@ function M.start(args)
                             runInTerminal = false
                         }
                         dap.run(config)
-                        goto end_loop
+                        break
                     end
                 end
-                ::end_loop::
             end)
         end
     }):start()
-
-    ::end_func::
 end
 
 return M
