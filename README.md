@@ -49,6 +49,7 @@ RustOpenCargo
 RustParentModule
 RustJoinLines
 RustHoverActions
+RustHoverRange 
 RustMoveItemDown
 RustMoveItemUp
 RustStartStandaloneServerForBuffer 
@@ -223,6 +224,14 @@ Note: To activate hover actions, run the command twice (or your hover keymap if 
 -- Command:
 -- RustHoverActions 
 require'rust-tools.hover_actions'.hover_actions()
+```
+
+### Hover Range
+Note: Requires rust-analyzer version after 2021-08-02. Shows the type in visual mode when hovering.
+```lua
+-- Command:
+-- RustHoverRange 
+require'rust-tools.hover_range'.hover_range()
 ```
 
 ### Open Cargo.toml
