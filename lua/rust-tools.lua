@@ -37,6 +37,7 @@ local function setupCommands()
             end
         },
         RustHoverActions = {require('rust-tools.hover_actions').hover_actions},
+        RustHoverRange = {require('rust-tools.hover_range').hover_range},
         RustMoveItemDown = {
             function() require('rust-tools.move_item').move_item() end
         },
@@ -73,7 +74,7 @@ local function setup_capabilities()
     capabilities.textDocument.completion.completionItem.snippetSupport = true
 
     -- send actions with hover request
-    capabilities.experimental = {hoverActions = true}
+    capabilities.experimental = {hoverActions = true, hoverRange = true}
 
     -- enable auto-import
     capabilities.textDocument.completion.completionItem.resolveSupport =
