@@ -9,6 +9,7 @@ local M = {}
 local function get_params() return vim.lsp.util.make_position_params() end
 
 M._state = {winnr = nil, commands = nil}
+local set_keymap_opt = {noremap = true}
 
 -- run the command under the cursor, if the thing under the cursor is not the
 -- command then do nothing
@@ -89,7 +90,7 @@ function M.handler(_, _, result, _, _, _)
     M._state.winnr = winnr
     vim.api.nvim_buf_set_keymap(bufnr, "n", "<Esc>",
                                 ":lua require'rust-tools.hover_actions'._close_hover()<CR>",
-                                {})
+                                set_keymap_opt)
 
     vim.api.nvim_buf_attach(bufnr, false,
                             {on_detach = function() M._state.winnr = nil end})
@@ -133,11 +134,11 @@ function M.handler(_, _, result, _, _, _)
     -- run the command under the cursor
     vim.api.nvim_buf_set_keymap(bufnr, "n", "<CR>",
                                 ":lua require'rust-tools.hover_actions'._run_command()<CR>",
-                                {})
+                                set_keymap_opt)
     -- close on escape
     vim.api.nvim_buf_set_keymap(bufnr, "n", "<Esc>",
                                 ":lua require'rust-tools.hover_actions'._close_hover()<CR>",
-                                {})
+                                set_keymap_opt)
 end
 
 -- Sends the request to rust-analyzer to get hover actions and handle it
