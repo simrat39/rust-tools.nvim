@@ -2,6 +2,11 @@ local vim = vim
 
 local M = {}
 
+-- Needed for autocompletion to work
+_G.rust_tools_get_graphviz_backends = function()
+    return M.options.tools.crate_graph.enabled_graphviz_backends
+end
+
 local defaults = {
     tools = { -- rust-tools options
         -- automatically set inlay hints (type hints)
@@ -87,6 +92,27 @@ local defaults = {
             -- whether the hover action window gets automatically focused
             -- default: false
             auto_focus = false
+        },
+
+        crate_graph = {
+            -- Backend used for displaying the graph
+            backend = "x11", -- see: https://graphviz.org/docs/outputs/
+            output = nil, -- where to store the output, nil for no output stored (relative path from cwd)
+            full = true, -- true for all crates.io and external crates, false only the local crates
+
+            -- List of backends found on: https://graphviz.org/docs/outputs/
+            -- Is used for input validation and autocompletion
+            -- Last updated: 2021-08-26
+            enabled_graphviz_backends = {
+                "bmp", "cgimage", "canon", "dot", "gv", "xdot", "xdot1.2", "xdot1.4",
+                "eps", "exr", "fig", "gd", "gd2", "gif", "gtk", "ico", "cmap", "ismap",
+                "imap", "cmapx", "imap_np", "cmapx_np", "jpg", "jpeg", "jpe", "jp2",
+                "json", "json0", "dot_json", "xdot_json", "pdf", "pic", "pct", "pict",
+                "plain", "plain-ext", "png", "pov", "ps", "ps2", "psd", "sgi", "svg",
+                "svgz", "tga", "tiff", "tif", "tk", "vml", "vmlz", "wbmp", "webp", "xlib",
+                "x11"
+            }
+
         }
     },
 
