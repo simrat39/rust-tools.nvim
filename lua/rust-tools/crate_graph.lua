@@ -39,6 +39,11 @@ local function handler_factory(backend, output)
         -- Needs to be handled with care to prevent security problems
         local handle = io.popen(cmd, "w")
         handle:write(graph)
+
+        -- needs to be here otherwise dot may take a long time before it gets
+        -- any input + cleaning up (not waiting for garbage collection)
+        handle:flush()
+        handle:close()
     end
 end
 
