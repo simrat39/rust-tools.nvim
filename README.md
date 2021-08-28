@@ -261,6 +261,8 @@ require'rust-tools.parent_module'.parent_module()
 require'rust-tools.join_lines'.join_lines()
 ```
 
-## Inspiration
+## Related Projects
+- [`Saecki/crates.nvim`](https://github.com/Saecki/crates.nvim)
 
+## Inspiration
 This plugin draws inspiration from [`akinsho/flutter-tools.nvim`](https://github.com/akinsho/flutter-tools.nvim)
