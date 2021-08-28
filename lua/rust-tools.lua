@@ -74,7 +74,11 @@ local function setup_capabilities()
     capabilities.textDocument.completion.completionItem.snippetSupport = true
 
     -- send actions with hover request
-    capabilities.experimental = {hoverActions = true, hoverRange = true}
+    capabilities.experimental = {
+        hoverActions = true,
+        hoverRange = true,
+        snippetTextEdit = true
+    }
 
     -- enable auto-import
     capabilities.textDocument.completion.completionItem.resolveSupport =
