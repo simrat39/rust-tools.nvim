@@ -33,4 +33,13 @@ function M.is_bufnr_rust(bufnr)
     return vim.api.nvim_buf_get_option(bufnr, 'ft') == 'rust'
 end
 
+function M.contains(list, item)
+    for _, val in ipairs(list) do
+        if item == val then
+            return true
+        end
+    end
+    return false
+end
+
 return M
