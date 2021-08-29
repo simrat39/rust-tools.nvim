@@ -21,6 +21,10 @@ function M._run_command()
     local action = M._state.commands[line]
 
     M._close_hover()
+    M.execute_rust_analyzer_command(action)
+end
+
+function M.execute_rust_analyzer_command(action, client_id, bufnr)
     if action.command == "rust-analyzer.gotoLocation" then
         vim.lsp.util.jump_to_location(action.arguments[1])
     elseif action.command == "rust-analyzer.showReferences" then
@@ -29,6 +33,16 @@ function M._run_command()
         runnables.run_command(1, action.arguments)
     elseif action.command == "rust-analyzer.debugSingle" then
         require'rust-tools.dap'.start(action.arguments[1].args)
+    else
+        local client = vim.lsp.get_client_by_id(client_id)
+        assert(client,
+               'Client is required to execute lens, client_id=' .. client_id)
+        client.request('workspace/executeCommand', action.command,
+                       function(...)
+            local result = vim.lsp.handlers['workspace/executeCommand'](...)
+            vim.lsp.codelens.refresh()
+            return result
+        end, bufnr)
     end
 end
 

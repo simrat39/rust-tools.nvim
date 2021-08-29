@@ -48,7 +48,8 @@ local function setupCommands()
         },
         RustViewCrateGraph = {
             function(backend, output)
-                require('rust-tools.crate_graph').view_crate_graph(backend, output)
+                require('rust-tools.crate_graph').view_crate_graph(backend,
+                                                                   output)
             end,
             "-nargs=* -complete=customlist,v:lua.rust_tools_get_graphviz_backends",
             description = '`:RustViewCrateGraph [<backend> [<output>]]` Show the crate graph'
@@ -67,6 +68,10 @@ local function setup_handlers()
     if tool_opts.hover_with_actions then
         custom_handlers["textDocument/hover"] =
             require('rust-tools.hover_actions').handler
+    end
+
+    custom_handlers['textDocument/codeLens'] = function(...)
+      return vim.lsp.codelens.on_codelens(...)
     end
 
     lsp_opts.handlers = vim.tbl_deep_extend("force", custom_handlers,
@@ -127,6 +132,8 @@ local function get_root_dir()
 end
 
 function M.setup(opts)
+    vim.lsp.codelens = require('rust-tools.codelens')
+
     config.setup(opts)
 
     setup_capabilities()
