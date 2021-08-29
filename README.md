@@ -7,6 +7,7 @@ This plugin adds extra functionality over rust analyzer.
 - `neovim 0.5+`
 - `nvim-lspconfig`
 - `rust-analyzer`
+- `dot` from `graphviz` (only for crate graph)
 
 ## Installation
 
@@ -54,6 +55,7 @@ RustMoveItemDown
 RustMoveItemUp
 RustStartStandaloneServerForBuffer 
 RustDebuggables
+RustViewCrateGraph
 ```
 
 ## Standalone File Support
@@ -161,6 +163,23 @@ local opts = {
 
             -- whether the hover action window gets automatically focused
             auto_focus = false
+        },
+
+        -- settings for showing the crate graph based on graphviz and the dot
+        -- command
+        crate_graph = {
+            -- Backend used for displaying the graph
+            -- see: https://graphviz.org/docs/outputs/
+            -- default: x11
+            backend = "x11",
+            -- where to store the output, nil for no output stored (relative
+            -- path from pwd)
+            -- default: nil
+            output = nil,
+            -- true for all crates.io and external crates, false only the local
+            -- crates
+            -- default: true
+            full = true,
         }
     },
 
@@ -259,6 +278,13 @@ require'rust-tools.parent_module'.parent_module()
 -- Command:
 -- RustJoinLines  
 require'rust-tools.join_lines'.join_lines()
+```
+
+### View crate graph
+```lua
+-- Command:
+-- RustViewCrateGraph [backend [output]]
+require'rust-tools.crate_graph'.view_crate_graph(backend, output)
 ```
 
 ## Related Projects

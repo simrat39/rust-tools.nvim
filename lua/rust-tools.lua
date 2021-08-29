@@ -45,6 +45,13 @@ local function setupCommands()
             function()
                 require('rust-tools.move_item').move_item(true)
             end
+        },
+        RustViewCrateGraph = {
+            function(backend, output)
+                require('rust-tools.crate_graph').view_crate_graph(backend, output)
+            end,
+            "-nargs=* -complete=customlist,v:lua.rust_tools_get_graphviz_backends",
+            description = '`:RustViewCrateGraph [<backend> [<output>]]` Show the crate graph'
         }
     })
 end
