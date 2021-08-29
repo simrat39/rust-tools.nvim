@@ -78,6 +78,18 @@ local function setup_handlers()
                                             lsp_opts.handlers or {})
 end
 
+local function setup_on_init()
+    local lsp_opts = config.options.server
+    local old_on_init = lsp_opts.on_init
+
+    lsp_opts.on_init = function (...)
+        vim.lsp.codelens = require('rust-tools.codelens')
+        if old_on_init ~= nil then
+           old_on_init(...)
+        end
+    end
+end
+
 local function setup_capabilities()
     local lsp_opts = config.options.server
     local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -132,11 +144,11 @@ local function get_root_dir()
 end
 
 function M.setup(opts)
-    vim.lsp.codelens = require('rust-tools.codelens')
-
     config.setup(opts)
 
     setup_capabilities()
+    -- setup on_init
+    setup_on_init()
     -- setup handlers
     setup_handlers()
     -- setup user commands
