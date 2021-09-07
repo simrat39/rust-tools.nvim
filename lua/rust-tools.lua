@@ -4,6 +4,7 @@ local config = require 'rust-tools.config'
 local utils = require('rust-tools.utils.utils')
 local lspconfig_utils = require('lspconfig.util')
 local rt_dap = require('rust-tools.dap')
+local server_status = require('rust-tools.server_status')
 
 local M = {}
 
@@ -74,6 +75,8 @@ local function setup_handlers()
       return vim.lsp.codelens.on_codelens(...)
     end
 
+    custom_handlers['experimental/serverStatus'] = server_status.handler
+
     lsp_opts.handlers = vim.tbl_deep_extend("force", custom_handlers,
                                             lsp_opts.handlers or {})
 end
@@ -101,6 +104,7 @@ local function setup_capabilities()
     capabilities.experimental = {
         hoverActions = true,
         hoverRange = true,
+        serverStatusNotification = true,
         -- snippetTextEdit = true
     }
 
