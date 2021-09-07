@@ -101,7 +101,7 @@ local function setup_capabilities()
     capabilities.experimental = {
         hoverActions = true,
         hoverRange = true,
-        snippetTextEdit = true
+        -- snippetTextEdit = true
     }
 
     -- enable auto-import
