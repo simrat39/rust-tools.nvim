@@ -13,7 +13,14 @@ local function get_params(up)
 end
 
 -- move it baby
-local function handler(_, _, result, _, _, _)
+local function handler(...)
+    local _args = { ... }
+    local result
+    if vim.fn.has 'nvim-0.5.1' == 1 then
+        result = _args[2]
+    else
+        result = _args[3]
+    end
     if result == nil then return end
     utils.snippet_text_edits_to_text_edits(result)
     vim.lsp.util.apply_text_edits(result)

@@ -71,7 +71,15 @@ local function parse_commands()
     return prompt
 end
 
-function M.handler(_, _, result, _, _, _)
+function M.handler(...)
+    local _args = { ... }
+    local result
+    if vim.fn.has 'nvim-0.5.1' == 1 then
+        result = _args[2]
+    else
+        result = _args[3]
+    end
+
     if not (result and result.contents) then
         -- return { 'No information available' }
         return

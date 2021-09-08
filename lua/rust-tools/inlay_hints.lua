@@ -90,7 +90,16 @@ end
 local function get_handler()
     local opts = config.options.tools.inlay_hints
 
-    return function(_, _, result, _, bufnr, _)
+    return function(...)
+        local _args = { ... }
+        local result, bufnr
+        if vim.fn.has 'nvim-0.5.1' == 1 then
+            result = _args[2]
+            bufnr = _args[3].bufnr
+        else
+            result = _args[3]
+            bufnr = _args[5]
+        end
         if (vim.api.nvim_get_current_buf() ~= bufnr) then return end
 
         -- clean it up at first

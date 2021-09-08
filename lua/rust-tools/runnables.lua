@@ -79,7 +79,14 @@ function M.run_command(choice, result)
     vim.api.nvim_buf_attach(latest_buf_id, false, {on_detach = onDetach})
 end
 
-local function handler(_, _, result, _, _, _)
+local function handler(...)
+    local _args = { ... }
+    local result
+    if vim.fn.has 'nvim-0.5.1' == 1 then
+        result = _args[2]
+    else
+        result = _args[3]
+    end
     -- get the choice from the user
     local choice = vim.fn.inputlist(getOptions(result, true, true))
 
