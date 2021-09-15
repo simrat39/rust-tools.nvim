@@ -1,4 +1,3 @@
-local vim = vim
 local nvim_lsp = require 'lspconfig'
 local config = require 'rust-tools.config'
 local utils = require('rust-tools.utils.utils')
@@ -63,19 +62,14 @@ local function setup_handlers()
     local tool_opts = config.options.tools
     local custom_handlers = {}
 
-    if tool_opts.hover_with_actions == nil then
-        tool_opts.hover_with_actions = true
-    end
     if tool_opts.hover_with_actions then
         custom_handlers["textDocument/hover"] =
-            require('rust-tools.hover_actions').handler
+            utils.mk_handler(require('rust-tools.hover_actions').handler)
     end
 
-    custom_handlers['textDocument/codeLens'] = function(...)
-      return vim.lsp.codelens.on_codelens(...)
-    end
+    -- custom_handlers['textDocument/codeLens'] = utils.mk_handler(vim.lsp.codelens.on_codelens)
 
-    custom_handlers['experimental/serverStatus'] = server_status.handler
+    custom_handlers['experimental/serverStatus'] = utils.mk_handler(server_status.handler)
 
     lsp_opts.handlers = vim.tbl_deep_extend("force", custom_handlers,
                                             lsp_opts.handlers or {})

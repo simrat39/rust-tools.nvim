@@ -1,4 +1,5 @@
 local util = require('vim.lsp.util')
+local utils = require('rust-tools.utils.utils')
 local hover_actions = require('rust-tools.hover_actions')
 local api = vim.api
 local M = {}
@@ -189,8 +190,10 @@ end
 
 --- |lsp-handler| for the method `textDocument/codeLens`
 ---
-function M.on_codelens(err, _, result, client_id, bufnr)
+function M.on_codelens(err, result, ctx)
   assert(not err, vim.inspect(err))
+  local bufnr = ctx.bufnr
+  local client_id = ctx.client_id
 
   M.save(result, bufnr, client_id)
 
@@ -221,7 +224,7 @@ function M.refresh()
     return
   end
   active_refreshes[bufnr] = true
-  vim.lsp.buf_request(0, 'textDocument/codeLens', params)
+  utils.request(0, 'textDocument/codeLens', params, M.on_codelens)
 end
 
 

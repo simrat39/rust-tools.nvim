@@ -1,3 +1,5 @@
+local utils = require('rust-tools.utils.utils')
+
 local M = {}
 
 local function get_opts()
@@ -16,12 +18,12 @@ local function get_opts()
     params.position = params.range
     params.range = nil
     --print(vim.inspect(params))
-    
+
     return params
 end
 
 function M.hover_range()
-    vim.lsp.buf_request(0, "textDocument/hover", get_opts())
+    utils.request(0, "textDocument/hover", get_opts())
 end
 
 return M

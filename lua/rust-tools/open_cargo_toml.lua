@@ -1,4 +1,4 @@
--- ?? helps with all the warnings spam
+local utils = require('rust-tools.utils.utils')
 local vim = vim
 
 local M = {}
@@ -9,13 +9,13 @@ local function get_params()
     }
 end
 
-local function handler(_, _, result, _, _, _)
+local function handler(_, result)
     vim.lsp.util.jump_to_location(result)
 end
 
 -- Sends the request to rust-analyzer to get cargo.tomls location and open it
 function M.open_cargo_toml()
-    vim.lsp.buf_request(0, "experimental/openCargoToml", get_params(), handler)
+    utils.request(0, "experimental/openCargoToml", get_params(), handler)
 end
 
 return M

@@ -16,7 +16,7 @@ local function handler_factory(backend, output)
     -- Graph is a representation of the crate graph following the graphviz format
     -- The handler processes and pipes the graph to the dot command that will
     -- visualize with the given backend
-    return function(err, _, graph, _, _)
+    return function(err, graph)
         if err ~= nil then
             error("Cound not execute request to server"..err)
             return
@@ -48,7 +48,7 @@ local function handler_factory(backend, output)
 end
 
 function M.view_crate_graph(backend, output)
-    vim.lsp.buf_request(0, "rust-analyzer/viewCrateGraph", get_opts(), handler_factory(backend, output))
+    utils.request(0, "rust-analyzer/viewCrateGraph", get_opts(), handler_factory(backend, output))
 end
 
 return M

@@ -1,5 +1,4 @@
--- ?? helps with all the warnings spam
-local vim = vim
+local utils = require('rust-tools.utils.utils')
 local util = vim.lsp.util
 local runnables = require('rust-tools.runnables')
 local config = require('rust-tools.config')
@@ -71,7 +70,7 @@ local function parse_commands()
     return prompt
 end
 
-function M.handler(_, _, result, _, _, _)
+function M.handler(_, result)
     if not (result and result.contents) then
         -- return { 'No information available' }
         return
@@ -157,7 +156,7 @@ end
 
 -- Sends the request to rust-analyzer to get hover actions and handle it
 function M.hover_actions()
-    vim.lsp.buf_request(0, "textDocument/hover", get_params(), M.handler)
+    utils.request(0, "textDocument/hover", get_params(), M.handler)
 end
 
 return M

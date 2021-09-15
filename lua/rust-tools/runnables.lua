@@ -1,5 +1,3 @@
--- ?? helps with all the warnings spam
-local vim = vim
 local utils = require('rust-tools.utils.utils')
 local config = require 'rust-tools.config'
 
@@ -79,7 +77,7 @@ function M.run_command(choice, result)
     vim.api.nvim_buf_attach(latest_buf_id, false, {on_detach = onDetach})
 end
 
-local function handler(_, _, result, _, _, _)
+local function handler(_, result)
     -- get the choice from the user
     local choice = vim.fn.inputlist(getOptions(result, true, true))
 
@@ -93,7 +91,7 @@ local function get_telescope_handler(opts)
     local actions = require('telescope.actions')
     local action_state = require('telescope.actions.state')
 
-    return function(_, _, results)
+    return function(_, results)
         local choices = getOptions(results, false, false)
 
         local function attach_mappings(bufnr, map)
@@ -138,14 +136,7 @@ function M.runnables()
 
     -- fallback to the vanilla method incase telescope is not installed or the
     -- user doesn't want to use it
-    vim.lsp.buf_request(0, "experimental/runnables", get_params(), used_handler)
-end
-
--- Same thing but with telescope.nvim
-function M.runnables_telescope()
-    print("This function is deprecated, please see :RustRunnables")
-    M.runnables()
-    -- vim.lsp.buf_request(0, "experimental/runnables", get_params(), get_telescope_handler(opts))
+    utils.request(0, "experimental/runnables", get_params(), used_handler)
 end
 
 return M

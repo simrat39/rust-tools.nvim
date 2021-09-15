@@ -1,5 +1,6 @@
 local rt_dap = require('rust-tools.dap')
 local config = require('rust-tools.config')
+local utils = require('rust-tools.utils.utils')
 
 local M = {}
 
@@ -67,7 +68,7 @@ local function sanitize_results_for_debugging(result)
     return ret
 end
 
-local function handler(_, _, result)
+local function handler(_, result)
     result = sanitize_results_for_debugging(result)
 
     -- get the choice from the user
@@ -83,7 +84,7 @@ local function get_telescope_handler(opts)
     local actions = require('telescope.actions')
     local action_state = require('telescope.actions.state')
 
-    return function(_, _, results)
+    return function(_, results)
         results = sanitize_results_for_debugging(results)
         local choices = getOptions(results, false, false)
         local function attach_mappings(bufnr, map)
@@ -129,7 +130,7 @@ function M.debuggables()
 
     -- fallback to the vanilla method incase telescope is not installed or the
     -- user doesn't want to use it
-    vim.lsp.buf_request(0, "experimental/runnables", get_params(), used_handler)
+    utils.request(0, "experimental/runnables", get_params(), used_handler)
 end
 
 return M

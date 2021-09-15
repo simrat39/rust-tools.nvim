@@ -1,5 +1,3 @@
--- ?? helps with all the warnings spam
-local vim = vim
 local utils = require('rust-tools.utils.utils')
 
 local M = {}
@@ -36,7 +34,7 @@ local function parse_lines(t)
     return ret
 end
 
-local function handler(_, _, result, _, _, _)
+local function handler(_, result)
     -- echo a message when result is nil (meaning no macro under cursor) and
     -- exit
     if result == nil then
@@ -65,7 +63,7 @@ end
 
 -- Sends the request to rust-analyzer to get cargo.tomls location and open it
 function M.expand_macro()
-    vim.lsp.buf_request(0, "rust-analyzer/expandMacro", get_params(), handler)
+    utils.request(0, "rust-analyzer/expandMacro", get_params(), handler)
 end
 
 return M
