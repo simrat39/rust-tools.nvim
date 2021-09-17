@@ -8,7 +8,7 @@ local M = {}
 local function get_params() return vim.lsp.util.make_position_params() end
 
 M._state = {winnr = nil, commands = nil}
-local set_keymap_opt = {noremap = true}
+local set_keymap_opt = {noremap = true, silent = true}
 
 -- run the command under the cursor, if the thing under the cursor is not the
 -- command then do nothing
