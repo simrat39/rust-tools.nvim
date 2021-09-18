@@ -4,8 +4,10 @@ local inlay = require('rust-tools.inlay_hints')
 local M = {}
 
 function M.handler(_, result)
-    if result.quiescent and config.options.tools.autoSetHints then
-       inlay.set_inlay_hints();
+    if result.quiescent and config.options.tools.autoSetHints and
+        (not M.ran_once) then
+        inlay.set_inlay_hints();
+        M.ran_once = true;
     end
 end
 
