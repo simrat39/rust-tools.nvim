@@ -1,12 +1,10 @@
+local config = require 'rust-tools.config'
+
 local M = {}
 
 function M.setup_adapter()
     local dap = require('dap')
-    dap.adapters.rt_lldb = {
-        type = 'executable',
-        command = 'lldb-vscode',
-        name = "rt_lldb"
-    }
+    dap.adapters.rt_lldb = config.options.dap.adapter
 end
 
 local function get_cargo_args_from_runnables_args(runnable_args)

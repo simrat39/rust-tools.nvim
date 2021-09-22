@@ -187,6 +187,15 @@ local opts = {
     -- these override the defaults set by rust-tools.nvim
     -- see https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#rust_analyzer
     server = {} -- rust-analyer options
+
+    -- debugging stuff
+    dap = {
+        adapter = {
+            type = 'executable',
+            command = 'lldb-vscode',
+            name = "rt_lldb"
+        }
+    }
 }
 
 require('rust-tools').setup(opts)
