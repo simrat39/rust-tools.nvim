@@ -174,7 +174,8 @@ local function handler(err, result, ctx)
                     "right_align" or "eol",
                 virt_text = {
                     {virt_text, config.options.tools.inlay_hints.highlight}
-                }
+                },
+                hl_mode = "combine"
             });
 
             -- update state
