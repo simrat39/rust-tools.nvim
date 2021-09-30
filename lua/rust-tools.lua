@@ -80,6 +80,7 @@ local function setup_on_init()
     local old_on_init = lsp_opts.on_init
 
     lsp_opts.on_init = function (...)
+        utils.override_apply_text_edits()
         vim.lsp.codelens = require('rust-tools.codelens')
         if old_on_init ~= nil then
            old_on_init(...)
@@ -99,7 +100,7 @@ local function setup_capabilities()
         hoverActions = true,
         hoverRange = true,
         serverStatusNotification = true,
-        -- snippetTextEdit = true
+        snippetTextEdit = true
     }
 
     -- enable auto-import

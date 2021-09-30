@@ -21,9 +21,17 @@ function M.resize(vertical, amount)
     vim.cmd(cmd)
 end
 
+function M.override_apply_text_edits()
+   local old_func = vim.lsp.util.apply_text_edits
+   vim.lsp.util.apply_text_edits = function (edits, bufnr)
+       M.snippet_text_edits_to_text_edits(edits)
+       old_func(edits, bufnr)
+   end
+end
+
 function M.snippet_text_edits_to_text_edits(spe)
     for _, value in ipairs(spe) do
-        if value.newText ~= nil then
+        if value.newText and value.insertTextFormat then
             value.newText = string.gsub(value.newText, "%$%d", "");
         end
     end
