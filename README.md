@@ -86,6 +86,40 @@ Put your cursor on any test module or function, enter the hover actions menu and
 
 Future support for code lenses and telescope/runnables is also planned.
 
+### A better debugging experience...
+For basic debugging, lldb-vscode is good enough. But if you want something
+better, you might wanna read this section.
+
+You might have noticed that lldb-vscode does not show types like strings and
+enums properly, but vscode does. How could this be 🤔 🤔
+
+This is because vscode uses a wrapper *over* lldb which provides all the
+goodies. Setting it up for nvim is a bit wack, but thankfully rust-tools
+provides some utility functions to make the process easier.
+
+Steps:
+1. Download the [CodeLLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb) vscode extension.
+2. Find out where its installed. On linux, it's usually in
+   ```/home/___/.vscode/extensions/...```
+3. Update your configuration:
+```lua
+-- Update this path
+local extension_path = '/home/simrat39/.vscode/extensions/vadimcn.vscode-lldb-1.6.7/'
+local codelldb_path = extension_path .. 'adapter/codelldb'
+local liblldb_path = extension_path .. 'lldb/lib/liblldb.so'
+
+local opts = {
+    -- ... other configs
+    dap = {
+        adapter = require('rust-tools.dap').get_codelldb_adapter(
+            codelldb_path, liblldb_path)
+    }
+}
+
+-- Normal setup
+require('rust-tools').setup(opts)
+```
+
 ## Configuration
 The options shown below are the defaults. You only need to pass the keys to the setup function that you want to be changed, because the defaults are applied for keys that are not provided. 
 

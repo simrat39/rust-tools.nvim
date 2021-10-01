@@ -2,6 +2,55 @@ local config = require 'rust-tools.config'
 
 local M = {}
 
+---For the heroes who want to use it
+---@param codelldb_path string
+---@param liblldb_path string
+function M.get_codelldb_adapter(codelldb_path, liblldb_path)
+    return function(callback, _)
+        local stdout = vim.loop.new_pipe(false)
+        local handle
+        local pid_or_err
+        local port
+
+        local opts = {
+            stdio = {nil, stdout},
+            args = {"--liblldb", liblldb_path},
+            detached = true
+        }
+
+        handle, pid_or_err = vim.loop.spawn(codelldb_path, opts, function(code)
+            stdout:close()
+            handle:close()
+            if code ~= 0 then
+                print('codelldb exited with code', code)
+            end
+        end)
+
+        assert(handle, 'Error running codelldb: ' .. tostring(pid_or_err))
+
+        stdout:read_start(function(err, chunk)
+            assert(not err, err)
+            if chunk then
+                if not port then
+                    local chunks = {}
+                    for substring in chunk:gmatch("%S+") do
+                       table.insert(chunks, substring)
+                    end
+                    port = tonumber(chunks[#chunks])
+                else
+                    vim.schedule(function()
+                        require('dap.repl').append(chunk)
+                    end)
+                end
+            end
+        end)
+
+        vim.defer_fn(function()
+            callback({type = "server", host = "127.0.0.1", port = port})
+        end, 100)
+    end
+end
+
 function M.setup_adapter()
     local dap = require('dap')
     dap.adapters.rt_lldb = config.options.dap.adapter
