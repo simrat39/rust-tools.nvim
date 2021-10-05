@@ -94,11 +94,6 @@ function M.start(args)
         return
     end
 
-    if vim.fn.executable("lldb-vscode") == 0 then
-        scheduled_error("lldb-vscode not found. Please install lldb.")
-        return
-    end
-
     local dap = require('dap')
     local Job = require('plenary.job')
 
