@@ -34,9 +34,16 @@ function M.get_codelldb_adapter(codelldb_path, liblldb_path)
                 if not port then
                     local chunks = {}
                     for substring in chunk:gmatch("%S+") do
-                       table.insert(chunks, substring)
+                        table.insert(chunks, substring)
                     end
                     port = tonumber(chunks[#chunks])
+                    vim.schedule(function()
+                        callback({
+                            type = "server",
+                            host = "127.0.0.1",
+                            port = port
+                        })
+                    end)
                 else
                     vim.schedule(function()
                         require('dap.repl').append(chunk)
@@ -45,9 +52,6 @@ function M.get_codelldb_adapter(codelldb_path, liblldb_path)
             end
         end)
 
-        vim.defer_fn(function()
-            callback({type = "server", host = "127.0.0.1", port = port})
-        end, 100)
     end
 end
 
