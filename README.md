@@ -56,6 +56,7 @@ RustMoveItemUp
 RustStartStandaloneServerForBuffer 
 RustDebuggables
 RustViewCrateGraph
+RustReloadWorkspace
 ```
 
 ## Standalone File Support
