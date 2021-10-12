@@ -9,7 +9,12 @@ function M.start_standalone_client()
 		cmd = { "rust-analyzer" },
 		init_options = { detachedFiles = { vim.api.nvim_buf_get_name(0) } },
 		on_init = function(client)
+			local current_buf = vim.api.nvim_get_current_buf()
 			vim.lsp.buf_attach_client(0, client.id)
+			local on_attach = ra_config.options.server.on_attach
+			if on_attach then
+				on_attach(current_buf, client)
+			end
 			vim.cmd("command! RustSetInlayHints :lua require('rust-tools.inlay_hints').set_inlay_hints()")
 			vim.cmd("command! RustDisableInlayHints :lua require('rust-tools.inlay_hints').disable_inlay_hints()")
 			vim.cmd("command! RustToggleInlayHints :lua require('rust-tools.inlay_hints').toggle_inlay_hints()")
