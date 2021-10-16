@@ -3,7 +3,7 @@ local runnables = require("rust-tools.runnables")
 local M = {}
 
 function M.setup_lsp_commands()
-	if vim.lsp.commands then
+	if not vim.lsp.commands then
 		vim.lsp.commands = {}
 	end
 
