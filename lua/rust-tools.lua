@@ -177,11 +177,6 @@ function M.setup(opts)
 
 	lcommands.setup_lsp_commands()
 
-	-- enable automatic inlay hints
-	if config.options.tools.autoSetHints then
-		require("rust-tools.inlay_hints").setup_autocmd()
-	end
-
 	if pcall(require, "dap") then
 		rt_dap.setup_adapter()
 	end
