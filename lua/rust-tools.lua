@@ -4,6 +4,7 @@ local utils = require("rust-tools.utils.utils")
 local lspconfig_utils = require("lspconfig.util")
 local rt_dap = require("rust-tools.dap")
 local server_status = require("rust-tools.server_status")
+local lcommands = require("rust-tools/commands")
 
 local M = {}
 
@@ -73,7 +74,6 @@ local function setup_on_init()
 
 	lsp_opts.on_init = function(...)
 		utils.override_apply_text_edits()
-		vim.lsp.codelens = require("rust-tools.codelens")
 		if old_on_init ~= nil then
 			old_on_init(...)
 		end
@@ -174,6 +174,8 @@ function M.setup(opts)
 	setupCommands()
 	-- setup rust analyzer
 	setup_lsp()
+
+	lcommands.setup_lsp_commands()
 
 	-- enable automatic inlay hints
 	if config.options.tools.autoSetHints then
