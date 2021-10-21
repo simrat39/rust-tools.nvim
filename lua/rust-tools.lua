@@ -51,6 +51,11 @@ local function setupCommands()
 		RustReloadWorkspace = {
 			require("rust-tools/workspace_refresh").reload_workspace,
 		},
+		RustCodeAction = {
+			function()
+				require("rust-tools/code_action_group").code_action_group()
+			end,
+		},
 	})
 end
 
@@ -93,6 +98,7 @@ local function setup_capabilities()
 		hoverRange = true,
 		serverStatusNotification = true,
 		snippetTextEdit = true,
+		codeActionGroup = true,
 	}
 
 	-- enable auto-import
