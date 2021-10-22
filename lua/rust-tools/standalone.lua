@@ -8,6 +8,7 @@ function M.start_standalone_client()
 		capabilities = ra_config.options.server.capabilities,
 		cmd = { "rust-analyzer" },
 		init_options = { detachedFiles = { vim.api.nvim_buf_get_name(0) } },
+		name = "rust_analyzer-standalone",
 		on_init = function(client)
 			local current_buf = vim.api.nvim_get_current_buf()
 			vim.lsp.buf_attach_client(0, client.id)
