@@ -164,6 +164,7 @@ local function on_code_action_results(results, ctx)
             au!
             autocmd BufEnter * lua require('rust-tools/code_action_group').on_buf_enter()
         augroup END
+        redraw
     ]])
 end
 
