@@ -9,21 +9,28 @@ local function get_params()
 end
 
 M._state = { winnr = nil, commands = nil }
+M.code_actions = {}
+
 local set_keymap_opt = { noremap = true, silent = true }
 
 -- run the command under the cursor, if the thing under the cursor is not the
 -- command then do nothing
 function M._run_command()
-	local line = vim.api.nvim_win_get_cursor(M._state.winnr)[1]
+  local line = vim.api.nvim_win_get_cursor(M._state.winnr)[1]
 
-	if line > #M._state.commands then
-		return
-	end
+  if line > (#(M._state.commands or {}) + #M.code_actions) then return end
 
-	local action = M._state.commands[line]
-
-	M._close_hover()
-	M.execute_rust_analyzer_command(action)
+  local action = M._state.commands and M._state.commands[line - #M.code_actions] or nil
+  if action then
+    M._close_hover()
+    M.execute_rust_analyzer_command(action)
+  else
+    action = M.code_actions[line]
+    M._close_hover()
+    if action then
+      require'lspsaga.api'.code_action_execute(action[1], action[2], M.ctx)
+    end
+  end
 end
 
 function M.execute_rust_analyzer_command(action)
@@ -40,33 +47,44 @@ function M._close_hover()
 end
 
 local function parse_commands()
-	local prompt = {}
+  local prompt = {}
+  if #M.code_actions ~= 0 then
+    for i, info in ipairs(M.code_actions) do
+      table.insert(prompt, string.format("%d. %s ", i, info[2].title))
+    end
+  end
 
-	for i, value in ipairs(M._state.commands) do
-		if value.command == "rust-analyzer.gotoLocation" then
-			table.insert(prompt, string.format("%d. Go to %s (%s)", i, value.title, value.tooltip))
-		elseif value.command == "rust-analyzer.showReferences" then
-			table.insert(prompt, string.format("%d. %s", i, "Go to " .. value.title))
-		else
-			table.insert(prompt, string.format("%d. %s", i, value.title))
-		end
-	end
-	table.insert(prompt, "")
+  if M._state.commands then
+    for i, value in ipairs(M._state.commands) do
+      i = i + #M.code_actions
+      if value.command == "rust-analyzer.gotoLocation" then
+        table.insert(prompt, string.format("%d. Go to %s (%s)", i, value.title, value.tooltip))
+      elseif value.command == "rust-analyzer.showReferences" then
+        table.insert(prompt, string.format("%d. %s", i, "Go to " .. value.title))
+      else
+        table.insert(prompt, string.format("%d. %s", i, value.title))
+      end
+    end
+  end
 
-	return prompt
+  return prompt
 end
 
-function M.handler(_, result)
-	if not (result and result.contents) then
-		-- return { 'No information available' }
-		return
-	end
+function M.handler(_, result, code_actions)
+  if not (result and result.contents) and next(code_actions) == nil then
+    return
+  elseif next(code_actions) ~= nil then
+    M.code_actions = code_actions
+  end
 
-	local markdown_lines = util.convert_input_to_markdown_lines(result.contents)
+	local markdown_lines = (result and result.contents) and result.contents or nil
+  if config.options.tools.hover_actions.hide_content or not markdown_lines then
+    markdown_lines = { "------" }
+  end
+  markdown_lines = util.convert_input_to_markdown_lines(markdown_lines)
 	markdown_lines = util.trim_empty_lines(markdown_lines)
 
 	if vim.tbl_isempty(markdown_lines) then
-		-- return { 'No information available' }
 		return
 	end
 
@@ -103,15 +121,18 @@ function M.handler(_, result)
 	})
 
 	--- stop here if there are no possible actions
-	if result.actions == nil then
-		return
-	end
+  if next(M.code_actions) == nil and not (result or result.actions)  then
+    vim.notify("No code actions found", vim.log.levels.INFO, {})
+    return M._close_hover()
+  end
 
 	-- syntax highlighting
 	vim.api.nvim_buf_set_option(bufnr, "filetype", "rust")
 
-	-- update the state
-	M._state.commands = result.actions[1].commands
+  -- update the state
+  if result and result.actions then
+    M._state.commands = result.actions[1].commands
+  end
 
 	local prompt = parse_commands()
 
@@ -164,7 +185,23 @@ end
 
 -- Sends the request to rust-analyzer to get hover actions and handle it
 function M.hover_actions()
-	utils.request(0, "textDocument/hover", get_params(), M.handler)
+  utils.request(0, "textDocument/hover", get_params(), function(_,result)
+    require('lspsaga.api').code_action_request({
+      params = vim.lsp.util.make_range_params(),
+      callback = function (ctx)
+        M.ctx = ctx
+        return function(response)
+          local code_actions = {}
+          for client_id, result in pairs(response or {}) do
+            for _, action in ipairs(result.result or {}) do
+              table.insert(code_actions, { client_id, action })
+            end
+          end
+          M.handler(_, result, code_actions)
+        end
+      end
+    })
+  end)
 end
 
 return M

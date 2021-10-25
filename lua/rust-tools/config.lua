@@ -91,7 +91,13 @@ local defaults = {
 
             -- whether the hover action window gets automatically focused
             -- default: false
-            auto_focus = false
+            auto_focus = false,
+            -- whether the hover action should include code actions.
+            -- default: false
+            merge_code_actions = false,
+            -- whether to hide server content on a given symbol
+            -- default: false
+            hide_content = false,
         },
 
         -- settings for showing the crate graph based on graphviz and the dot
