@@ -6,7 +6,7 @@ function M.start_standalone_client()
 	local config = {
 		root_dir = require("lspconfig.util").path.dirname(vim.api.nvim_buf_get_name(0)),
 		capabilities = ra_config.options.server.capabilities,
-		cmd = { "rust-analyzer" },
+		cmd = ra_config.options.server.cmd or { "rust-analyzer" },
 		init_options = { detachedFiles = { vim.api.nvim_buf_get_name(0) } },
 		name = "rust_analyzer-standalone",
 		on_init = function(client)
