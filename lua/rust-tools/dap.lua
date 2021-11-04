@@ -55,7 +55,7 @@ function M.get_codelldb_adapter(codelldb_path, liblldb_path)
 				end
 			end
 		end)
-		stderr:read_start(function(err, chunk)
+		stderr:read_start(function(_, chunk)
 			if chunk then
 				error_message = error_message .. chunk
 

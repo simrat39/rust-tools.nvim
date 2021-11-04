@@ -2,6 +2,29 @@ local vim = vim
 
 local M = {}
 
+function M.is_windows()
+	return vim.loop.os_uname().sysname == "Windows" or "Windows_NT"
+end
+
+---Get a new command which is a chain of all the old commands
+---Note that a space is not added at the end of the returned command string
+---@param commands table
+function M.chain_commands(commands)
+	local separator = M.is_windows() and " | " or " && "
+	local ret = ""
+
+	for i, value in ipairs(commands) do
+		local is_last = i == #commands
+		ret = ret .. value
+
+		if not is_last then
+			ret = ret .. separator
+		end
+	end
+
+	return ret
+end
+
 function M.delete_buf(bufnr)
 	if bufnr ~= nil then
 		vim.api.nvim_buf_delete(bufnr, { force = true })
