@@ -29,8 +29,12 @@ local function getCommand(c, results)
     local args = results[c].args
 
     local dir = args.workspaceRoot;
-
-    ret = string.format("cd '%s' && cargo ", dir)
+    
+    if vim.loop.os_uname().sysname == "Windows" or "Windows_NT" then
+        ret = string.format("cd '%s' | cargo ", dir)
+    else
+        ret = string.format("cd '%s' && cargo ", dir)
+    end
 
     for _, value in ipairs(args.cargoArgs) do ret = ret .. value .. " " end
 
