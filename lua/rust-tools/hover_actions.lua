@@ -51,7 +51,6 @@ local function parse_commands()
 			table.insert(prompt, string.format("%d. %s", i, value.title))
 		end
 	end
-	table.insert(prompt, "")
 
 	return prompt
 end
@@ -63,6 +62,18 @@ function M.handler(_, result)
 	end
 
 	local markdown_lines = util.convert_input_to_markdown_lines(result.contents)
+	if result.actions then
+		M._state.commands = result.actions[1].commands
+		local prompt = parse_commands()
+		local l = {}
+
+		for _, value in ipairs(prompt) do
+			table.insert(l, value)
+		end
+
+		markdown_lines = vim.list_extend(l, markdown_lines)
+	end
+
 	markdown_lines = util.trim_empty_lines(markdown_lines)
 
 	if vim.tbl_isempty(markdown_lines) then
@@ -107,43 +118,9 @@ function M.handler(_, result)
 		return
 	end
 
-	-- syntax highlighting
-	vim.api.nvim_buf_set_option(bufnr, "filetype", "rust")
-
-	-- update the state
-	M._state.commands = result.actions[1].commands
-
-	local prompt = parse_commands()
-
-	-- get the maximum length of all the possible commands
-	local max_len = 0
-	for _, line in ipairs(prompt) do
-		if #line > max_len then
-			max_len = #line
-		end
-	end
-
-	--- update the height to compensate for the commands being added
-	local old_height = vim.api.nvim_win_get_height(winnr)
-	vim.api.nvim_win_set_height(winnr, old_height + #prompt)
-
-	--- update the width to compensate for the commands being added
-	local old_width = vim.api.nvim_win_get_width(winnr)
-	if max_len > old_width then
-		vim.api.nvim_win_set_width(winnr, max_len)
-	end
-
-	-- make it modifiable so that the commands text can be added
-	vim.api.nvim_buf_set_option(bufnr, "modifiable", true)
 	-- makes more sense in a dropdown-ish ui
 	vim.api.nvim_win_set_option(winnr, "cursorline", true)
-	-- write to the buffer containing the hover text
-	vim.api.nvim_buf_set_lines(bufnr, 0, 0, false, prompt)
-	-- no need now since we have written all we want
-	vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
-	-- move cursor to the start since its at the place before we added the
-	-- commands text
-	vim.api.nvim_win_set_cursor(winnr, { 1, 0 })
+
 	-- run the command under the cursor
 	vim.api.nvim_buf_set_keymap(
 		bufnr,
