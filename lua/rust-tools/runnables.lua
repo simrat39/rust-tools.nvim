@@ -10,8 +10,6 @@ local function get_params()
 	}
 end
 
-local latest_buf_id = nil
-
 local function getOptions(result, withTitle, withIndex)
 	local option_strings = withTitle and { "Runnables: " } or {}
 
@@ -23,30 +21,22 @@ local function getOptions(result, withTitle, withIndex)
 	return option_strings
 end
 
+---comment
+---@return string build command
+---@return string|table args
+---@return any cwd
 local function getCommand(c, results)
 	local ret = " "
 	local args = results[c].args
 
 	local dir = args.workspaceRoot
 
-	ret = utils.chain_commands({ "cd " .. dir, "cargo " })
+	ret = vim.list_extend({}, args.cargoArgs or {})
+	ret = vim.list_extend(ret, args.cargoExtraArgs or {})
+	table.insert(ret, "--")
+	ret = vim.list_extend(ret, args.executableArgs or {})
 
-	for _, value in ipairs(args.cargoArgs) do
-		ret = ret .. value .. " "
-	end
-
-	for _, value in ipairs(args.cargoExtraArgs) do
-		ret = ret .. value .. " "
-	end
-
-	if not vim.tbl_isempty(args.executableArgs) then
-		ret = ret .. "-- "
-		for _, value in ipairs(args.executableArgs) do
-			ret = ret .. value .. " "
-		end
-	end
-
-	return ret
+	return "cargo", ret, dir
 end
 
 function M.run_command(choice, result)
@@ -55,33 +45,11 @@ function M.run_command(choice, result)
 		return
 	end
 
-	-- check if a buffer with the latest id is already open, if it is then
-	-- delete it and continue
-	utils.delete_buf(latest_buf_id)
+	local opts = config.options.tools
 
-	-- create the new buffer
-	latest_buf_id = vim.api.nvim_create_buf(false, true)
+	local command, args, cwd = getCommand(choice, result)
 
-	-- split the window to create a new buffer and set it to our window
-	utils.split(false, latest_buf_id)
-
-	-- make the new buffer smaller
-	utils.resize(false, "-5")
-
-	-- close the buffer when escape is pressed :)
-	vim.api.nvim_buf_set_keymap(latest_buf_id, "n", "<Esc>", ":q<CR>", { noremap = true })
-
-	local command = getCommand(choice, result)
-
-	-- run the command
-	vim.fn.termopen(command)
-
-	-- when the buffer is closed, set the latest buf id to nil else there are
-	-- some edge cases with the id being sit but a buffer not being open
-	local function onDetach(_, _)
-		latest_buf_id = nil
-	end
-	vim.api.nvim_buf_attach(latest_buf_id, false, { on_detach = onDetach })
+	opts.executor.execute_command(command, args, cwd)
 end
 
 local function handler(_, result)

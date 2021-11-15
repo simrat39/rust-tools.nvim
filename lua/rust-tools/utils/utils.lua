@@ -6,6 +6,19 @@ function M.is_windows()
 	return vim.loop.os_uname().sysname == "Windows" or "Windows_NT"
 end
 
+---comment
+---@param command string
+---@param args table
+function M.make_command_from_args(command, args)
+	local ret = command .. " "
+
+	for _, value in ipairs(args) do
+		ret = ret .. value .. " "
+	end
+
+	return ret
+end
+
 ---Get a new command which is a chain of all the old commands
 ---Note that a space is not added at the end of the returned command string
 ---@param commands table
