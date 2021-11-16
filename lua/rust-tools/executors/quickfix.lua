@@ -1,5 +1,3 @@
-local Job = require("plenary.job")
-
 local M = {}
 
 local function clear_qf()
@@ -30,7 +28,7 @@ function M.execute_command(command, args, cwd)
 	clear_qf()
 
 	-- start compiling
-	Job
+	require("plenary.job")
 		:new({
 			command = command,
 			args = args,
