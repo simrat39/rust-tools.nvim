@@ -1,7 +1,7 @@
 command RustStartStandaloneServerForBuffer :lua require('rust-tools.standalone').start_standalone_client()
 
-" Copied from vim
-set errorformat=
+" Copied from built-in compiler/{rustc,cargo}.vim
+setlocal errorformat=
 			\%f:%l:%c:\ %t%*[^:]:\ %m,
 			\%f:%l:%c:\ %*\\d:%*\\d\ %t%*[^:]:\ %m,
 			\%-G%f:%l\ %s,
@@ -10,7 +10,7 @@ set errorformat=
 			\%-G%*[\ ]...
 
 " New errorformat (after nightly 2016/08/10)
-set errorformat+=
+setlocal errorformat+=
 			\%-G,
 			\%-Gerror:\ aborting\ %.%#,
 			\%-Gerror:\ Could\ not\ compile\ %.%#,
@@ -20,7 +20,7 @@ set errorformat+=
 			\%Inote:\ %m,
 			\%C\ %#-->\ %f:%l:%c
 
-set errorformat+=
+setlocal errorformat+=
 			\%-G%\\s%#Downloading%.%#,
 			\%-G%\\s%#Compiling%.%#,
 			\%-G%\\s%#Finished%.%#,
