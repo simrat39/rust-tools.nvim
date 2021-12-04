@@ -8,7 +8,7 @@ local lcommands = require("rust-tools/commands")
 
 local M = {}
 
-local function setupCommands()
+local function setup_commands()
 	local lsp_opts = config.options.server
 
 	lsp_opts.commands = vim.tbl_deep_extend("force", lsp_opts.commands or {}, {
@@ -47,6 +47,13 @@ local function setupCommands()
 			end,
 			"-nargs=* -complete=customlist,v:lua.rust_tools_get_graphviz_backends",
 			description = "`:RustViewCrateGraph [<backend> [<output>]]` Show the crate graph",
+		},
+		RustSSR = {
+			function(query)
+				require("rust-tools.ssr").ssr(query)
+			end,
+			"-nargs=?",
+			description = "`:RustSSR [query]` Structural Search Replace",
 		},
 		RustReloadWorkspace = {
 			require("rust-tools/workspace_refresh").reload_workspace,
@@ -99,6 +106,7 @@ local function setup_capabilities()
 		serverStatusNotification = true,
 		snippetTextEdit = true,
 		codeActionGroup = true,
+        ssr = true,
 	}
 
 	-- enable auto-import
@@ -177,7 +185,7 @@ function M.setup(opts)
 	-- setup handlers
 	setup_handlers()
 	-- setup user commands
-	setupCommands()
+	setup_commands()
 	-- setup rust analyzer
 	setup_lsp()
 

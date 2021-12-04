@@ -57,6 +57,7 @@ RustStartStandaloneServerForBuffer
 RustDebuggables
 RustViewCrateGraph
 RustReloadWorkspace
+RustSSR
 ```
 
 ## Standalone File Support
@@ -326,6 +327,13 @@ require'rust-tools.parent_module'.parent_module()
 -- Command:
 -- RustJoinLines  
 require'rust-tools.join_lines'.join_lines()
+```
+
+### Structural Search Replace 
+```lua
+-- Command:
+-- RustSSR [query]
+require'rust-tools.ssr'.ssr(query)
 ```
 
 ### View crate graph
