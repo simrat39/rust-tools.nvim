@@ -72,9 +72,9 @@ local function handler(_, result)
     result = sanitize_results_for_debugging(result)
 
     -- get the choice from the user
-    local choice = vim.fn.inputlist(getOptions(result, true, true))
-    local args = result[choice].args
-    rt_dap.start(args)
+    vim.ui.select(getOptions(result, true, true), { prompt = "Debuggables" }, function(choice)
+        rt_dap.start(result[choice].args)
+    end)
 end
 
 local function get_telescope_handler(opts)
