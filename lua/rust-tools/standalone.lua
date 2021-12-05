@@ -14,7 +14,7 @@ function M.start_standalone_client()
 			vim.lsp.buf_attach_client(0, client.id)
 			local on_attach = ra_config.options.server.on_attach
 			if on_attach then
-				on_attach(current_buf, client)
+				on_attach(client, current_buf)
 			end
 			vim.cmd("command! RustSetInlayHints :lua require('rust-tools.inlay_hints').set_inlay_hints()")
 			vim.cmd("command! RustDisableInlayHints :lua require('rust-tools.inlay_hints').disable_inlay_hints()")
