@@ -53,10 +53,10 @@ function M.run_command(choice, result)
 end
 
 local function handler(_, result)
-	-- get the choice from the user
-	local choice = vim.fn.inputlist(getOptions(result, true, true))
-
-	M.run_command(choice, result)
+    -- get the choice from the user
+    vim.ui.select(getOptions(result, true, true), { prompt = "Runnables" }, function(choice)
+        M.run_command(choice, result)
+    end)
 end
 
 local function get_telescope_handler(opts)
