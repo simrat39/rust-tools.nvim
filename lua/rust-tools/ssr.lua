@@ -21,9 +21,12 @@ end
 
 function M.ssr(query)
     if not query then
-       query = vim.fn.input("Enter query: ")
+        vim.ui.input({ prompt = "Enter query: ", default = " ==>> " }, function(query_)
+            utils.request(0, "experimental/ssr", get_opts(query_), handler)
+        end)
+    else
+        utils.request(0, "experimental/ssr", get_opts(query), handler)
     end
-    utils.request(0, "experimental/ssr", get_opts(query), handler)
 end
 
 return M
