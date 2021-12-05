@@ -20,7 +20,6 @@ Plug 'simrat39/rust-tools.nvim'
 " Optional dependencies
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim'
 
 " Debugging (needs plenary from above as well)
 Plug 'mfussenegger/nvim-dap'
@@ -140,17 +139,13 @@ local opts = {
 		executor = require("rust-tools/executors").termopen,
 
         runnables = {
-            -- whether to use telescope for selection menu or not
-            use_telescope = true
-
-            -- rest of the opts are forwarded to telescope
+            -- Specify a custom `vim.ui.select` compatible function for RustRunnables
+			select = nil,
         },
 
         debuggables = {
-            -- whether to use telescope for selection menu or not
-            use_telescope = true
-
-            -- rest of the opts are forwarded to telescope
+            -- Specify a custom `vim.ui.select` compatible function for RustDebuggables
+			select = nil,
         },
 
         -- These apply to the default RustSetInlayHints command
