@@ -1,13 +1,6 @@
 # rust-tools.nvim
-
 Extra rust tools for writing applications in neovim using the native lsp.
 This plugin adds extra functionality over rust analyzer.
-
-**_Breaking Change_** rust_tools.nvim no longer requires/uses telescope for
-RustRunnables/RustDebuggables.
-Now uses `vim.ui.select` for choosing the options, try
-[telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim)
-or [popui.nvim](https://github.com/hood/popui.nvim) for pretty interfaces
 
 ## Prerequisites
 
@@ -24,8 +17,12 @@ using `vim-plug`
 Plug 'neovim/nvim-lspconfig'
 Plug 'simrat39/rust-tools.nvim'
 
-" Debugging 
+" Optional dependencies
+Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+
+" Debugging (needs plenary from above as well)
 Plug 'mfussenegger/nvim-dap'
 ```
 <b>Look at the configuration information below to get started.</b>
@@ -83,8 +80,6 @@ Currently, rust-tools support debugging in two different ways:
 
 ### RustDebuggables
 Similar to ```RustRunnables```, this command provides a list of targets that can be debugged, from specific tests to the entire project. Just run the command and chose your target, and the debugging will begin.
-
-Uses `vim.ui.select` for choosing the options, try [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim) or [popui.nvim] for pretty interfaces
 
 ### Hover actions
 Put your cursor on the main function, enter the hover actions menu and select the debug option to debug the entire application.
@@ -145,13 +140,17 @@ local opts = {
 		executor = require("rust-tools/executors").termopen,
 
         runnables = {
-            -- Specify a custom `vim.ui.select` compatible function for RustRunnables
-			select = nil,
+            -- whether to use telescope for selection menu or not
+            use_telescope = true
+
+            -- rest of the opts are forwarded to telescope
         },
 
         debuggables = {
-            -- Specify a custom `vim.ui.select` compatible function for RustDebuggables
-			select = nil,
+            -- whether to use telescope for selection menu or not
+            use_telescope = true
+
+            -- rest of the opts are forwarded to telescope
         },
 
         -- These apply to the default RustSetInlayHints command
@@ -271,9 +270,6 @@ require('rust-tools.inlay_hints').toggle_inlay_hints()
 -- RustRunnables
 require('rust-tools.runnables').runnables()
 ```
-
-Uses `vim.ui.select` for choosing the options, try [telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim) or [popui.nvim] for pretty interfaces
-
 ### Expand Macros Recursively 
 ![expand macros](https://github.com/simrat39/rust-tools-demos/raw/master/expand_macros_recursively.gif)
 ```lua
