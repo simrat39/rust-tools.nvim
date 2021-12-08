@@ -27,13 +27,19 @@ local defaults = {
 
 		-- These apply to the default RustRunnables command
 		runnables = {
-      -- Specify a custom `vim.ui.select` compatible function for RustRunnables
-			select = nil,
+			-- whether to use telescope for selection menu or not
+			-- default: true
+			use_telescope = true,
+
+			-- rest of the opts are forwarded to telescope
 		},
 
 		debuggables = {
-      -- Specify a custom `vim.ui.select` compatible function for RustDebuggables
-			select = nil,
+			-- whether to use telescope for selection menu or not
+			-- default: true
+			use_telescope = true,
+
+			-- rest of the opts are forwarded to telescope
 		},
 
 		-- These apply to the default RustSetInlayHints command
