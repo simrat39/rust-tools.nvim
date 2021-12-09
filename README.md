@@ -10,7 +10,7 @@ or [popui.nvim](https://github.com/hood/popui.nvim) for pretty interfaces.
 
 ## Prerequisites
 
-- `neovim 0.5+`
+- `neovim 0.6`
 - `nvim-lspconfig`
 - `rust-analyzer`
 - `dot` from `graphviz` (only for crate graph)
