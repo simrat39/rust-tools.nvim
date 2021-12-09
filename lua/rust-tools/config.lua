@@ -25,23 +25,6 @@ local defaults = {
 		-- options right now: termopen / quickfix
 		executor = require("rust-tools/executors").termopen,
 
-		-- These apply to the default RustRunnables command
-		runnables = {
-			-- whether to use telescope for selection menu or not
-			-- default: true
-			use_telescope = true,
-
-			-- rest of the opts are forwarded to telescope
-		},
-
-		debuggables = {
-			-- whether to use telescope for selection menu or not
-			-- default: true
-			use_telescope = true,
-
-			-- rest of the opts are forwarded to telescope
-		},
-
 		-- These apply to the default RustSetInlayHints command
 		inlay_hints = {
 
