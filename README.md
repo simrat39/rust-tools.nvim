@@ -2,6 +2,12 @@
 Extra rust tools for writing applications in neovim using the native lsp.
 This plugin adds extra functionality over rust analyzer.
 
+# _**Recent breaking changes**_
+We no longer use telescope.nvim for Runnables/Debuggables. Instead we
+now use vim.ui.select. Check out 
+[telescope-ui-select.nvim](https://github.com/nvim-telescope/telescope-ui-select.nvim)
+or [popui.nvim](https://github.com/hood/popui.nvim) for pretty interfaces.
+
 ## Prerequisites
 
 - `neovim 0.5+`
@@ -17,12 +23,8 @@ using `vim-plug`
 Plug 'neovim/nvim-lspconfig'
 Plug 'simrat39/rust-tools.nvim'
 
-" Optional dependencies
-Plug 'nvim-lua/popup.nvim'
+" Debugging
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim'
-
-" Debugging (needs plenary from above as well)
 Plug 'mfussenegger/nvim-dap'
 ```
 <b>Look at the configuration information below to get started.</b>
