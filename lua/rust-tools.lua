@@ -106,7 +106,7 @@ local function setup_capabilities()
 		serverStatusNotification = true,
 		snippetTextEdit = true,
 		codeActionGroup = true,
-        ssr = true,
+		ssr = true,
 	}
 
 	-- enable auto-import
@@ -164,11 +164,14 @@ end
 
 local function setup_root_dir()
 	local lsp_opts = config.options.server
-	lsp_opts.root_dir = get_root_dir
+	if not lsp_opts.root_dir then
+		lsp_opts.root_dir = get_root_dir
+	end
 end
 
 function M.start_standalone_if_required()
 	local current_buf = vim.api.nvim_get_current_buf()
+
 	if utils.is_bufnr_rust(current_buf) and (get_root_dir() == nil) then
 		require("rust-tools.standalone").start_standalone_client()
 	end
