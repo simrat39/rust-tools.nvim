@@ -170,9 +170,10 @@ local function setup_root_dir()
 end
 
 function M.start_standalone_if_required()
+	local lsp_opts = config.options.server
 	local current_buf = vim.api.nvim_get_current_buf()
 
-	if utils.is_bufnr_rust(current_buf) and (get_root_dir() == nil) then
+	if lsp_opts.standalone and utils.is_bufnr_rust(current_buf) and (get_root_dir() == nil) then
 		require("rust-tools.standalone").start_standalone_client()
 	end
 end
