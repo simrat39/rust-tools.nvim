@@ -10,6 +10,7 @@ local function get_params()
 end
 
 local function handler(_, result)
+    if result == nil then return end
     vim.lsp.util.jump_to_location(result)
 end
 
