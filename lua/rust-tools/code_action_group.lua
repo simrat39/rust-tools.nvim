@@ -195,7 +195,7 @@ function M.on_primary_enter_press()
 		return
 	end
 
-	local line = vim.api.nvim_win_get_cursor(M.state.secondary.winnr)[1]
+	local line = vim.api.nvim_win_get_cursor(M.state.secondary.winnr or 0)[1]
 
 	for _, value in ipairs(M.state.actions.ungrouped) do
 		if value[2].idx == line then
@@ -207,7 +207,7 @@ function M.on_primary_enter_press()
 end
 
 function M.on_secondary_enter_press()
-	local line = vim.api.nvim_win_get_cursor(M.state.secondary.winnr)[1]
+	local line = vim.api.nvim_win_get_cursor(M.state.secondary.winnr or 0)[1]
 	local active_group = nil
 
 	for _, value in pairs(M.state.actions.grouped) do
