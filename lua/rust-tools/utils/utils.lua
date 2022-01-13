@@ -63,7 +63,7 @@ function M.override_apply_text_edits()
 	local old_func = vim.lsp.util.apply_text_edits
 	vim.lsp.util.apply_text_edits = function(edits, bufnr)
 		M.snippet_text_edits_to_text_edits(edits)
-		old_func(edits, bufnr)
+		old_func(edits, bufnr, "utf16")
 	end
 end
 
