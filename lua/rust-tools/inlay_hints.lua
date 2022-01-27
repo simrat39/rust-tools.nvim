@@ -65,16 +65,17 @@ local function parseHints(result)
 
     if type(result) ~= 'table' then return {} end
     for _, value in pairs(result) do
-        local line = tostring(value.range["end"].line)
+        local range = value.range
+        local line = tostring(range["end"].line)
         local label = value.label
         local kind = value.kind
         local current_line = vim.api.nvim_win_get_cursor(0)[1]
 
         local function add_line()
             if map[line] ~= nil then
-                table.insert(map[line], {label = label, kind = kind})
+                table.insert(map[line], {label = label, kind = kind, range = range})
             else
-                map[line] = {{label = label, kind = kind}}
+                map[line] = {{label = label, kind = kind, range = range}}
             end
         end
 
@@ -128,7 +129,7 @@ local function handler(err, result, ctx)
                 if value_inner.kind == "ParameterHint" then
                     table.insert(param_hints, value_inner.label)
                 else
-                    table.insert(other_hints, value_inner.label)
+                    table.insert(other_hints, value_inner)
                 end
             end
 
@@ -148,7 +149,14 @@ local function handler(err, result, ctx)
             if not vim.tbl_isempty(other_hints) then
                 virt_text = virt_text .. opts.other_hints_prefix
                 for i, value_inner_inner in ipairs(other_hints) do
-                    virt_text = virt_text .. value_inner_inner
+                    if value_inner_inner.kind == "TypeHint" and opts.show_variable_name then
+                        local char_start = value_inner_inner.range.start.character
+                        local char_end = value_inner_inner.range['end'].character
+                        local variable_name = string.sub(current_line, char_start + 1, char_end)
+                        virt_text = virt_text .. variable_name .. ": " .. value_inner_inner.label
+                    else
+                        virt_text = virt_text .. value_inner_inner.label
+                    end
                     if i ~= #other_hints then
                         virt_text = virt_text .. ", "
                     end
