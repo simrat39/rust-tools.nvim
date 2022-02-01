@@ -218,6 +218,9 @@ local opts = {
             -- path from pwd)
             -- default: nil
             output = nil,
+            -- command to pipe the output to, nil for no piping
+            pipe = nil,
+            -- NOTE: Be careful when using pipe and output together
             -- true for all crates.io and external crates, false only the local
             -- crates
             -- default: true
