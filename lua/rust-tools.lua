@@ -42,8 +42,8 @@ local function setup_commands()
 			end,
 		},
 		RustViewCrateGraph = {
-			function(backend, output)
-				require("rust-tools.crate_graph").view_crate_graph(backend, output)
+			function(backend, output, pipe)
+				require("rust-tools.crate_graph").view_crate_graph(backend, output, pipe)
 			end,
 			"-nargs=* -complete=customlist,v:lua.rust_tools_get_graphviz_backends",
 			description = "`:RustViewCrateGraph [<backend> [<output>]]` Show the crate graph",
@@ -72,7 +72,9 @@ local function setup_handlers()
 	local custom_handlers = {}
 
 	if tool_opts.hover_with_actions then
-		custom_handlers["textDocument/hover"] = utils.mk_handler(require("rust-tools.hover_actions").handler)
+		custom_handlers["textDocument/hover"] = utils.mk_handler(
+			require("rust-tools.hover_actions").handler
+		)
 	end
 
 	custom_handlers["experimental/serverStatus"] = utils.mk_handler(server_status.handler)
