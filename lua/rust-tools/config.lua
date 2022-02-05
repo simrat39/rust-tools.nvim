@@ -42,6 +42,10 @@ local defaults = {
 			-- default: true
 			show_parameter_hints = true,
 
+			-- whether to show variable name before type hints with the inlay hints or not
+			-- default: false
+			show_variable_name = false,
+
 			-- prefix for parameter hints
 			-- default: "<-"
 			parameter_hints_prefix = "<- ",

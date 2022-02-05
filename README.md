@@ -137,9 +137,9 @@ local opts = {
         -- This overrides the default hover handler 
         hover_with_actions = true,
 
-		-- how to execute terminal commands
-		-- options right now: termopen / quickfix
-		executor = require("rust-tools/executors").termopen,
+        -- how to execute terminal commands
+        -- options right now: termopen / quickfix
+        executor = require("rust-tools/executors").termopen,
 
         runnables = {
             -- whether to use telescope for selection menu or not
@@ -170,6 +170,9 @@ local opts = {
 
             -- wheter to show parameter hints with the inlay hints or not
             show_parameter_hints = true,
+
+            -- whether to show variable name before type hints with the inlay hints or not
+            show_variable_name = false,
 
             -- prefix for parameter hints
             parameter_hints_prefix = "<- ",
@@ -228,11 +231,11 @@ local opts = {
     -- all the opts to send to nvim-lspconfig
     -- these override the defaults set by rust-tools.nvim
     -- see https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#rust_analyzer
-	server = {
-		-- standalone file support
-		-- setting it to false may improve startup time
-		standalone = true,
-	}, -- rust-analyer options
+    server = {
+        -- standalone file support
+        -- setting it to false may improve startup time
+        standalone = true,
+    }, -- rust-analyer options
 
     -- debugging stuff
     dap = {
