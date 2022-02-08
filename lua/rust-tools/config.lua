@@ -25,6 +25,10 @@ local defaults = {
 		-- options right now: termopen / quickfix
 		executor = require("rust-tools/executors").termopen,
 
+		-- callback to execute once rust-analyzer is done initializing the workspace
+		-- The callback receives one parameter indicating the `health` of the server: "ok" | "warning" | "error"
+		on_initialized = nil,
+
 		-- These apply to the default RustSetInlayHints command
 		inlay_hints = {
 
