@@ -104,11 +104,11 @@ provides some utility functions to make the process easier.
 Steps:
 1. Download the [CodeLLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb) vscode extension.
 2. Find out where its installed. On linux, it's usually in
-   ```/home/___/.vscode/extensions/...```
+   ```$HOME/.vscode/extensions/...```
 3. Update your configuration:
 ```lua
 -- Update this path
-local extension_path = '/home/simrat39/.vscode/extensions/vadimcn.vscode-lldb-1.6.7/'
+local extension_path = vim.env.HOME .. '/.vscode/extensions/vadimcn.vscode-lldb-1.6.7/'
 local codelldb_path = extension_path .. 'adapter/codelldb'
 local liblldb_path = extension_path .. 'lldb/lib/liblldb.so'
 
