@@ -197,6 +197,10 @@ function M.setup(opts)
 
 	lcommands.setup_lsp_commands()
 
+	if vim.o.filetype == "rust" then
+		M.start_standalone_if_required()
+	end
+
 	if pcall(require, "dap") then
 		rt_dap.setup_adapter()
 	end
