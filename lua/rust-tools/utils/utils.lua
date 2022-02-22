@@ -76,8 +76,7 @@ function M.snippet_text_edits_to_text_edits(spe)
 end
 
 function M.is_bufnr_rust(bufnr)
-	local ret = vim.api.nvim_buf_get_option(bufnr, "ft") == "rust"
-	return ret
+	return vim.api.nvim_buf_get_option(bufnr, "ft") == "rust"
 end
 
 function M.contains(list, item)
