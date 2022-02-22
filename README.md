@@ -141,6 +141,10 @@ local opts = {
         -- options right now: termopen / quickfix
         executor = require("rust-tools/executors").termopen,
 
+        -- callback to execute once rust-analyzer is done initializing the workspace
+		-- The callback receives one parameter indicating the `health` of the server: "ok" | "warning" | "error"
+		on_initialized = nil,
+
         runnables = {
             -- whether to use telescope for selection menu or not
             use_telescope = true
