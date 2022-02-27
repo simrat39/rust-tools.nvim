@@ -1,4 +1,4 @@
-**Possible rust-analyzer settings**  
+**Possible rust-analyzer settings (rust-analyzer 2022-02-21)**  
 ```lua
 -- example opts  
 local opts = {  

@@ -1,12 +1,21 @@
 import 'dart:convert';
 import 'dart:io';
 
+String getVersion() {
+  var proc = Process.runSync('rust-analyzer', ['--version']);
+
+  var ret = proc.stdout as String;
+  ret = ret.substring(0, ret.length - 1);
+
+  return ret;
+}
+
 void main() async {
   var proc = Process.runSync('rust-analyzer', ['--print-config-schema']);
 
   Map<String, dynamic> decoded = jsonDecode(proc.stdout);
 
-  String md = "**Possible rust-analyzer settings**  \n";
+  String md = "**Possible rust-analyzer settings (${getVersion()})**  \n";
   md += "```lua\n";
   md += "-- example opts  \n";
   md += "local opts = {  \n";
