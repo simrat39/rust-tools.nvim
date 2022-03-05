@@ -35,17 +35,20 @@ void main() async {
 
   decoded.forEach((key, value) {
     var type = value["type"];
+    var typeList = [];
     var defaultValue = value["default"];
     String desc = value["markdownDescription"];
 
     String titleMD = "**`$key`**: ";
 
     if (type is List) {
-      for (var t in type) {
-        titleMD += "`$t`, ";
-      }
+      typeList = type;
     } else {
-      titleMD += "`$type`";
+      typeList.add(type);
+    }
+
+    for (var t in typeList) {
+      titleMD += "`$t`, ";
     }
 
     String defaultMD = "**Default**: `$defaultValue`";
@@ -54,9 +57,30 @@ void main() async {
     md += titleMD + "  \n";
     md += defaultMD + "  \n";
     md += descriptionMD + "  \n";
+    if (typeList.contains("string")) {
+      md += getStringExtra(value);
+    }
     md += "\n---\n";
   });
 
   File fmd = File('output.md');
   fmd.writeAsString(md);
+}
+
+String getStringExtra(dynamic value) {
+  var enums = value['enum'];
+  if (enums == null) {
+    return "";
+  }
+  List<dynamic> enumDescriptions = value['enumDescriptions'];
+
+  String ret = "**Possible Values**\n";
+
+  int i = 0;
+  for (var en in enums) {
+    ret += "- **$en**: ${enumDescriptions[i]}\n";
+    i++;
+  }
+
+  return ret;
 }
