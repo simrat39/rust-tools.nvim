@@ -81,12 +81,15 @@ function M.handler(_, result)
 		return
 	end
 
-	local bufnr, winnr = util.open_floating_preview(markdown_lines, "markdown", {
-		border = next(config.options.tools.hover_actions.border) and config.options.tools.hover_actions.border or nil,
-		focusable = true,
-		focus_id = "rust-tools-hover-actions",
-		close_events = { "CursorMoved", "BufHidden", "InsertCharPre" },
-	})
+	local bufnr, winnr = util.open_floating_preview(
+		markdown_lines,
+		"markdown",
+		vim.tbl_extend("keep", config.options.tools.hover_actions, {
+			focusable = true,
+			focus_id = "rust-tools-hover-actions",
+			close_events = { "CursorMoved", "BufHidden", "InsertCharPre" },
+		})
+	)
 
 	if config.options.tools.hover_actions.auto_focus then
 		vim.api.nvim_set_current_win(winnr)

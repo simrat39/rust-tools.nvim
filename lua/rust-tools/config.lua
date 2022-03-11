@@ -37,7 +37,7 @@ local defaults = {
 
 			-- Event which triggers a refersh of the inlay hints.
 			-- You can make this "CursorMoved" or "CursorMoved,CursorMovedI" but
-			-- not that this may cause  higher CPU usage.
+			-- not that this may cause higher CPU usage.
 			-- This option is only respected when only_current_line and
 			-- autoSetHints both are true.
 			only_current_line_autocmd = "CursorHold",
@@ -74,6 +74,7 @@ local defaults = {
 			highlight = "Comment",
 		},
 
+		-- options same as lsp hover / vim.lsp.util.open_floating_preview()
 		hover_actions = {
 			-- the border that is used for the hover window
 			-- see vim.api.nvim_open_win()
