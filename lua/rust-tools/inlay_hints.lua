@@ -89,10 +89,10 @@ local function parseHints(result)
 	return map
 end
 
-local function get_max_len(bufnr)
+local function get_max_len(bufnr, parsed_data)
 	local max_len = -1
 
-	for key, _ in pairs(ret) do
+	for key, _ in pairs(parsed_data) do
 		local line = tonumber(key)
 		local current_line = vim.api.nvim_buf_get_lines(bufnr, line, line + 1, false)[1]
 		if current_line then
@@ -118,9 +118,9 @@ local function handler(err, result, ctx)
 	-- clean it up at first
 	M.disable_inlay_hints()
 
-	local ret = parseHints(result)
+	local parsed = parseHints(result)
 
-	for key, value in pairs(ret) do
+	for key, value in pairs(parsed) do
 		local virt_text = ""
 		local line = tonumber(key)
 
@@ -176,7 +176,7 @@ local function handler(err, result, ctx)
 			end
 
 			if config.options.tools.inlay_hints.max_len_align then
-				local max_len = get_max_len(bufnr)
+				local max_len = get_max_len(bufnr, parsed)
 				virt_text = string.rep(
 					" ",
 					max_len - current_line_len + config.options.tools.inlay_hints.max_len_align_padding
