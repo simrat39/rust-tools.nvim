@@ -21,7 +21,7 @@ local function get_params()
 	return { textDocument = vim.lsp.util.make_text_document_params() }
 end
 
-local namespace = vim.api.nvim_create_namespace("rust-analyzer/inlayHints")
+local namespace = vim.api.nvim_create_namespace("experimental/inlayHints")
 -- whether the hints are enabled or not
 local enabled = nil
 
@@ -64,8 +64,8 @@ local function parseHints(result)
 		return {}
 	end
 	for _, value in pairs(result) do
-		local range = value.range
-		local line = tostring(range["end"].line)
+		local range = value.position
+		local line = value.position.line
 		local label = value.label
 		local kind = value.kind
 		local current_line = vim.api.nvim_win_get_cursor(0)[1]
@@ -134,9 +134,11 @@ local function handler(err, result, ctx)
 
 			-- segregate paramter hints and other hints
 			for _, value_inner in ipairs(value) do
-				if value_inner.kind == "ParameterHint" then
+				if value_inner.kind == 2 then
 					table.insert(param_hints, value_inner.label)
-				else
+				end
+
+				if value_inner.kind == 1 then
 					table.insert(other_hints, value_inner)
 				end
 			end
@@ -145,7 +147,7 @@ local function handler(err, result, ctx)
 			if not vim.tbl_isempty(param_hints) and opts.show_parameter_hints then
 				virt_text = virt_text .. opts.parameter_hints_prefix .. "("
 				for i, value_inner_inner in ipairs(param_hints) do
-					virt_text = virt_text .. value_inner_inner
+					virt_text = virt_text .. value_inner_inner:sub(1, -2)
 					if i ~= #param_hints then
 						virt_text = virt_text .. ", "
 					end
@@ -157,13 +159,13 @@ local function handler(err, result, ctx)
 			if not vim.tbl_isempty(other_hints) then
 				virt_text = virt_text .. opts.other_hints_prefix
 				for i, value_inner_inner in ipairs(other_hints) do
-					if value_inner_inner.kind == "TypeHint" and opts.show_variable_name then
+					if value_inner_inner.kind == 2 and opts.show_variable_name then
 						local char_start = value_inner_inner.range.start.character
 						local char_end = value_inner_inner.range["end"].character
 						local variable_name = string.sub(current_line, char_start + 1, char_end)
 						virt_text = virt_text .. variable_name .. ": " .. value_inner_inner.label
 					else
-						virt_text = virt_text .. value_inner_inner.label
+						virt_text = virt_text .. value_inner_inner.label:sub(3)
 					end
 					if i ~= #other_hints then
 						virt_text = virt_text .. ", "
@@ -214,7 +216,7 @@ end
 
 -- Sends the request to rust-analyzer to get the inlay hints and handle them
 function M.set_inlay_hints()
-	utils.request(0, "rust-analyzer/inlayHints", get_params(), handler)
+	utils.request(0, "experimental/inlayHints", get_params(), handler)
 end
 
 return M
