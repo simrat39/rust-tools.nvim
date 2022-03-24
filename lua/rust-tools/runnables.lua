@@ -40,8 +40,8 @@ local function getCommand(c, results)
 end
 
 function M.run_command(choice, result)
-  -- do nothing if choice is too high or too low
-  if choice < 1 or choice > #result then
+  -- do nothing if choice is nil (e.g., the user pressed <esc>) or too high or too low
+  if choice == nil or choice < 1 or choice > #result then
     return
   end
 
