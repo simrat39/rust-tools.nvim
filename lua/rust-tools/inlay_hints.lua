@@ -165,7 +165,11 @@ local function handler(err, result, ctx)
 						local variable_name = string.sub(current_line, char_start + 1, char_end)
 						virt_text = virt_text .. variable_name .. ": " .. value_inner_inner.label
 					else
-						virt_text = virt_text .. value_inner_inner.label:sub(3)
+						if string.sub(value_inner_inner.label, 1, 2) == ": " then
+							virt_text = virt_text .. value_inner_inner.label:sub(3)
+						else
+							virt_text = virt_text .. value_inner_inner.label
+						end
 					end
 					if i ~= #other_hints then
 						virt_text = virt_text .. ", "
