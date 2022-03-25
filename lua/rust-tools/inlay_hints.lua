@@ -185,14 +185,16 @@ local function handler(err, result, ctx)
 				) .. virt_text
 			end
 
-			-- set the virtual text
-			vim.api.nvim_buf_set_extmark(bufnr, namespace, line, 0, {
-				virt_text_pos = config.options.tools.inlay_hints.right_align and "right_align" or "eol",
-				virt_text = {
-					{ virt_text, config.options.tools.inlay_hints.highlight },
-				},
-				hl_mode = "combine",
-			})
+			-- set the virtual text if it is not empty
+			if virt_text ~= "" then
+				vim.api.nvim_buf_set_extmark(bufnr, namespace, line, 0, {
+					virt_text_pos = config.options.tools.inlay_hints.right_align and "right_align" or "eol",
+					virt_text = {
+						{ virt_text, config.options.tools.inlay_hints.highlight },
+					},
+					hl_mode = "combine",
+				})
+			end
 
 			-- update state
 			enabled = true
