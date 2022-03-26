@@ -4,21 +4,21 @@ local config = require("rust-tools.config")
 local M = {}
 
 local function get_params()
-	return {
-		textDocument = vim.lsp.util.make_text_document_params(),
-		position = nil, -- get em all
-	}
+  return {
+    textDocument = vim.lsp.util.make_text_document_params(),
+    position = nil, -- get em all
+  }
 end
 
 local function get_options(result)
-	local option_strings = {}
+  local option_strings = {}
 
-	for _, runnable in ipairs(result) do
-		local str = runnable.label
-		table.insert(option_strings, str)
-	end
+  for _, runnable in ipairs(result) do
+    local str = runnable.label
+    table.insert(option_strings, str)
+  end
 
-	return option_strings
+  return option_strings
 end
 
 ---comment
@@ -26,38 +26,42 @@ end
 ---@return string|table args
 ---@return any cwd
 local function getCommand(c, results)
-	local ret = " "
-	local args = results[c].args
+  local ret = " "
+  local args = results[c].args
 
-	local dir = args.workspaceRoot
+  local dir = args.workspaceRoot
 
-	ret = vim.list_extend({}, args.cargoArgs or {})
-	ret = vim.list_extend(ret, args.cargoExtraArgs or {})
-	table.insert(ret, "--")
-	ret = vim.list_extend(ret, args.executableArgs or {})
+  ret = vim.list_extend({}, args.cargoArgs or {})
+  ret = vim.list_extend(ret, args.cargoExtraArgs or {})
+  table.insert(ret, "--")
+  ret = vim.list_extend(ret, args.executableArgs or {})
 
-	return "cargo", ret, dir
+  return "cargo", ret, dir
 end
 
 function M.run_command(choice, result)
-	-- do nothing if choice is too high or too low
-	if choice < 1 or choice > #result then
-		return
-	end
+  -- do nothing if choice is too high or too low
+  if choice < 1 or choice > #result then
+    return
+  end
 
-	local opts = config.options.tools
+  local opts = config.options.tools
 
-	local command, args, cwd = getCommand(choice, result)
+  local command, args, cwd = getCommand(choice, result)
 
-	opts.executor.execute_command(command, args, cwd)
+  opts.executor.execute_command(command, args, cwd)
 end
 
 local function handler(_, result)
-	-- get the choice from the user
-	local options = get_options(result)
-	vim.ui.select(options, { prompt = "Runnables", kind = "rust-tools/runnables" }, function(_, choice)
-		M.run_command(choice, result)
-	end)
+  -- get the choice from the user
+  local options = get_options(result)
+  vim.ui.select(
+    options,
+    { prompt = "Runnables", kind = "rust-tools/runnables" },
+    function(_, choice)
+      M.run_command(choice, result)
+    end
+  )
 end
 
 -- Sends the request to rust-analyzer to get the runnables and handles them
@@ -65,7 +69,7 @@ end
 -- which is used to check whether we want to use telescope or the vanilla vim
 -- way for input
 function M.runnables()
-	utils.request(0, "experimental/runnables", get_params(), handler)
+  utils.request(0, "experimental/runnables", get_params(), handler)
 end
 
 return M
