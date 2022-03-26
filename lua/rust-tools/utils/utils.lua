@@ -70,7 +70,10 @@ end
 function M.snippet_text_edits_to_text_edits(spe)
 	for _, value in ipairs(spe) do
 		if value.newText and value.insertTextFormat then
+			-- $0 -> Nothing
 			value.newText = string.gsub(value.newText, "%$%d", "")
+			-- ${0:_} -> _
+			value.newText = string.gsub(value.newText, "%${%d:(.-)}", "%1")
 		end
 	end
 end
