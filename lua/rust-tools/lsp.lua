@@ -10,14 +10,14 @@ local function setup_commands()
 
   lsp_opts.commands = vim.tbl_deep_extend("force", lsp_opts.commands or {}, {
     RustSetInlayHints = {
-      rt.inlay_hints.set_inlay_hints,
+      rt.inlay_hints.enable,
     },
     RustDisableInlayHints = {
-      rt.inlay_hints.disable_inlay_hints,
+      rt.inlay_hints.disable,
     },
-    RustToggleInlayHints = {
-      rt.inlay_hints.toggle_inlay_hints,
-    },
+    -- RustToggleInlayHints = {
+    --   rt.inlay_hints.toggle_inlay_hints,
+    -- },
     RustExpandMacro = { require("rust-tools.expand_macro").expand_macro },
     RustOpenCargo = { require("rust-tools.open_cargo_toml").open_cargo_toml },
     RustParentModule = { require("rust-tools.parent_module").parent_module },

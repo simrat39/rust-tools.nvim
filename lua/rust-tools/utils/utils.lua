@@ -121,4 +121,10 @@ function M.request(bufnr, method, params, handler)
   return vim.lsp.buf_request(bufnr, method, params, M.mk_handler(handler))
 end
 
+function M.is_ra_server(client)
+  local name = client.name
+  return client.name == "rust_analyzer"
+    or client.name == "rust_analyzer-standalone"
+end
+
 return M

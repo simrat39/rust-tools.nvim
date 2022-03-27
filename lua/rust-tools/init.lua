@@ -1,7 +1,11 @@
 local M = {
   config = nil,
   utils = nil,
-  inlay_hints = nil,
+  inlay_hints = {
+    enable = nil,
+    disable = nil,
+    cache = nil,
+  },
   lsp = nil,
 }
 
@@ -18,7 +22,20 @@ function M.setup(opts)
 
   M.lsp = lsp
 
-  M.inlay_hints = inlay
+  local hints = inlay.new()
+  hints.set_cache_autocmd()
+
+  M.inlay_hints = {
+    enable = function()
+      inlay.enable(hints)
+    end,
+    disable = function()
+      inlay.disable(hints)
+    end,
+    cache = function()
+      inlay.cache_render(hints)
+    end,
+  }
 
   config.setup(opts)
   lsp.setup()

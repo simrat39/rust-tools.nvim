@@ -1,37 +1,61 @@
+local rt = require("rust-tools")
+
 local M = {}
-local utils = require("rust-tools.utils.utils")
-local vim = vim
-local config = require("rust-tools.config")
 
--- Update inlay hints when opening a new buffer and when writing a buffer to a
--- file
--- opts is a string representation of the table of options
-function M.setup_autocmd()
-  local events = "BufEnter,BufWinEnter,TabEnter,BufWritePost"
-  if config.options.tools.inlay_hints.only_current_line then
-    events = string.format(
-      "%s,%s",
-      events,
-      config.options.tools.inlay_hints.only_current_line_autocmd
-    )
+function M.new()
+  M.namespace = vim.api.nvim_create_namespace("experimental/inlayHints")
+  local self = setmetatable({ cache = {}, enabled = false }, { __index = M })
+
+  return self
+end
+
+local function clear_ns(bufnr)
+  -- clear namespace which clears the virtual text as well
+  vim.api.nvim_buf_clear_namespace(bufnr, M.namespace, 0, -1)
+end
+
+function M.disable(self)
+  self.disable = false
+  M.disable_cache_autocmd()
+
+  for k, _ in pairs(self.cache) do
+    if vim.api.nvim_buf_is_valid(k) then
+      clear_ns(k)
+    end
   end
+end
 
-  vim.api.nvim_command("augroup InlayHints")
+-- Sends the request to rust-analyzer to get the inlay hints and handle them
+function M.enable(self)
+  self.enabled = true
+  M.set_cache_autocmd()
+  M.cache_render(self)
+end
+
+function M.set_cache_autocmd()
+  local events = "BufWritePost"
+
+  vim.api.nvim_command("augroup InlayHintsCache")
   vim.api.nvim_command(
-    "autocmd "
-      .. events
-      .. ' *.rs :lua require"rust-tools.inlay_hints".set_inlay_hints()'
+    "autocmd " .. events .. ' *.rs :lua require"rust-tools".inlay_hints.cache()'
   )
   vim.api.nvim_command("augroup END")
+end
+
+function M.disable_cache_autocmd()
+  vim.api.nvim_exec(
+    [[
+    augroup InlayHintsCache
+    autocmd!
+    augroup END
+  ]],
+    false
+  )
 end
 
 local function get_params()
   return { textDocument = vim.lsp.util.make_text_document_params() }
 end
-
-local namespace = vim.api.nvim_create_namespace("experimental/inlayHints")
--- whether the hints are enabled or not
-local enabled = nil
 
 -- parses the result into a easily parsable format
 -- example:
@@ -44,29 +68,10 @@ local enabled = nil
 --      kind = "TypeHint",
 --      label = "usize"
 --    } },
---  ["15"] = { {
---      kind = "ParameterHint",
---      label = "styles"
---    }, {
---      kind = "ParameterHint",
---      label = "len"
---    } },
---  ["7"] = { {
---      kind = "ChainingHint",
---      label = "Result<String, VarError>"
---    }, {
---      kind = "ParameterHint",
---      label = "key"
---    } },
---  ["8"] = { {
---      kind = "ParameterHint",
---      label = "op"
---    } }
 -- }
 --
 local function parseHints(result)
   local map = {}
-  local only_current_line = config.options.tools.inlay_hints.only_current_line
 
   if type(result) ~= "table" then
     return {}
@@ -76,7 +81,6 @@ local function parseHints(result)
     local line = value.position.line
     local label = value.label
     local kind = value.kind
-    local current_line = vim.api.nvim_win_get_cursor(0)[1]
 
     local function add_line()
       if map[line] ~= nil then
@@ -86,54 +90,40 @@ local function parseHints(result)
       end
     end
 
-    if only_current_line then
-      if line == tostring(current_line - 1) then
-        add_line()
-      end
-    else
-      add_line()
-    end
+    add_line()
   end
   return map
 end
 
-local function get_max_len(bufnr, parsed_data)
-  local max_len = -1
+function M.cache_render(self)
+  for _, v in ipairs(vim.lsp.buf_get_clients(0)) do
+    if rt.utils.is_ra_server(v) then
+      v.request(
+        "experimental/inlayHints",
+        get_params(),
+        function(err, result, ctx)
+          if err then
+            return
+          end
 
-  for key, _ in pairs(parsed_data) do
-    local line = tonumber(key)
-    local current_line = vim.api.nvim_buf_get_lines(
-      bufnr,
-      line,
-      line + 1,
-      false
-    )[1]
-    if current_line then
-      local current_line_len = string.len(current_line)
-      max_len = math.max(max_len, current_line_len)
+          self.cache[ctx.bufnr] = parseHints(result)
+
+          M.render(self, ctx.bufnr)
+        end,
+        0
+      )
     end
   end
-
-  return max_len
 end
 
-local function handler(err, result, ctx)
-  if err then
-    return
-  end
-  local opts = config.options.tools.inlay_hints
-  local bufnr = ctx.bufnr
+function M.render(self, bufnr)
+  local opts = rt.config.options.tools.inlay_hints
+  local buffer = bufnr or vim.api.nvim_get_current_buf()
+  clear_ns(buffer)
 
-  if vim.api.nvim_get_current_buf() ~= bufnr then
-    return
-  end
+  local hints = self.cache[buffer]
 
-  -- clean it up at first
-  M.disable_inlay_hints()
-
-  local parsed = parseHints(result)
-
-  for key, value in pairs(parsed) do
+  for key, value in pairs(hints) do
     local virt_text = ""
     local line = tonumber(key)
 
@@ -145,8 +135,6 @@ local function handler(err, result, ctx)
     )[1]
 
     if current_line then
-      local current_line_len = string.len(current_line)
-
       local param_hints = {}
       local other_hints = {}
 
@@ -202,60 +190,18 @@ local function handler(err, result, ctx)
         end
       end
 
-      if config.options.tools.inlay_hints.right_align then
-        virt_text = virt_text
-          .. string.rep(
-            " ",
-            config.options.tools.inlay_hints.right_align_padding
-          )
-      end
-
-      if config.options.tools.inlay_hints.max_len_align then
-        local max_len = get_max_len(bufnr, parsed)
-        virt_text = string.rep(
-          " ",
-          max_len
-            - current_line_len
-            + config.options.tools.inlay_hints.max_len_align_padding
-        ) .. virt_text
-      end
-
       -- set the virtual text if it is not empty
       if virt_text ~= "" then
-        vim.api.nvim_buf_set_extmark(bufnr, namespace, line, 0, {
-          virt_text_pos = config.options.tools.inlay_hints.right_align
-              and "right_align"
-            or "eol",
+        vim.api.nvim_buf_set_extmark(bufnr, M.namespace, line, 0, {
+          virt_text_pos = opts.right_align and "right_align" or "eol",
           virt_text = {
-            { virt_text, config.options.tools.inlay_hints.highlight },
+            { virt_text, opts.highlight },
           },
           hl_mode = "combine",
         })
       end
-
-      -- update state
-      enabled = true
     end
   end
-end
-
-function M.toggle_inlay_hints()
-  if enabled then
-    M.disable_inlay_hints()
-  else
-    M.set_inlay_hints()
-  end
-  enabled = not enabled
-end
-
-function M.disable_inlay_hints()
-  -- clear namespace which clears the virtual text as well
-  vim.api.nvim_buf_clear_namespace(0, namespace, 0, -1)
-end
-
--- Sends the request to rust-analyzer to get the inlay hints and handle them
-function M.set_inlay_hints()
-  utils.request(0, "experimental/inlayHints", get_params(), handler)
 end
 
 return M
