@@ -9,12 +9,6 @@ end
 
 local defaults = {
   tools = { -- rust-tools options
-    -- automatically set inlay hints (type hints)
-    -- There is an issue due to which the hints are not applied on the first
-    -- opened file. For now, write to the file to trigger a reapplication of
-    -- the hints or just run :RustSetInlayHints.
-    -- default: true
-    autoSetHints = true,
 
     -- whether to show hover actions inside the hover window
     -- this overrides the default hover handler so something like lspsaga.nvim's hover would be overriden by this
@@ -31,6 +25,9 @@ local defaults = {
 
     -- These apply to the default RustSetInlayHints command
     inlay_hints = {
+      -- automatically set inlay hints (type hints)
+      -- default: true
+      auto = true,
 
       -- Only show inlay hints for the current line
       only_current_line = false,
