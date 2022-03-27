@@ -39,8 +39,8 @@ function M.setup(opts)
     unset = function()
       inlay.unset()
     end,
-    cache = function()
-      inlay.cache_render(hints)
+    cache = function(cheap)
+      inlay.cache_render(hints, cheap)
     end,
   }
 

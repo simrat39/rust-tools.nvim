@@ -35,7 +35,7 @@ end
 
 -- Set inlay hints only for the current buffer
 function M.set(self)
-  M.cache_render(self, 0)
+  M.cache_render(self, false, 0)
 end
 
 -- Clear hints only for the current buffer
@@ -44,17 +44,16 @@ function M.unset()
 end
 
 function M.enable_cache_autocmd()
-  local events = "BufWritePost,BufReadPost"
-
-  vim.api.nvim_command("augroup InlayHintsCache")
-  vim.api.nvim_command(
-    "autocmd " .. events .. ' *.rs :lua require"rust-tools".inlay_hints.cache()'
-  )
-  vim.api.nvim_command("augroup END")
+  vim.cmd([[
+        augroup InlayHintsCache
+        autocmd BufWritePost,BufReadPost *.rs :lua require"rust-tools".inlay_hints.cache(false)
+        autocmd BufEnter,BufWinEnter,TabEnter *.rs :lua require"rust-tools".inlay_hints.cache(true)
+        augroup END
+    ]])
 end
 
 function M.disable_cache_autocmd()
-  vim.api.nvim_exec(
+  vim.cmd(
     [[
     augroup InlayHintsCache
     autocmd!
@@ -81,7 +80,7 @@ end
 --    } },
 -- }
 --
-local function parseHints(result)
+local function parse_hints(result)
   local map = {}
 
   if type(result) ~= "table" then
@@ -106,7 +105,12 @@ local function parseHints(result)
   return map
 end
 
-function M.cache_render(self, bufnr)
+function M.cache_render(self, cheap, bufnr)
+  local buffer = bufnr or vim.api.nvim_get_current_buf()
+  if cheap and self.cache[buffer] ~= nil then
+    return
+  end
+
   for _, v in ipairs(vim.lsp.buf_get_clients(0)) do
     if rt.utils.is_ra_server(v) then
       v.request(
@@ -117,11 +121,11 @@ function M.cache_render(self, bufnr)
             return
           end
 
-          self.cache[ctx.bufnr] = parseHints(result)
+          self.cache[ctx.bufnr] = parse_hints(result)
 
           M.render(self, ctx.bufnr)
         end,
-        bufnr or 0
+        buffer
       )
     end
   end
