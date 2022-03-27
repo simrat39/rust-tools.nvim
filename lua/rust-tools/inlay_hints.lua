@@ -14,6 +14,7 @@ local function clear_ns(bufnr)
   vim.api.nvim_buf_clear_namespace(bufnr, M.namespace, 0, -1)
 end
 
+-- Disable hints and clear all cached buffers
 function M.disable(self)
   self.disable = false
   M.disable_cache_autocmd()
@@ -25,15 +26,25 @@ function M.disable(self)
   end
 end
 
--- Sends the request to rust-analyzer to get the inlay hints and handle them
+-- Enable auto hints and set hints for the current buffer
 function M.enable(self)
   self.enabled = true
-  M.set_cache_autocmd()
-  M.cache_render(self)
+  M.enable_cache_autocmd()
+  M.set(self)
 end
 
-function M.set_cache_autocmd()
-  local events = "BufWritePost"
+-- Set inlay hints only for the current buffer
+function M.set(self)
+  M.cache_render(self, 0)
+end
+
+-- Clear hints only for the current buffer
+function M.unset()
+  clear_ns()
+end
+
+function M.enable_cache_autocmd()
+  local events = "BufWritePost,BufReadPost"
 
   vim.api.nvim_command("augroup InlayHintsCache")
   vim.api.nvim_command(
@@ -95,7 +106,7 @@ local function parseHints(result)
   return map
 end
 
-function M.cache_render(self)
+function M.cache_render(self, bufnr)
   for _, v in ipairs(vim.lsp.buf_get_clients(0)) do
     if rt.utils.is_ra_server(v) then
       v.request(
@@ -110,7 +121,7 @@ function M.cache_render(self)
 
           M.render(self, ctx.bufnr)
         end,
-        0
+        bufnr or 0
       )
     end
   end
