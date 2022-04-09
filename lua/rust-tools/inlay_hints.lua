@@ -20,7 +20,7 @@ function M.setup_autocmd()
   vim.api.nvim_command(
     "autocmd "
       .. events
-      .. ' *.rs :lua require"rust-tools.inlay_hints".set_inlay_hints()'
+      .. ' *.rs silent! :lua require"rust-tools.inlay_hints".set_inlay_hints()'
   )
   vim.api.nvim_command("augroup END")
 end
@@ -255,6 +255,7 @@ end
 
 -- Sends the request to rust-analyzer to get the inlay hints and handle them
 function M.set_inlay_hints()
+  vim.lsp.codelens.refresh()
   utils.request(0, "experimental/inlayHints", get_params(), handler)
 end
 
