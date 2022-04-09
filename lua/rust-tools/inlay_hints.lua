@@ -255,7 +255,6 @@ end
 
 -- Sends the request to rust-analyzer to get the inlay hints and handle them
 function M.set_inlay_hints()
-  vim.lsp.codelens.refresh()
   utils.request(0, "experimental/inlayHints", get_params(), handler)
 end
 
