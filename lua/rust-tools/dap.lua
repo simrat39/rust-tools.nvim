@@ -1,22 +1,33 @@
 local config = require("rust-tools.config")
+local loop = vim.loop
 
 local M = {}
 
+local function get_free_port()
+  local server = loop.new_tcp()
+  assert(loop.tcp_bind(server, "127.0.0.1", 0), "Unable to find an open port")
+
+  local port = loop.tcp_getsockname(server).port
+  loop.close(server)
+  return port
+end
 ---For the heroes who want to use it
 ---@param codelldb_path string
 ---@param liblldb_path string
-function M.get_codelldb_adapter(codelldb_path, liblldb_path)
+---@param port number to pass to codelldb
+function M.get_codelldb_adapter(codelldb_path, liblldb_path, port)
   return function(callback, _)
     local stdout = vim.loop.new_pipe(false)
     local stderr = vim.loop.new_pipe(false)
     local handle
     local pid_or_err
-    local port
     local error_message = ""
+
+    port = port or get_free_port()
 
     local opts = {
       stdio = { nil, stdout, stderr },
-      args = { "--liblldb", liblldb_path },
+      args = { "--liblldb", liblldb_path, "--port", port },
       detached = true,
     }
 
@@ -35,24 +46,9 @@ function M.get_codelldb_adapter(codelldb_path, liblldb_path)
     stdout:read_start(function(err, chunk)
       assert(not err, err)
       if chunk then
-        if not port then
-          local chunks = {}
-          for substring in chunk:gmatch("%S+") do
-            table.insert(chunks, substring)
-          end
-          port = tonumber(chunks[#chunks])
-          vim.schedule(function()
-            callback({
-              type = "server",
-              host = "127.0.0.1",
-              port = port,
-            })
-          end)
-        else
-          vim.schedule(function()
-            require("dap.repl").append(chunk)
-          end)
-        end
+        vim.schedule(function()
+          require("dap.repl").append(chunk)
+        end)
       end
     end)
     stderr:read_start(function(_, chunk)
@@ -64,6 +60,16 @@ function M.get_codelldb_adapter(codelldb_path, liblldb_path)
         end)
       end
     end)
+
+    vim.defer_fn(function()
+      vim.schedule(function()
+        callback({
+          type = "server",
+          host = "127.0.0.1",
+          port = port,
+        })
+      end)
+    end, 500)
   end
 end
 
