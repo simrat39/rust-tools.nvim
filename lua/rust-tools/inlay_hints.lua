@@ -26,7 +26,10 @@ function M.setup_autocmd()
 end
 
 local function get_params()
-  return { textDocument = vim.lsp.util.make_text_document_params() }
+  local params = vim.lsp.util.make_given_range_params()
+  params["range"]["start"]["line"] = 0
+  params["range"]["end"]["line"] = vim.api.nvim_buf_line_count(0) - 1
+  return params
 end
 
 local namespace = vim.api.nvim_create_namespace("experimental/inlayHints")
@@ -255,7 +258,7 @@ end
 
 -- Sends the request to rust-analyzer to get the inlay hints and handle them
 function M.set_inlay_hints()
-  utils.request(0, "experimental/inlayHints", get_params(), handler)
+  utils.request(0, "textDocument/inlayHint", get_params(), handler)
 end
 
 return M
