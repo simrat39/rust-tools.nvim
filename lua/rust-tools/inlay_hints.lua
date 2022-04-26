@@ -50,11 +50,18 @@ function M.unset()
 end
 
 function M.enable_cache_autocmd()
-  vim.cmd([[
+  local opts = rt.config.options.tools.inlay_hints
+  vim.cmd(string.format(
+    [[
         augroup InlayHintsCache
         autocmd BufWritePost,BufReadPost,BufEnter,BufWinEnter,TabEnter *.rs :lua require"rust-tools".inlay_hints.cache()
+        %s
         augroup END
-    ]])
+    ]],
+    opts.only_current_line
+        and "autocmd CursorMoved *.rs :lua require'rust-tools'.inlay_hints.render()"
+      or ""
+  ))
 end
 
 function M.disable_cache_autocmd()
@@ -140,16 +147,28 @@ end
 function M.render(self, bufnr)
   local opts = rt.config.options.tools.inlay_hints
   local buffer = bufnr or vim.api.nvim_get_current_buf()
-  clear_ns(buffer)
 
   local hints = self.cache[buffer]
+
+  if hints == nil then
+    return
+  end
+
+  clear_ns(buffer)
 
   for key, value in pairs(hints) do
     local virt_text = ""
     local line = tonumber(key)
 
+    if opts.only_current_line then
+      local curr_line_nr = vim.api.nvim_win_get_cursor(0)[1] - 1
+      if line ~= curr_line_nr then
+        goto continue
+      end
+    end
+
     local current_line = vim.api.nvim_buf_get_lines(
-      bufnr,
+      buffer,
       line,
       line + 1,
       false
@@ -213,7 +232,7 @@ function M.render(self, bufnr)
 
       -- set the virtual text if it is not empty
       if virt_text ~= "" then
-        vim.api.nvim_buf_set_extmark(bufnr, M.namespace, line, 0, {
+        vim.api.nvim_buf_set_extmark(buffer, M.namespace, line, 0, {
           virt_text_pos = opts.right_align and "right_align" or "eol",
           virt_text = {
             { virt_text, opts.highlight },
@@ -222,6 +241,7 @@ function M.render(self, bufnr)
         })
       end
     end
+    ::continue::
   end
 end
 

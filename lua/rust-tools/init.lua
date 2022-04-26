@@ -42,6 +42,9 @@ function M.setup(opts)
     cache = function()
       inlay.cache_render(hints)
     end,
+    render = function()
+      inlay.render(hints)
+    end,
   }
 
   config.setup(opts)
