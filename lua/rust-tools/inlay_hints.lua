@@ -69,8 +69,12 @@ function M.disable_cache_autocmd()
   )
 end
 
-local function get_params()
-  return { textDocument = vim.lsp.util.make_text_document_params() }
+local function get_params(bufnr)
+  local params = vim.lsp.util.make_given_range_params()
+  params["range"]["start"]["line"] = 0
+  params["range"]["end"]["line"] = vim.api.nvim_buf_line_count(bufnr) - 1
+
+  return params
 end
 
 -- parses the result into a easily parsable format
@@ -120,8 +124,8 @@ function M.cache_render(self, cheap, bufnr)
   for _, v in ipairs(vim.lsp.buf_get_clients(buffer)) do
     if rt.utils.is_ra_server(v) then
       v.request(
-        "experimental/inlayHints",
-        get_params(),
+        "textDocument/inlayHint",
+        get_params(buffer),
         function(err, result, ctx)
           if err then
             return
