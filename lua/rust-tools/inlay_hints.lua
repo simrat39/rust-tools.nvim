@@ -28,7 +28,7 @@ end
 
 local function set_all(self)
   for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-    M.cache_render(self, false, bufnr)
+    M.cache_render(self, bufnr)
   end
 end
 
@@ -41,7 +41,7 @@ end
 
 -- Set inlay hints only for the current buffer
 function M.set(self)
-  M.cache_render(self, false, 0)
+  M.cache_render(self, 0)
 end
 
 -- Clear hints only for the current buffer
@@ -52,8 +52,7 @@ end
 function M.enable_cache_autocmd()
   vim.cmd([[
         augroup InlayHintsCache
-        autocmd BufWritePost,BufReadPost *.rs :lua require"rust-tools".inlay_hints.cache(false)
-        autocmd BufEnter,BufWinEnter,TabEnter *.rs :lua require"rust-tools".inlay_hints.cache(true)
+        autocmd BufWritePost,BufReadPost,BufEnter,BufWinEnter,TabEnter *.rs :lua require"rust-tools".inlay_hints.cache()
         augroup END
     ]])
 end
@@ -115,11 +114,8 @@ local function parse_hints(result)
   return map
 end
 
-function M.cache_render(self, cheap, bufnr)
+function M.cache_render(self, bufnr)
   local buffer = bufnr or vim.api.nvim_get_current_buf()
-  if cheap and self.cache[buffer] ~= nil then
-    return
-  end
 
   for _, v in ipairs(vim.lsp.buf_get_clients(buffer)) do
     if rt.utils.is_ra_server(v) then
