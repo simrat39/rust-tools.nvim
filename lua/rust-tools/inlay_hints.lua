@@ -26,11 +26,17 @@ function M.disable(self)
   end
 end
 
+local function set_all(self)
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+    M.cache_render(self, false, bufnr)
+  end
+end
+
 -- Enable auto hints and set hints for the current buffer
 function M.enable(self)
   self.enabled = true
   M.enable_cache_autocmd()
-  M.set(self)
+  set_all(self)
 end
 
 -- Set inlay hints only for the current buffer
@@ -111,7 +117,7 @@ function M.cache_render(self, cheap, bufnr)
     return
   end
 
-  for _, v in ipairs(vim.lsp.buf_get_clients(0)) do
+  for _, v in ipairs(vim.lsp.buf_get_clients(buffer)) do
     if rt.utils.is_ra_server(v) then
       v.request(
         "experimental/inlayHints",
