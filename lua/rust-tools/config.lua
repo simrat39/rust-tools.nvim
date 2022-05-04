@@ -92,6 +92,19 @@ local defaults = {
       -- whether the hover action window gets automatically focused
       -- default: false
       auto_focus = false,
+
+      -- keymaps for scrolling the hover window
+      keymaps = {
+        -- enable the keymaps
+        -- default: false
+        enable = false,
+        -- scroll up
+        -- default: "<c-j>"
+        scroll_up = "<c-j>",
+        -- scroll down
+        -- default: "<c-k>"
+        scroll_down = "<c-k>",
+      },
     },
 
     -- settings for showing the crate graph based on graphviz and the dot
