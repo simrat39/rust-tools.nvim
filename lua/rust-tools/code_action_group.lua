@@ -37,11 +37,17 @@ function M.on_user_choice(action_tuple, ctx)
   --
   local client = vim.lsp.get_client_by_id(action_tuple[1])
   local action = action_tuple[2]
+  local code_action_provider = nil
+  if vim.fn.has('nvim-0.8.0') then
+    code_action_provider = client.server_capabilities.codeActionProvider
+  else
+    code_action_provider = client.resolved_capabilities.code_action
+  end
   if
     not action.edit
     and client
-    and type(client.server_capabilities.codeActionProvider) == "table"
-    and client.server_capabilities.codeActionProvider.resolveProvider
+    and type(code_action_provider) == "table"
+    and code_action_provider.resolveProvider
   then
     client.request("codeAction/resolve", action, function(err, resolved_action)
       if err then
