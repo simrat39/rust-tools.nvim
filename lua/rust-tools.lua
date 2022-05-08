@@ -144,8 +144,11 @@ local function setup_capabilities()
   )
 end
 
-local function setup_lsp()
-  nvim_lsp.rust_analyzer.setup(config.options.server)
+-- allow user to use their on attach, reuse the one used for other LSP server
+local function setup_lsp(on_attach)
+
+  stp = vim.tbl_deep_extend("force", config.options.server, { on_attach = on_attach })
+  nvim_lsp.rust_analyzer.setup(stp)
 end
 
 local function get_root_dir(filename)
@@ -198,7 +201,7 @@ function M.start_standalone_if_required()
   end
 end
 
-function M.setup(opts)
+function M.setup(opts, on_attach)
   config.setup(opts)
 
   setup_capabilities()
@@ -211,7 +214,7 @@ function M.setup(opts)
   -- setup user commands
   setup_commands()
   -- setup rust analyzer
-  setup_lsp()
+  setup_lsp(on_attach)
 
   lcommands.setup_lsp_commands()
 
