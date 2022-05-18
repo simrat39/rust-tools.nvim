@@ -1,11 +1,10 @@
-local utils = require("rust-tools.utils.utils")
+local rt = require("rust-tools")
 local util = vim.lsp.util
-local config = require("rust-tools.config")
 
 local M = {}
 
 local function get_params()
-  return vim.lsp.util.make_position_params()
+  return util.make_position_params(0, nil)
 end
 
 M._state = { winnr = nil, commands = nil }
@@ -64,7 +63,7 @@ function M.handler(_, result)
     return
   end
 
-  local markdown_lines = util.convert_input_to_markdown_lines(result.contents)
+  local markdown_lines = util.convert_input_to_markdown_lines(result.contents, {})
   if result.actions then
     M._state.commands = result.actions[1].commands
     local prompt = parse_commands()
@@ -87,14 +86,14 @@ function M.handler(_, result)
   local bufnr, winnr = util.open_floating_preview(
     markdown_lines,
     "markdown",
-    vim.tbl_extend("keep", config.options.tools.hover_actions, {
+    vim.tbl_extend("keep", rt.config.options.tools.hover_actions, {
       focusable = true,
       focus_id = "rust-tools-hover-actions",
       close_events = { "CursorMoved", "BufHidden", "InsertCharPre" },
     })
   )
 
-  if config.options.tools.hover_actions.auto_focus then
+  if rt.config.options.tools.hover_actions.auto_focus then
     vim.api.nvim_set_current_win(winnr)
   end
 
@@ -147,7 +146,7 @@ end
 
 -- Sends the request to rust-analyzer to get hover actions and handle it
 function M.hover_actions()
-  utils.request(0, "textDocument/hover", get_params(), M.handler)
+  rt.utils.request(0, "textDocument/hover", get_params(), M.handler)
 end
 
 return M
