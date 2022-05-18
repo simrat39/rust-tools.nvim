@@ -3,7 +3,8 @@ local vim = vim
 local M = {}
 
 function M.is_windows()
-  return vim.loop.os_uname().sysname == "Windows" or "Windows_NT"
+  local sysname = vim.loop.os_uname().sysname
+  return sysname == "Windows" or sysname == "Windows_NT"
 end
 
 ---comment
