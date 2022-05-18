@@ -12,6 +12,9 @@ local function setup_commands()
     RustSetInlayHints = {
       rt.inlay_hints.enable,
     },
+    RustOpenExternalDocs= {
+      require("rust-tools.external_docs").open_external_docs,
+    },
     RustDisableInlayHints = {
       rt.inlay_hints.disable,
     },

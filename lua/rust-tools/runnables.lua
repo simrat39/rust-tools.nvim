@@ -40,7 +40,7 @@ end
 
 function M.run_command(choice, result)
   -- do nothing if choice is too high or too low
-  if choice < 1 or choice > #result then
+  if not choice or choice < 1 or choice > #result then
     return
   end
 
@@ -54,13 +54,9 @@ end
 local function handler(_, result)
   -- get the choice from the user
   local options = get_options(result)
-  vim.ui.select(
-    options,
-    { prompt = "Runnables", kind = "rust-tools/runnables" },
-    function(_, choice)
-      M.run_command(choice, result)
-    end
-  )
+  vim.ui.select(options, { prompt = "Runnables", kind = "rust-tools/runnables" }, function(_, choice)
+    M.run_command(choice, result)
+  end)
 end
 
 -- Sends the request to rust-analyzer to get the runnables and handles them
