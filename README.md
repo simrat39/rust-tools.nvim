@@ -60,6 +60,7 @@ RustDebuggables
 RustViewCrateGraph
 RustReloadWorkspace
 RustSSR
+RustOpenExternalDocs
 ```
 
 ## Standalone File Support
