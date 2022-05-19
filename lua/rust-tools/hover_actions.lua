@@ -8,7 +8,7 @@ local function get_params()
   return vim.lsp.util.make_position_params()
 end
 
-M._state = { winnr = nil, commands = nil }
+M._state = { winnr = nil, parent_bufnr = nil, commands = nil }
 local set_keymap_opt = { noremap = true, silent = true }
 
 -- run the command under the cursor, if the thing under the cursor is not the
@@ -84,6 +84,10 @@ function M.handler(_, result)
     return
   end
 
+  -- update parent_bufnr before focus on hover buf
+  local parent_bufnr = vim.api.nvim_get_current_buf()
+  M._state.parent_bufnr = parent_bufnr
+
   local bufnr, winnr = util.open_floating_preview(
     markdown_lines,
     "markdown",
@@ -113,9 +117,33 @@ function M.handler(_, result)
     set_keymap_opt
   )
 
+  -- set keymaps for scrolling the popup
+  local keymaps = config.options.tools.hover_actions.keymaps
+  if keymaps.enable then
+    vim.api.nvim_buf_set_keymap(
+      M._state.parent_bufnr, -- set for parent buf, not the hover window buf
+      "n",
+      keymaps.scroll_up,
+      ":lua require'rust-tools.hover_actions'.scroll_hover(1)<CR>",
+      { silent = true }
+    )
+
+    vim.api.nvim_buf_set_keymap(
+      M._state.parent_bufnr, -- set for parent buf, not the hover window buf
+      "n",
+      keymaps.scroll_down,
+      ":lua require'rust-tools.hover_actions'.scroll_hover(-1)<CR>",
+      { silent = true }
+    )
+  end
+
   vim.api.nvim_buf_attach(bufnr, false, {
     on_detach = function()
       M._state.winnr = nil
+      if keymaps.enable then
+        vim.api.nvim_buf_del_keymap(M._state.parent_bufnr, "n", keymaps.scroll_up)
+        vim.api.nvim_buf_del_keymap(M._state.parent_bufnr, "n", keymaps.scroll_down)
+      end
     end,
   })
 
@@ -143,6 +171,21 @@ function M.handler(_, result)
     ":lua require'rust-tools.hover_actions'._close_hover()<CR>",
     set_keymap_opt
   )
+end
+
+---Scroll the hover window
+---@param offset number, scroll up if offset > 0 else scroll down
+function M.scroll_hover(offset)
+  if M._state.winnr ~= nil then
+    local cmd = [[exec "norm! \<c-d>"]]
+    if offset < 0 then
+      cmd = [[exec "norm! \<c-u>"]]
+    end
+    vim.api.nvim_win_call(
+      M._state.winnr,
+      function() vim.cmd(cmd) end
+    )
+  end
 end
 
 -- Sends the request to rust-analyzer to get hover actions and handle it
