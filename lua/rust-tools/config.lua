@@ -170,6 +170,9 @@ local defaults = {
         "x11",
       },
     },
+
+    -- should cache test or debug commands to run
+    cache = false
   },
 
   -- all the opts to send to nvim-lspconfig

@@ -30,6 +30,10 @@ function M.execute_rust_analyzer_command(action)
   local fn = vim.lsp.commands[action.command]
   if fn then
     fn(action)
+
+    if config.options.tools.cache then
+      require("rust-tools.utils.cache").set_last_runnable(action)
+    end
   end
 end
 
