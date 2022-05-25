@@ -189,6 +189,15 @@ local defaults = {
       name = "rt_lldb",
     },
   },
+
+  window = {
+    width = 0.9, -- width ratio
+    height = 0.9, -- height ratio
+    max_width = 200, -- max width of the terminal window
+    max_height = 60, -- max height of the terminal window
+    border = "single", -- Border style for the terminal window (see `:h nvim_open_win`)
+    floating = false, -- Define if the terminal window should be floating or not (disabled by default)
+  }
 }
 
 M.options = {
