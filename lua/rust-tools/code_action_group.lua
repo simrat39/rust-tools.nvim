@@ -1,3 +1,4 @@
+local utils = require("rust-tools.utils.utils")
 local M = {}
 
 ---@private
@@ -38,7 +39,7 @@ function M.on_user_choice(action_tuple, ctx)
   local client = vim.lsp.get_client_by_id(action_tuple[1])
   local action = action_tuple[2]
   local code_action_provider = nil
-  if vim.fn.has('nvim-0.8.0') then
+  if vim.fn.has("nvim-0.8.0") then
     code_action_provider = client.server_capabilities.codeActionProvider
   else
     code_action_provider = client.resolved_capabilities.code_action
@@ -258,19 +259,19 @@ function M.on_secondary_quit()
   -- and errors out
   M.state.secondary.clear()
 
-  vim.api.nvim_win_close(winnr, true)
+  utils.close_win(winnr)
 end
 
 function M.cleanup()
   vim.cmd([[autocmd! RustToolsCodeActions]])
 
   if M.state.primary.winnr then
-    vim.api.nvim_win_close(M.state.primary.winnr, true)
+    utils.close_win(M.state.primary.winnr)
     M.state.primary.clear()
   end
 
   if M.state.secondary.winnr then
-    vim.api.nvim_win_close(M.state.secondary.winnr, true)
+    utils.close_win(M.state.secondary.winnr)
     M.state.secondary.clear()
   end
 
@@ -287,9 +288,7 @@ function M.on_cursor_move()
       M.state.active_group_index = line
 
       if M.state.secondary.winnr then
-        if vim.api.nvim_win_is_valid(M.state.secondary.winnr) then
-          vim.api.nvim_win_close(M.state.secondary.winnr, true)
-        end
+        utils.close_win(M.state.secondary.winnr)
         M.state.secondary.clear()
       end
 
@@ -351,9 +350,7 @@ function M.on_cursor_move()
     end
 
     if M.state.secondary.winnr then
-      if vim.api.nvim_win_is_valid(M.state.secondary.winnr) then
-        vim.api.nvim_win_close(M.state.secondary.winnr, true)
-      end
+      utils.close_win(M.state.secondary.winnr)
       M.state.secondary.clear()
     end
   end
