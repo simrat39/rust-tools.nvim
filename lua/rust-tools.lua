@@ -8,6 +8,21 @@ local lcommands = require("rust-tools/commands")
 
 local M = {}
 
+local function setup_autocmds()
+  vim.cmd([[
+        augroup RustToolsAutocmds
+            au!
+    ]])
+  if config.options.tools.reload_workspace_from_cargo_toml then
+    vim.cmd([[ autocmd BufWritePost */Cargo.toml lua require('rust-tools/workspace_refresh')._reload_workspace_from_cargo_toml() ]])
+  end
+  vim.cmd([[
+            autocmd VimEnter *.rs lua require('rust-tools').start_standalone_if_required()
+        augroup END
+        redraw
+    ]])
+end
+
 local function setup_commands()
   local lsp_opts = config.options.server
 
@@ -201,6 +216,8 @@ end
 function M.setup(opts)
   config.setup(opts)
 
+  setup_autocmds()
+  -- setup capabilities
   setup_capabilities()
   -- setup on_init
   setup_on_init()
