@@ -5,6 +5,21 @@ local server_status = require("rust-tools.server_status")
 
 local M = {}
 
+local function setup_autocmds()
+  vim.cmd([[
+        augroup RustToolsAutocmds
+            au!
+  ]])
+  if config.options.tools.reload_workspace_from_cargo_toml then
+    vim.cmd([[ autocmd BufWritePost */Cargo.toml lua require('rust-tools/workspace_refresh')._reload_workspace_from_cargo_toml() ]])
+  end
+  vim.cmd([[
+            autocmd VimEnter *.rs lua require('rust-tools').lsp.start_standalone_if_required()
+        augroup END
+        redraw
+  ]])
+end
+
 local function setup_commands()
   local lsp_opts = rt.config.options.server
 
@@ -197,6 +212,8 @@ function M.start_standalone_if_required()
 end
 
 function M.setup()
+  setup_autocmds()
+  -- setup capabilities
   setup_capabilities()
   -- setup on_init
   setup_on_init()
