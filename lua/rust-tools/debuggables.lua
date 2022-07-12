@@ -72,6 +72,9 @@ local function sanitize_results_for_debugging(result)
 end
 
 local function handler(_, result)
+  if result == nil then
+    return
+  end
   result = sanitize_results_for_debugging(result)
 
   local options = get_options(result)
