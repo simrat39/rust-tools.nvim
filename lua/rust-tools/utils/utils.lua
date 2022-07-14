@@ -38,8 +38,14 @@ function M.chain_commands(commands)
 end
 
 function M.delete_buf(bufnr)
-  if bufnr ~= nil then
+  if bufnr ~= nil and vim.api.nvim_buf_is_valid(bufnr) then
     vim.api.nvim_buf_delete(bufnr, { force = true })
+  end
+end
+
+function M.close_win(winnr)
+  if winnr ~= nil and vim.api.nvim_win_is_valid(winnr) then
+    vim.api.nvim_win_close(winnr, true)
   end
 end
 

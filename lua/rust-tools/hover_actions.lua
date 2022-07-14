@@ -33,9 +33,7 @@ function M.execute_rust_analyzer_command(action)
 end
 
 function M._close_hover()
-  if M._state.winnr ~= nil then
-    vim.api.nvim_win_close(M._state.winnr, true)
-  end
+  utils.close_win(M._state.winnr)
 end
 
 local function parse_commands()
