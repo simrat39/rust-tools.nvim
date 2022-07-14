@@ -13,7 +13,8 @@ local set_keymap_opt = { noremap = true, silent = true }
 -- run the command under the cursor, if the thing under the cursor is not the
 -- command then do nothing
 function M._run_command()
-  local line = vim.api.nvim_win_get_cursor(M._state.winnr)[1]
+  local winnr = vim.api.nvim_get_current_win()
+  local line = vim.api.nvim_win_get_cursor(winnr)[1]
 
   if line > #M._state.commands then
     return
