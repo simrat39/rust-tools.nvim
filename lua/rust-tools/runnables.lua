@@ -52,6 +52,9 @@ function M.run_command(choice, result)
 end
 
 local function handler(_, result)
+  if result == nil then
+    return
+  end
   -- get the choice from the user
   local options = get_options(result)
   vim.ui.select(options, { prompt = "Runnables", kind = "rust-tools/runnables" }, function(_, choice)
