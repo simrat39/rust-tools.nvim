@@ -9,6 +9,8 @@ local M = {
     cache = nil,
   },
   lsp = nil,
+  dap = nil,
+  runnables = nil,
 }
 
 function M.setup(opts)
@@ -18,11 +20,13 @@ function M.setup(opts)
   local inlay = require("rust-tools/inlay_hints")
   local commands = require("rust-tools/commands")
   local rt_dap = require("rust-tools/dap")
+  local runnables = require("rust-tools/runnables")
 
   M.config = config
   M.utils = utils
-
   M.lsp = lsp
+  M.dap = rt_dap
+  M.runnables = runnables
 
   local hints = inlay.new()
 

@@ -18,9 +18,6 @@ local function setup_commands()
     RustDisableInlayHints = {
       rt.inlay_hints.disable,
     },
-    -- RustToggleInlayHints = {
-    --   rt.inlay_hints.toggle_inlay_hints,
-    -- },
     RustExpandMacro = { require("rust-tools.expand_macro").expand_macro },
     RustOpenCargo = { require("rust-tools.open_cargo_toml").open_cargo_toml },
     RustParentModule = { require("rust-tools.parent_module").parent_module },
