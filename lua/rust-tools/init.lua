@@ -24,41 +24,41 @@ local M = {
   server_status = nil,
   ssr = nil,
   standalone = nil,
-  workspace = nil,
+  workspace_refresh = nil,
   utils = nil,
 }
 
 function M.setup(opts)
-  local code_action_group = require("rust-tools/code_action_group")
+  local code_action_group = require("rust-tools.code_action_group")
   M.code_action_group = code_action_group
 
-  local commands = require("rust-tools/commands")
+  local commands = require("rust-tools.commands")
 
-  local config = require("rust-tools/config")
+  local config = require("rust-tools.config")
   M.config = config
 
-  local crate_graph = require("rust-tools/crate_graph")
+  local crate_graph = require("rust-tools.crate_graph")
   M.crate_graph = crate_graph
 
-  local rt_dap = require("rust-tools/dap")
+  local rt_dap = require("rust-tools.dap")
   M.dap = rt_dap
 
-  local debuggables = require("rust-tools/debuggables")
+  local debuggables = require("rust-tools.debuggables")
   M.debuggables = debuggables
 
-  local expand_macro = require("rust-tools/expand_macro")
+  local expand_macro = require("rust-tools.expand_macro")
   M.expand_macro = expand_macro
 
-  local external_docs = require("rust-tools/external_docs")
+  local external_docs = require("rust-tools.external_docs")
   M.external_docs = external_docs
 
-  local hover_actions = require("rust-tools/hover_actions")
+  local hover_actions = require("rust-tools.hover_actions")
   M.hover_actions = hover_actions
 
-  local hover_range = require("rust-tools/hover_range")
+  local hover_range = require("rust-tools.hover_range")
   M.hover_range = hover_range
 
-  local inlay = require("rust-tools/inlay_hints")
+  local inlay = require("rust-tools.inlay_hints")
   local hints = inlay.new()
   M.inlay_hints = {
     enable = function()
@@ -84,7 +84,7 @@ function M.setup(opts)
   local join_lines = require("rust-tools.join_lines")
   M.join_lines = join_lines
 
-  local lsp = require("rust-tools/lsp")
+  local lsp = require("rust-tools.lsp")
   M.lsp = lsp
 
   local move_item = require("rust-tools.move_item")

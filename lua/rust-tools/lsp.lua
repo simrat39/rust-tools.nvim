@@ -9,45 +9,50 @@ local function setup_commands()
   local lsp_opts = rt.config.options.server
 
   lsp_opts.commands = vim.tbl_deep_extend("force", lsp_opts.commands or {}, {
-    RustSetInlayHints = {
-      rt.inlay_hints.enable,
+    RustCodeAction = {
+      rt.code_action_group.code_action_group,
     },
-    RustOpenExternalDocs= {
-      require("rust-tools.external_docs").open_external_docs,
+    RustViewCrateGraph = {
+      function(backend, output, pipe)
+        rt.crate_graph.view_crate_graph(backend, output, pipe)
+      end,
+      "-nargs=* -complete=customlist,v:lua.rust_tools_get_graphviz_backends",
+      description = "`:RustViewCrateGraph [<backend> [<output>]]` Show the crate graph",
+    },
+    RustDebuggables = {
+      rt.debuggables.debuggables,
+    },
+    RustExpandMacro = { rt.expand_macro.expand_macro },
+    RustOpenExternalDocs = {
+      rt.external_docs.open_external_docs,
+    },
+    RustHoverActions = { rt.hover_actions.hover_actions },
+    RustHoverRange = { rt.hover_range.hover_range },
+    RustEnableInlayHints = {
+      rt.inlay_hints.enable,
     },
     RustDisableInlayHints = {
       rt.inlay_hints.disable,
     },
-    RustExpandMacro = { require("rust-tools.expand_macro").expand_macro },
-    RustOpenCargo = { require("rust-tools.open_cargo_toml").open_cargo_toml },
-    RustParentModule = { require("rust-tools.parent_module").parent_module },
-    RustJoinLines = { require("rust-tools.join_lines").join_lines },
-    RustRunnables = {
-      require("rust-tools.runnables").runnables,
+    RustSetInlayHints = {
+      rt.inlay_hints.set,
     },
-    RustDebuggables = {
-      require("rust-tools.debuggables").debuggables,
+    RustUnsetInlayHints = {
+      rt.inlay_hints.unset,
     },
-    RustHoverActions = { require("rust-tools.hover_actions").hover_actions },
-    RustHoverRange = { require("rust-tools.hover_range").hover_range },
+    RustJoinLines = { rt.join_lines.join_lines },
     RustMoveItemDown = {
-      require("rust-tools.move_item").move_item,
+      rt.move_item.move_item,
     },
     RustMoveItemUp = {
       function()
         require("rust-tools.move_item").move_item(true)
       end,
     },
-    RustViewCrateGraph = {
-      function(backend, output, pipe)
-        require("rust-tools.crate_graph").view_crate_graph(
-          backend,
-          output,
-          pipe
-        )
-      end,
-      "-nargs=* -complete=customlist,v:lua.rust_tools_get_graphviz_backends",
-      description = "`:RustViewCrateGraph [<backend> [<output>]]` Show the crate graph",
+    RustOpenCargo = { rt.open_cargo_toml.open_cargo_toml },
+    RustParentModule = { rt.parent_module.parent_module },
+    RustRunnables = {
+      rt.runnables.runnables,
     },
     RustSSR = {
       function(query)
@@ -57,12 +62,7 @@ local function setup_commands()
       description = "`:RustSSR [query]` Structural Search Replace",
     },
     RustReloadWorkspace = {
-      require("rust-tools/workspace_refresh").reload_workspace,
-    },
-    RustCodeAction = {
-      function()
-        require("rust-tools/code_action_group").code_action_group()
-      end,
+      rt.workspace_refresh.reload_workspace,
     },
   })
 end
