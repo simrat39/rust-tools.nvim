@@ -1,6 +1,4 @@
-local rt_dap = require("rust-tools.dap")
-local config = require("rust-tools.config")
-local utils = require("rust-tools.utils.utils")
+local rt = require("rust-tools")
 
 local M = {}
 
@@ -80,7 +78,7 @@ local function handler(_, result)
     { prompt = "Debuggables", kind = "rust-tools/debuggables" },
     function(_, choice)
       local args = result[choice].args
-      rt_dap.start(args)
+      rt.dap.start(args)
     end
   )
 end
@@ -90,7 +88,7 @@ end
 -- which is used to check whether we want to use telescope or the vanilla vim
 -- way for input
 function M.debuggables()
-  utils.request(0, "experimental/runnables", get_params(), handler)
+  rt.utils.request(0, "experimental/runnables", get_params(), handler)
 end
 
 return M

@@ -1,5 +1,4 @@
-local ra_config = require("rust-tools.config")
-
+local rt = require("rust-tools")
 local M = {}
 
 function M.start_standalone_client()
@@ -7,14 +6,14 @@ function M.start_standalone_client()
     root_dir = require("lspconfig.util").path.dirname(
       vim.api.nvim_buf_get_name(0)
     ),
-    capabilities = ra_config.options.server.capabilities,
-    cmd = ra_config.options.server.cmd or { "rust-analyzer" },
+    capabilities = rt.config.options.server.capabilities,
+    cmd = rt.config.options.server.cmd or { "rust-analyzer" },
     init_options = { detachedFiles = { vim.api.nvim_buf_get_name(0) } },
     name = "rust_analyzer-standalone",
     on_init = function(client)
       local current_buf = vim.api.nvim_get_current_buf()
       vim.lsp.buf_attach_client(0, client.id)
-      local on_attach = ra_config.options.server.on_attach
+      local on_attach = rt.config.options.server.on_attach
       if on_attach then
         on_attach(client, current_buf)
       end
@@ -53,7 +52,7 @@ function M.start_standalone_client()
       vim.cmd("delcommand RustMoveItemDown")
       vim.cmd("delcommand RustMoveItemUp")
     end,
-    handlers = ra_config.options.server.handlers,
+    handlers = rt.config.options.server.handlers,
   }
 
   vim.lsp.start_client(config)

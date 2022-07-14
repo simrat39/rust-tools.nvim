@@ -1,5 +1,4 @@
-local utils = require("rust-tools.utils.utils")
-local vim = vim
+local rt = require("rust-tools")
 
 local M = {}
 
@@ -24,7 +23,7 @@ end
 
 -- Sends the request to rust-analyzer to get the parent modules location and open it
 function M.parent_module()
-  utils.request(0, "experimental/parentModule", get_params(), handler)
+  rt.utils.request(0, "experimental/parentModule", get_params(), handler)
 end
 
 return M

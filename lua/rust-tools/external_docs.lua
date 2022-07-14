@@ -1,8 +1,9 @@
+local rt = require("rust-tools")
+
 local M = {}
-local utils = require("rust-tools.utils.utils")
 
 function M.open_external_docs()
-  utils.request(
+  rt.utils.request(
     0,
     "experimental/externalDocs",
     vim.lsp.util.make_position_params(),

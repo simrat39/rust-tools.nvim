@@ -81,37 +81,37 @@ function M.setup(opts)
     end,
   }
 
-  local join_lines = require("rust-tools/join_lines")
+  local join_lines = require("rust-tools.join_lines")
   M.join_lines = join_lines
 
   local lsp = require("rust-tools/lsp")
   M.lsp = lsp
 
-  local move_item = require("rust-tools/move_item")
+  local move_item = require("rust-tools.move_item")
   M.move_item = move_item
 
-  local open_cargo_toml = require("rust-tools/open_cargo_toml")
+  local open_cargo_toml = require("rust-tools.open_cargo_toml")
   M.open_cargo_toml = open_cargo_toml
 
-  local parent_module = require("rust-tools/parent_module")
+  local parent_module = require("rust-tools.parent_module")
   M.parent_module = parent_module
 
-  local runnables = require("rust-tools/runnables")
+  local runnables = require("rust-tools.runnables")
   M.runnables = runnables
 
-  local server_status = require("rust-tools/server_status")
+  local server_status = require("rust-tools.server_status")
   M.server_status = server_status
 
-  local ssr = require("rust-tools/ssr")
+  local ssr = require("rust-tools.ssr")
   M.ssr = ssr
 
-  local standalone = require("rust-tools/standalone")
+  local standalone = require("rust-tools.standalone")
   M.standalone = standalone
 
-  local workspace_refresh = require("rust-tools/workspace_refresh")
+  local workspace_refresh = require("rust-tools.workspace_refresh")
   M.workspace_refresh = workspace_refresh
 
-  local utils = require("rust-tools/utils/utils")
+  local utils = require("rust-tools.utils.utils")
   M.utils = utils
 
   config.setup(opts)

@@ -1,4 +1,4 @@
-local config = require("rust-tools.config")
+local rt = require("rust-tools")
 
 local M = {}
 
@@ -69,7 +69,7 @@ end
 
 function M.setup_adapter()
   local dap = require("dap")
-  dap.adapters.rt_lldb = config.options.dap.adapter
+  dap.adapters.rt_lldb = rt.config.options.dap.adapter
 end
 
 local function get_cargo_args_from_runnables_args(runnable_args)
