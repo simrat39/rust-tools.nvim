@@ -23,13 +23,13 @@ function M._run_command()
   local action = M._state.commands[line]
 
   M._close_hover()
-  M.execute_rust_analyzer_command(action)
+  M.execute_rust_analyzer_command(action, ctx)
 end
 
-function M.execute_rust_analyzer_command(action)
+function M.execute_rust_analyzer_command(action, ctx)
   local fn = vim.lsp.commands[action.command]
   if fn then
-    fn(action)
+    fn(action, ctx)
   end
 end
 
@@ -56,13 +56,16 @@ local function parse_commands()
   return prompt
 end
 
-function M.handler(_, result)
+function M.handler(_, result, ctx)
   if not (result and result.contents) then
     -- return { 'No information available' }
     return
   end
 
-  local markdown_lines = util.convert_input_to_markdown_lines(result.contents, {})
+  local markdown_lines = util.convert_input_to_markdown_lines(
+    result.contents,
+    {}
+  )
   if result.actions then
     M._state.commands = result.actions[1].commands
     local prompt = parse_commands()
@@ -126,13 +129,10 @@ function M.handler(_, result)
   vim.api.nvim_win_set_option(winnr, "cursorline", true)
 
   -- run the command under the cursor
-  vim.api.nvim_buf_set_keymap(
-    bufnr,
-    "n",
-    "<CR>",
-    ":lua require'rust-tools.hover_actions'._run_command()<CR>",
-    set_keymap_opt
-  )
+  vim.keymap.set("n", "<CR>", function()
+    M._run_command(ctx)
+  end, { buffer = bufnr, noremap = true, silent = true })
+
   -- close on escape
   vim.api.nvim_buf_set_keymap(
     bufnr,
