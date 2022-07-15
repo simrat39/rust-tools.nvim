@@ -8,11 +8,14 @@ local function get_params()
 end
 
 M._state = { winnr = nil, commands = nil }
-local set_keymap_opt = { noremap = true, silent = true }
+
+local function close_hover()
+  rt.utils.close_win(M._state.winnr)
+end
 
 -- run the command under the cursor, if the thing under the cursor is not the
 -- command then do nothing
-function M._run_command()
+local function run_command(ctx)
   local winnr = vim.api.nvim_get_current_win()
   local line = vim.api.nvim_win_get_cursor(winnr)[1]
 
@@ -22,7 +25,7 @@ function M._run_command()
 
   local action = M._state.commands[line]
 
-  M._close_hover()
+  close_hover()
   M.execute_rust_analyzer_command(action, ctx)
 end
 
@@ -34,7 +37,6 @@ function M.execute_rust_analyzer_command(action, ctx)
 end
 
 function M._close_hover()
-  utils.close_win(M._state.winnr)
 end
 
 local function parse_commands()
@@ -106,12 +108,11 @@ function M.handler(_, result, ctx)
   -- update the window number here so that we can map escape to close even
   -- when there are no actions, update the rest of the state later
   M._state.winnr = winnr
-  vim.api.nvim_buf_set_keymap(
-    bufnr,
+  vim.keymap.set(
     "n",
     "<Esc>",
-    ":lua require'rust-tools.hover_actions'._close_hover()<CR>",
-    set_keymap_opt
+    close_hover,
+    { buffer = bufnr, noremap = true, silent = true }
   )
 
   vim.api.nvim_buf_attach(bufnr, false, {
@@ -130,17 +131,8 @@ function M.handler(_, result, ctx)
 
   -- run the command under the cursor
   vim.keymap.set("n", "<CR>", function()
-    M._run_command(ctx)
+    run_command(ctx)
   end, { buffer = bufnr, noremap = true, silent = true })
-
-  -- close on escape
-  vim.api.nvim_buf_set_keymap(
-    bufnr,
-    "n",
-    "<Esc>",
-    ":lua require'rust-tools.hover_actions'._close_hover()<CR>",
-    set_keymap_opt
-  )
 end
 
 -- Sends the request to rust-analyzer to get hover actions and handle it
