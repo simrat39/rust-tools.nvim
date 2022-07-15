@@ -3,10 +3,10 @@ local rt = require("rust-tools")
 local M = {}
 
 local function get_params()
-  return vim.lsp.util.make_position_params()
+  return vim.lsp.util.make_position_params(0, nil)
 end
 
-local function handler(_, result)
+local function handler(_, result, ctx)
   if result == nil or vim.tbl_isempty(result) then
     vim.api.nvim_out_write("Can't find parent module\n")
     return
@@ -18,7 +18,8 @@ local function handler(_, result)
     location = result[1]
   end
 
-  vim.lsp.util.jump_to_location(location)
+  local client = vim.lsp.get_client_by_id(ctx.client_id)
+  vim.lsp.util.jump_to_location(location, client.offset_encoding)
 end
 
 -- Sends the request to rust-analyzer to get the parent modules location and open it
