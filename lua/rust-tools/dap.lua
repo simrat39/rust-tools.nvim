@@ -6,65 +6,15 @@ local M = {}
 ---@param codelldb_path string
 ---@param liblldb_path string
 function M.get_codelldb_adapter(codelldb_path, liblldb_path)
-  return function(callback, _)
-    local stdout = vim.loop.new_pipe(false)
-    local stderr = vim.loop.new_pipe(false)
-    local handle
-    local pid_or_err
-    local port
-    local error_message = ""
-
-    local opts = {
-      stdio = { nil, stdout, stderr },
-      args = { "--liblldb", liblldb_path },
-      detached = true,
-    }
-
-    handle, pid_or_err = vim.loop.spawn(codelldb_path, opts, function(code)
-      stdout:close()
-      stderr:close()
-      handle:close()
-      if code ~= 0 then
-        print("codelldb exited with code", code)
-        print("error message", error_message)
-      end
-    end)
-
-    assert(handle, "Error running codelldb: " .. tostring(pid_or_err))
-
-    stdout:read_start(function(err, chunk)
-      assert(not err, err)
-      if chunk then
-        if not port then
-          local chunks = {}
-          for substring in chunk:gmatch("%S+") do
-            table.insert(chunks, substring)
-          end
-          port = tonumber(chunks[#chunks])
-          vim.schedule(function()
-            callback({
-              type = "server",
-              host = "127.0.0.1",
-              port = port,
-            })
-          end)
-        else
-          vim.schedule(function()
-            require("dap.repl").append(chunk)
-          end)
-        end
-      end
-    end)
-    stderr:read_start(function(_, chunk)
-      if chunk then
-        error_message = error_message .. chunk
-
-        vim.schedule(function()
-          require("dap.repl").append(chunk)
-        end)
-      end
-    end)
-  end
+  return {
+    type = "server",
+    port = "${port}",
+    host = "127.0.0.1",
+    executable = {
+      command = codelldb_path,
+      args = { "--liblldb", liblldb_path, "--port", "${port}" },
+    },
+  }
 end
 
 function M.setup_adapter()
