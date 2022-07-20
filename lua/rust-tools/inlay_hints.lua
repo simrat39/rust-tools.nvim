@@ -54,7 +54,7 @@ function M.enable_cache_autocmd()
   vim.cmd(string.format(
     [[
         augroup InlayHintsCache
-        autocmd BufWritePost,BufReadPost,BufEnter,BufWinEnter,TabEnter *.rs :lua require"rust-tools".inlay_hints.cache()
+        autocmd CursorHold,InsertLeave,BufWritePost,BufReadPost,BufEnter,BufWinEnter,TabEnter *.rs :lua require"rust-tools".inlay_hints.cache()
         %s
         augroup END
     ]],
