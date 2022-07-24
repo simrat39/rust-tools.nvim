@@ -34,7 +34,7 @@ end
 
 -- Enable auto hints and set hints for the current buffer
 function M.enable(self)
-  self.enabled = true
+  self.enabled = false
   M.enable_cache_autocmd()
   set_all(self)
 end
