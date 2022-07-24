@@ -58,28 +58,28 @@ function M.setup(opts)
   local hover_range = require("rust-tools.hover_range")
   M.hover_range = hover_range
 
-  local inlay = require("rust-tools.inlay_hints")
-  local hints = inlay.new()
-  M.inlay_hints = {
-    enable = function()
-      inlay.enable(hints)
-    end,
-    disable = function()
-      inlay.disable(hints)
-    end,
-    set = function()
-      inlay.set(hints)
-    end,
-    unset = function()
-      inlay.unset()
-    end,
-    cache = function()
-      inlay.cache_render(hints)
-    end,
-    render = function()
-      inlay.render(hints)
-    end,
-  }
+  -- local inlay = require("rust-tools.inlay_hints")
+  -- local hints = inlay.new()
+  -- M.inlay_hints = {
+  --   enable = function()
+  --     inlay.enable(hints)
+  --   end,
+  --   disable = function()
+  --     inlay.disable(hints)
+  --   end,
+  --   set = function()
+  --     inlay.set(hints)
+  --   end,
+  --   unset = function()
+  --     inlay.unset()
+  --   end,
+  --   cache = function()
+  --     inlay.cache_render(hints)
+  --   end,
+  --   render = function()
+  --     inlay.render(hints)
+  --   end,
+  -- }
 
   local join_lines = require("rust-tools.join_lines")
   M.join_lines = join_lines
