@@ -24,7 +24,9 @@ end
 
 local function get_cargo_args_from_runnables_args(runnable_args)
   local cargo_args = runnable_args.cargoArgs
-
+  if cargo_args[1] == "run" then
+    cargo_args[1] = "build"
+  end
   table.insert(cargo_args, "--message-format=json")
 
   for _, value in ipairs(runnable_args.cargoExtraArgs) do
