@@ -10,11 +10,6 @@ end
 local defaults = {
   tools = { -- rust-tools options
 
-    -- whether to show hover actions inside the hover window
-    -- this overrides the default hover handler so something like lspsaga.nvim's hover would be overriden by this
-    -- default: true
-    hover_with_actions = true,
-
     -- how to execute terminal commands
     -- options right now: termopen / quickfix
     executor = require("rust-tools/executors").termopen,
@@ -73,6 +68,7 @@ local defaults = {
 
     -- options same as lsp hover / vim.lsp.util.open_floating_preview()
     hover_actions = {
+
       -- the border that is used for the hover window
       -- see vim.api.nvim_open_win()
       border = {

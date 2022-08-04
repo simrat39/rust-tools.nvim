@@ -73,8 +73,9 @@ local function setup_handlers()
   local custom_handlers = {}
 
   if tool_opts.hover_with_actions then
-    custom_handlers["textDocument/hover"] = rt.utils.mk_handler(
-      require("rust-tools.hover_actions").handler
+    vim.notify(
+      "rust-tools: hover_with_actions is deprecated, please setup a keybind to :RustHoverActions in on_attach instead",
+      vim.log.levels.INFO
     )
   end
 
