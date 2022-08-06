@@ -46,7 +46,7 @@ end
 
 -- Clear hints only for the current buffer
 function M.unset()
-  clear_ns()
+  clear_ns(0)
 end
 
 function M.enable_cache_autocmd()
