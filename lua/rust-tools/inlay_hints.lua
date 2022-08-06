@@ -54,7 +54,7 @@ function M.enable_cache_autocmd()
   vim.cmd(string.format(
     [[
         augroup InlayHintsCache
-        autocmd BufWritePost,BufReadPost,BufEnter,BufWinEnter,TabEnter *.rs :lua require"rust-tools".inlay_hints.cache()
+        autocmd BufWritePost,BufReadPost,BufEnter,BufWinEnter,TabEnter,TextChanged,TextChangedI *.rs :lua require"rust-tools".inlay_hints.cache()
         %s
         augroup END
     ]],
@@ -76,6 +76,7 @@ function M.disable_cache_autocmd()
 end
 
 local function get_params(bufnr)
+  ---@diagnostic disable-next-line: missing-parameter
   local params = vim.lsp.util.make_given_range_params()
   params["range"]["start"]["line"] = 0
   params["range"]["end"]["line"] = vim.api.nvim_buf_line_count(bufnr) - 1
@@ -167,82 +168,60 @@ function M.render(self, bufnr)
       end
     end
 
-    local current_line = vim.api.nvim_buf_get_lines(
-      buffer,
-      line,
-      line + 1,
-      false
-    )[1]
+    local param_hints = {}
+    local other_hints = {}
 
-    if current_line then
-      local param_hints = {}
-      local other_hints = {}
-
-      -- segregate paramter hints and other hints
-      for _, value_inner in ipairs(value) do
-        if value_inner.kind == 2 then
-          table.insert(param_hints, value_inner.label)
-        end
-
-        if value_inner.kind == 1 then
-          table.insert(other_hints, value_inner)
-        end
+    -- segregate paramter hints and other hints
+    for _, value_inner in ipairs(value) do
+      if value_inner.kind == 2 then
+        table.insert(param_hints, value_inner.label)
       end
 
-      -- show parameter hints inside brackets with commas and a thin arrow
-      if not vim.tbl_isempty(param_hints) and opts.show_parameter_hints then
-        virt_text = virt_text .. opts.parameter_hints_prefix .. "("
-        for i, value_inner_inner in ipairs(param_hints) do
-          virt_text = virt_text .. value_inner_inner:sub(1, -2)
-          if i ~= #param_hints then
-            virt_text = virt_text .. ", "
-          end
-        end
-        virt_text = virt_text .. ") "
-      end
-
-      -- show other hints with commas and a thicc arrow
-      if not vim.tbl_isempty(other_hints) then
-        virt_text = virt_text .. opts.other_hints_prefix
-        for i, value_inner_inner in ipairs(other_hints) do
-          if value_inner_inner.kind == 2 and opts.show_variable_name then
-            local char_start = value_inner_inner.range.start.character
-            local char_end = value_inner_inner.range["end"].character
-            local variable_name = string.sub(
-              current_line,
-              char_start + 1,
-              char_end
-            )
-            virt_text = virt_text
-              .. variable_name
-              .. ": "
-              .. value_inner_inner.label
-          else
-            if string.sub(value_inner_inner.label, 1, 2) == ": " then
-              virt_text = virt_text .. value_inner_inner.label:sub(3)
-            else
-              virt_text = virt_text .. value_inner_inner.label
-            end
-          end
-          if i ~= #other_hints then
-            virt_text = virt_text .. ", "
-          end
-        end
-      end
-
-      -- set the virtual text if it is not empty
-      if virt_text ~= "" then
-        vim.api.nvim_buf_set_extmark(buffer, M.namespace, line, 0, {
-          virt_text_pos = opts.right_align and "right_align" or "eol",
-          virt_text = {
-            { virt_text, opts.highlight },
-          },
-          hl_mode = "combine",
-        })
+      if value_inner.kind == 1 then
+        table.insert(other_hints, value_inner)
       end
     end
-    ::continue::
+
+    -- show parameter hints inside brackets with commas and a thin arrow
+    if not vim.tbl_isempty(param_hints) and opts.show_parameter_hints then
+      virt_text = virt_text .. opts.parameter_hints_prefix .. "("
+      for i, value_inner_inner in ipairs(param_hints) do
+        virt_text = virt_text .. value_inner_inner:sub(1, -2)
+        if i ~= #param_hints then
+          virt_text = virt_text .. ", "
+        end
+      end
+      virt_text = virt_text .. ") "
+    end
+
+    -- show other hints with commas and a thicc arrow
+    if not vim.tbl_isempty(other_hints) then
+      virt_text = virt_text .. opts.other_hints_prefix
+      for i, value_inner_inner in ipairs(other_hints) do
+        if string.sub(value_inner_inner.label, 1, 2) == ": " then
+          virt_text = virt_text .. value_inner_inner.label:sub(3)
+        else
+          virt_text = virt_text .. value_inner_inner.label
+        end
+        if i ~= #other_hints then
+          virt_text = virt_text .. ", "
+        end
+      end
+    end
+
+    -- set the virtual text if it is not empty
+    if virt_text ~= "" then
+      ---@diagnostic disable-next-line: param-type-mismatch
+      vim.api.nvim_buf_set_extmark(buffer, M.namespace, line, 0, {
+        virt_text_pos = opts.right_align and "right_align" or "eol",
+        virt_text = {
+          { virt_text, opts.highlight },
+        },
+        hl_mode = "combine",
+      })
+    end
   end
+  ::continue::
 end
 
 return M

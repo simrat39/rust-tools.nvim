@@ -27,20 +27,9 @@ local defaults = {
       -- Only show inlay hints for the current line
       only_current_line = false,
 
-      -- Event which triggers a refersh of the inlay hints.
-      -- You can make this "CursorMoved" or "CursorMoved,CursorMovedI" but
-      -- not that this may cause higher CPU usage.
-      -- This option is only respected when only_current_line and
-      -- autoSetHints both are true.
-      only_current_line_autocmd = "CursorHold",
-
       -- whether to show parameter hints with the inlay hints or not
       -- default: true
       show_parameter_hints = true,
-
-      -- whether to show variable name before type hints with the inlay hints or not
-      -- default: false
-      show_variable_name = false,
 
       -- prefix for parameter hints
       -- default: "<-"
