@@ -356,11 +356,19 @@ local opts = {
 
   -- debugging stuff
   dap = {
+    -- Auto-generates the Rust standard library source map. This allows stepping
+    -- into libstd source code while debugging.
+    std_source_map = true,
+
+    -- Debug adapter
     adapter = {
       type = "executable",
       command = "lldb-vscode",
       name = "rt_lldb",
     },
+
+    -- Launch configurations passed to the debug adapter
+    configuration = {},
   },
 }
 
