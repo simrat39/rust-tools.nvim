@@ -62,17 +62,21 @@ rt.setup({
   
   ![inlay hints](https://github.com/simrat39/rust-tools-demos/raw/master/inlay_hints.png)
   ```lua
-  -- Command:
+  -- Commands:
+  -- RustEnableInlayHints
+  -- RustDisableInlayHints
   -- RustSetInlayHints
-  -- RustDisableInlayHints 
-  -- RustToggleInlayHints 
+  -- RustUnsetInlayHints
 
-  -- set inlay hints
-  require('rust-tools.inlay_hints').set_inlay_hints()
-  -- disable inlay hints
-  require('rust-tools.inlay_hints').disable_inlay_hints()
-  -- toggle inlay hints
-  require('rust-tools.inlay_hints').toggle_inlay_hints()
+  -- Set inlay hints for the current buffer
+  require('rust-tools').inlay_hints.set()
+  -- Unset inlay hints for the current buffer
+  require('rust-tools').inlay_hints.unset()
+
+  -- Enable inlay hints auto update and set them for all the buffers
+  require('rust-tools').inlay_hints.enable()
+  -- Disable inlay hints auto update and unset them for all buffers
+  require('rust-tools').inlay_hints.disable()
   ```
 </details>
 
@@ -85,7 +89,7 @@ rt.setup({
   ```lua
   -- Command:
   -- RustRunnables
-  require('rust-tools.runnables').runnables()
+  require('rust-tools').runnables.runnables()
 ```
 </details>
 
@@ -98,7 +102,7 @@ rt.setup({
   ```lua
   -- Command:
   -- RustExpandMacro  
-  require'rust-tools.expand_macro'.expand_macro()
+  require'rust-tools'.expand_macro.expand_macro()
   ```
 </details>
 
@@ -113,7 +117,7 @@ rt.setup({
   -- RustMoveItemUp    
   -- RustMoveItemDown    
   local up = true -- true = move up, false = move down
-  require'rust-tools.move_item'.move_item(up)
+  require'rust-tools'.move_item.move_item(up)
 ```
 </details>
 
@@ -127,7 +131,7 @@ rt.setup({
  ```lua
  -- Command:
  -- RustHoverActions 
- require'rust-tools.hover_actions'.hover_actions()
+ require'rust-tools'.hover_actions.hover_actions()
  ```
 </details>
 
@@ -140,7 +144,7 @@ rt.setup({
   ```lua
   -- Command:
   -- RustHoverRange 
-  require'rust-tools.hover_range'.hover_range()
+  require'rust-tools'.hover_range.hover_range()
   ```
 </details>
 
@@ -153,7 +157,7 @@ rt.setup({
   ```lua
   -- Command:
   -- RustOpenCargo
-  require'rust-tools.open_cargo_toml'.open_cargo_toml()
+  require'rust-tools'.open_cargo_toml.open_cargo_toml()
   ```
 </details>
 
@@ -166,7 +170,7 @@ rt.setup({
   ```lua
   -- Command:
   -- RustParentModule 
-  require'rust-tools.parent_module'.parent_module()
+  require'rust-tools'.parent_module.parent_module()
   ```
 </details>
 
@@ -179,7 +183,7 @@ rt.setup({
   ```lua
   -- Command:
   -- RustJoinLines  
-  require'rust-tools.join_lines'.join_lines()
+  require'rust-tools'.join_lines.join_lines()
   ```
 </details>
 
@@ -191,7 +195,7 @@ rt.setup({
   ```lua
   -- Command:
   -- RustSSR [query]
-  require'rust-tools.ssr'.ssr(query)
+  require'rust-tools'.ssr.ssr(query)
   ```
 </details>
 
@@ -203,7 +207,7 @@ rt.setup({
   ```lua
   -- Command:
   -- RustViewCrateGraph [backend [output]]
-  require'rust-tools.crate_graph'.view_crate_graph(backend, output)
+  require'rust-tools'.crate_graph.view_crate_graph(backend, output)
   ```
 </details>
 
