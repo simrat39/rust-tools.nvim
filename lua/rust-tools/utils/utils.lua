@@ -1,9 +1,8 @@
-local vim = vim
-
 local M = {}
 
 function M.is_windows()
-  return vim.loop.os_uname().sysname == "Windows" or "Windows_NT"
+  local sysname = vim.loop.os_uname().sysname
+  return sysname == "Windows" or sysname == "Windows_NT"
 end
 
 ---comment
@@ -39,8 +38,14 @@ function M.chain_commands(commands)
 end
 
 function M.delete_buf(bufnr)
-  if bufnr ~= nil then
+  if bufnr ~= nil and vim.api.nvim_buf_is_valid(bufnr) then
     vim.api.nvim_buf_delete(bufnr, { force = true })
+  end
+end
+
+function M.close_win(winnr)
+  if winnr ~= nil and vim.api.nvim_win_is_valid(winnr) then
+    vim.api.nvim_win_close(winnr, true)
   end
 end
 
@@ -119,6 +124,12 @@ end
 -- from mfussenegger/nvim-lsp-compl@29a81f3
 function M.request(bufnr, method, params, handler)
   return vim.lsp.buf_request(bufnr, method, params, M.mk_handler(handler))
+end
+
+function M.is_ra_server(client)
+  local name = client.name
+  return client.name == "rust_analyzer"
+    or client.name == "rust_analyzer-standalone"
 end
 
 return M

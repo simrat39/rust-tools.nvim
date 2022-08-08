@@ -1,18 +1,15 @@
-local runnables = require("rust-tools.runnables")
+local rt = require("rust-tools")
 
 local M = {}
 
 function M.setup_lsp_commands()
-  if not vim.lsp.commands then
-    vim.lsp.commands = {}
-  end
-
   vim.lsp.commands["rust-analyzer.runSingle"] = function(command)
-    runnables.run_command(1, command.arguments)
+    rt.runnables.run_command(1, command.arguments)
   end
 
-  vim.lsp.commands["rust-analyzer.gotoLocation"] = function(command)
-    vim.lsp.util.jump_to_location(command.arguments[1])
+  vim.lsp.commands["rust-analyzer.gotoLocation"] = function(command, ctx)
+    local client = vim.lsp.get_client_by_id(ctx.client_id)
+    vim.lsp.util.jump_to_location(command.arguments[1], client.offset_encoding)
   end
 
   vim.lsp.commands["rust-analyzer.showReferences"] = function(_)
@@ -20,7 +17,7 @@ function M.setup_lsp_commands()
   end
 
   vim.lsp.commands["rust-analyzer.debugSingle"] = function(command)
-    require("rust-tools.dap").start(command.arguments[1].args)
+    rt.dap.start(command.arguments[1].args)
   end
 end
 

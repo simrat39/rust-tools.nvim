@@ -1,11 +1,10 @@
-local utils = require "rust-tools.utils.utils"
-local config = require "rust-tools.config"
+local rt = require("rust-tools")
 
 local M = {}
 
 local function get_params()
   return {
-    textDocument = vim.lsp.util.make_text_document_params(),
+    textDocument = vim.lsp.util.make_text_document_params(0),
     position = nil, -- get em all
   }
 end
@@ -45,7 +44,7 @@ function M.run_command(choice, result)
     return
   end
 
-  local opts = config.options.tools
+  local opts = rt.config.options.tools
 
   local command, args, cwd = getCommand(choice, result)
 
@@ -53,6 +52,9 @@ function M.run_command(choice, result)
 end
 
 local function handler(_, result)
+  if result == nil then
+    return
+  end
   -- get the choice from the user
   local options = get_options(result)
   vim.ui.select(options, { prompt = "Runnables", kind = "rust-tools/runnables" }, function(_, choice)
@@ -65,7 +67,7 @@ end
 -- which is used to check whether we want to use telescope or the vanilla vim
 -- way for input
 function M.runnables()
-  utils.request(0, "experimental/runnables", get_params(), handler)
+  rt.utils.request(0, "experimental/runnables", get_params(), handler)
 end
 
 return M
