@@ -1,6 +1,14 @@
 # rust-tools.nvim
 A plugin to improve your rust experience in neovim.
 
+## Quick Links
+- [Wiki](https://github.com/simrat39/rust-tools.nvim/wiki)
+  - [CodeLLDB Debugging](https://github.com/simrat39/rust-tools.nvim/wiki/Debugging)
+  - [Standalone File](https://github.com/simrat39/rust-tools.nvim/wiki/Standalone-File-Support)
+- [Installation](#installation)
+- [Setup](#setup)
+- [Usage](#usage)
+
 ## Prerequisites
 
 - `neovim 0.7`
