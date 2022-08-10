@@ -168,6 +168,10 @@ local function render_line(line, line_hints, bufnr)
   local param_hints = {}
   local other_hints = {}
 
+  if line > vim.api.nvim_buf_line_count(bufnr) then
+    return
+  end
+
   -- segregate paramter hints and other hints
   for _, hint in ipairs(line_hints) do
     if hint.kind == 2 then
