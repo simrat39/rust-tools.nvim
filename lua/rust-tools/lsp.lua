@@ -6,18 +6,21 @@ local server_status = require("rust-tools.server_status")
 local M = {}
 
 local function setup_autocmds()
-  vim.cmd([[
-        augroup RustToolsAutocmds
-            au!
-  ]])
-  if config.options.tools.reload_workspace_from_cargo_toml then
-    vim.cmd([[ autocmd BufWritePost */Cargo.toml lua require('rust-tools/workspace_refresh')._reload_workspace_from_cargo_toml() ]])
+  local group = vim.api.nvim_create_augroup("RustToolsAutocmds", { clear = true })
+
+  if rt.config.options.tools.reload_workspace_from_cargo_toml then
+    vim.api.nvim_create_autocmd("BufWritePost", {
+      pattern = "*/Cargo.toml",
+      callback = require('rust-tools/workspace_refresh')._reload_workspace_from_cargo_toml,
+      group = group,
+    })
   end
-  vim.cmd([[
-            autocmd VimEnter *.rs lua require('rust-tools').lsp.start_standalone_if_required()
-        augroup END
-        redraw
-  ]])
+
+  vim.api.nvim_create_autocmd("VimEnter", {
+    pattern = "*.rs",
+    callback = rt.lsp.start_standalone_if_required,
+    group = group,
+  });
 end
 
 local function setup_commands()
