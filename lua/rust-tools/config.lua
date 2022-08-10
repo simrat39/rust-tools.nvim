@@ -18,6 +18,9 @@ local defaults = {
     -- The callback receives one parameter indicating the `health` of the server: "ok" | "warning" | "error"
     on_initialized = nil,
 
+    -- automatically call RustReloadWorkspace when writing to a Cargo.toml file.
+    reload_workspace_from_cargo_toml = true,
+
     -- These apply to the default RustSetInlayHints command
     inlay_hints = {
       -- automatically set inlay hints (type hints)

@@ -5,6 +5,24 @@ local server_status = require("rust-tools.server_status")
 
 local M = {}
 
+local function setup_autocmds()
+  local group = vim.api.nvim_create_augroup("RustToolsAutocmds", { clear = true })
+
+  if rt.config.options.tools.reload_workspace_from_cargo_toml then
+    vim.api.nvim_create_autocmd("BufWritePost", {
+      pattern = "*/Cargo.toml",
+      callback = require('rust-tools/workspace_refresh')._reload_workspace_from_cargo_toml,
+      group = group,
+    })
+  end
+
+  vim.api.nvim_create_autocmd("VimEnter", {
+    pattern = "*.rs",
+    callback = rt.lsp.start_standalone_if_required,
+    group = group,
+  });
+end
+
 local function setup_commands()
   local lsp_opts = rt.config.options.server
 
@@ -197,6 +215,8 @@ function M.start_standalone_if_required()
 end
 
 function M.setup()
+  setup_autocmds()
+  -- setup capabilities
   setup_capabilities()
   -- setup on_init
   setup_on_init()
