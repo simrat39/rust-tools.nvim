@@ -76,10 +76,19 @@ function M.disable_cache_autocmd()
 end
 
 local function get_params(client, bufnr)
-  ---@diagnostic disable-next-line: missing-parameter
-  local params = vim.lsp.util.make_given_range_params()
-  params["range"]["start"]["line"] = 0
-  params["range"]["start"]["character"] = 0
+  local params = {
+    textDocument = vim.lsp.util.make_text_document_params(bufnr),
+    range = {
+      start = {
+        line = 0,
+        character = 0,
+      },
+      ["end"] = {
+        line = 0,
+        character = 0,
+      },
+    },
+  }
 
   local line_count = vim.api.nvim_buf_line_count(bufnr) - 1
   local last_line = vim.api.nvim_buf_get_lines(
