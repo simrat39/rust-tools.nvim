@@ -40,6 +40,65 @@ local function scheduled_error(err)
   end)
 end
 
+local function get_rustc_hash(callback)
+  local Job = require("plenary.job")
+  Job
+    :new({
+      command = "rustc",
+      args = { "--version", "--verbose" },
+      clear_env = false,
+      on_exit = function(j, code)
+        if code and code > 0 then
+          scheduled_error(
+            "An error occured while trying to get the commit hash of rustc. Could not set the libstd source map."
+          )
+          return
+        end
+        local commit_hash = vim.split(j:result()[3], " ")[2]
+        callback(commit_hash)
+      end,
+    })
+    :start()
+end
+
+local function get_rustc_sysroot(callback)
+  local Job = require("plenary.job")
+  Job
+    :new({
+      command = "rustc",
+      args = { "--print", "sysroot" },
+      on_exit = function(j, code)
+        if code and code > 0 then
+          scheduled_error(
+            "An error occured while trying to get the sysroot path of rustc. Could not set the libstd source map."
+          )
+          return
+        end
+        local sysroot = j:result()[1]
+        callback(sysroot)
+      end,
+    })
+    :start()
+end
+
+local function setup_std_source_map()
+  get_rustc_hash(function(rustc_commit_hash)
+    get_rustc_sysroot(function(rustc_sysroot)
+      local new_map = {
+        "/rustc/" .. rustc_commit_hash,
+        rustc_sysroot .. "/lib/rustlib/src/rust",
+      }
+      if not rt.config.options.dap.configuration.sourceMap then
+        rt.config.options.dap.configuration.sourceMap = {}
+      end
+      vim.list_extend(
+        rt.config.options.dap.configuration.sourceMap,
+        { new_map }
+      )
+    end)
+  end)
+end
+
 function M.start(args)
   if not pcall(require, "dap") then
     scheduled_error("nvim-dap not found.")
@@ -59,6 +118,11 @@ function M.start(args)
   vim.notify(
     "Compiling a debug build for debugging. This might take some time..."
   )
+
+  -- setup libstd source map
+  if rt.config.options.dap.std_source_map then
+    setup_std_source_map()
+  end
 
   Job
     :new({
@@ -100,7 +164,13 @@ function M.start(args)
                 -- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
                 runInTerminal = false,
               }
-              dap.run(dap_config)
+              dap.run(
+                vim.tbl_deep_extend(
+                  "force",
+                  dap_config,
+                  rt.config.options.dap.configuration
+                )
+              )
               break
             end
           end
