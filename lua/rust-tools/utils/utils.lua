@@ -132,4 +132,21 @@ function M.is_ra_server(client)
     or client.name == "rust_analyzer-standalone"
 end
 
+
+-- sanitize_command_for_debugging substitudes the command arguments so it can be used to run a
+-- debugger.
+--
+-- @param command should be a table like: { "run", "--package", "<program>", "--bin", "<program>" }
+-- For some reason the endpoint textDocument/hover from rust-analyzer returns
+-- cargoArgs = { "run", "--package", "<program>", "--bin", "<program>" } for Debug entry.
+-- It doesn't make any sense to run a program before debugging.  Even more the debuggin won't run if
+-- the program waits some input.  Take a look at rust-analyzer/editors/code/src/toolchain.ts.
+function M.sanitize_command_for_debugging(command)
+  if command[1] == "run" then
+    command[1] = "build"
+  elseif command[1] == "test" then
+    table.insert(command, 2, "--no-run")
+  end
+end
+
 return M

@@ -59,11 +59,7 @@ local function sanitize_results_for_debugging(result)
   end, result)
 
   for i, value in ipairs(ret) do
-    if value.args.cargoArgs[1] == "run" then
-      ret[i].args.cargoArgs[1] = "build"
-    elseif value.args.cargoArgs[1] == "test" then
-      table.insert(ret[i].args.cargoArgs, 2, "--no-run")
-    end
+    rt.utils.sanitize_command_for_debugging(value.args.cargoArgs)
   end
 
   return ret
