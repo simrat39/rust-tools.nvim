@@ -100,7 +100,19 @@ function M.start(args)
                 -- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
                 runInTerminal = false,
               }
-              dap.run(dap_config)
+              if args.cargoArgs[1] == "build" or args.cargoArgs[1] == "run" then
+                vim.ui.input({ prompt = "Input arguments" }, function(input)
+                  if not input then
+                    input = ""
+                  end
+                  for m in input:gmatch("%S+") do
+                    table.insert(dap_config.args, m)
+                  end
+                  dap.run(dap_config)
+                end)
+              else
+                dap.run(dap_config)
+              end
               break
             end
           end
