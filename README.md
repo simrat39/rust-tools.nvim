@@ -258,7 +258,7 @@ local opts = {
       -- default: "=>"
       other_hints_prefix = "=> ",
 
-      -- whether to align to the lenght of the longest line in the file
+      -- whether to align to the length of the longest line in the file
       max_len_align = false,
 
       -- padding from the left if max_len_align is true
@@ -380,7 +380,7 @@ local opts = {
     -- standalone file support
     -- setting it to false may improve startup time
     standalone = true,
-  }, -- rust-analyer options
+  }, -- rust-analyzer options
 
   -- debugging stuff
   dap = {

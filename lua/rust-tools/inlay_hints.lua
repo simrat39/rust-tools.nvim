@@ -181,7 +181,7 @@ local function render_line(line, line_hints, bufnr)
     return
   end
 
-  -- segregate paramter hints and other hints
+  -- segregate parameter hints and other hints
   for _, hint in ipairs(line_hints) do
     if hint.kind == 2 then
       table.insert(param_hints, hint.label)

@@ -68,7 +68,7 @@ function M.start(args)
       on_exit = function(j, code)
         if code and code > 0 then
           scheduled_error(
-            "An error occured while compiling. Please fix all compilation issues and try again."
+            "An error occurred while compiling. Please fix all compilation issues and try again."
           )
         end
         vim.schedule(function()
