@@ -12,7 +12,7 @@ end
 
 local function handler(err, result)
   if err then
-    error("Cound not execute request to server: " .. err.message)
+    error("Could not execute request to server: " .. err.message)
     return
   end
 

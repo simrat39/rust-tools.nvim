@@ -18,7 +18,7 @@ local function handler_factory(backend, output, pipe)
   -- visualize with the given backend
   return function(err, graph)
     if err ~= nil then
-      error("Cound not execute request to server" .. err)
+      error("Could not execute request to server" .. err)
       return
     end
 

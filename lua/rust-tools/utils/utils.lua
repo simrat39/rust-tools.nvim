@@ -133,7 +133,7 @@ function M.is_ra_server(client)
 end
 
 
--- sanitize_command_for_debugging substitudes the command arguments so it can be used to run a
+-- sanitize_command_for_debugging substitutes the command arguments so it can be used to run a
 -- debugger.
 --
 -- @param command should be a table like: { "run", "--package", "<program>", "--bin", "<program>" }
