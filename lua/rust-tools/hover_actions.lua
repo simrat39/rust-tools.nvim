@@ -1,20 +1,23 @@
-local utils = require("rust-tools.utils.utils")
+local rt = require("rust-tools")
 local util = vim.lsp.util
-local config = require("rust-tools.config")
 
 local M = {}
 
 local function get_params()
-  return vim.lsp.util.make_position_params()
+  return util.make_position_params(0, nil)
 end
 
 M._state = { winnr = nil, commands = nil }
-local set_keymap_opt = { noremap = true, silent = true }
+
+local function close_hover()
+  rt.utils.close_win(M._state.winnr)
+end
 
 -- run the command under the cursor, if the thing under the cursor is not the
 -- command then do nothing
-function M._run_command()
-  local line = vim.api.nvim_win_get_cursor(M._state.winnr)[1]
+local function run_command(ctx)
+  local winnr = vim.api.nvim_get_current_win()
+  local line = vim.api.nvim_win_get_cursor(winnr)[1]
 
   if line > #M._state.commands then
     return
@@ -22,14 +25,14 @@ function M._run_command()
 
   local action = M._state.commands[line]
 
-  M._close_hover()
-  M.execute_rust_analyzer_command(action)
+  close_hover()
+  M.execute_rust_analyzer_command(action, ctx)
 end
 
-function M.execute_rust_analyzer_command(action)
+function M.execute_rust_analyzer_command(action, ctx)
   local fn = vim.lsp.commands[action.command]
   if fn then
-    fn(action)
+    fn(action, ctx)
 
     if config.options.tools.cache then
       require("rust-tools.utils.cache").set_last_runnable(action)
@@ -38,9 +41,6 @@ function M.execute_rust_analyzer_command(action)
 end
 
 function M._close_hover()
-  if M._state.winnr ~= nil then
-    vim.api.nvim_win_close(M._state.winnr, true)
-  end
 end
 
 local function parse_commands()
@@ -62,13 +62,16 @@ local function parse_commands()
   return prompt
 end
 
-function M.handler(_, result)
+function M.handler(_, result, ctx)
   if not (result and result.contents) then
     -- return { 'No information available' }
     return
   end
 
-  local markdown_lines = util.convert_input_to_markdown_lines(result.contents)
+  local markdown_lines = util.convert_input_to_markdown_lines(
+    result.contents,
+    {}
+  )
   if result.actions then
     M._state.commands = result.actions[1].commands
     local prompt = parse_commands()
@@ -91,14 +94,14 @@ function M.handler(_, result)
   local bufnr, winnr = util.open_floating_preview(
     markdown_lines,
     "markdown",
-    vim.tbl_extend("keep", config.options.tools.hover_actions, {
+    vim.tbl_extend("keep", rt.config.options.tools.hover_actions, {
       focusable = true,
       focus_id = "rust-tools-hover-actions",
       close_events = { "CursorMoved", "BufHidden", "InsertCharPre" },
     })
   )
 
-  if config.options.tools.hover_actions.auto_focus then
+  if rt.config.options.tools.hover_actions.auto_focus then
     vim.api.nvim_set_current_win(winnr)
   end
 
@@ -109,12 +112,11 @@ function M.handler(_, result)
   -- update the window number here so that we can map escape to close even
   -- when there are no actions, update the rest of the state later
   M._state.winnr = winnr
-  vim.api.nvim_buf_set_keymap(
-    bufnr,
+  vim.keymap.set(
     "n",
     "<Esc>",
-    ":lua require'rust-tools.hover_actions'._close_hover()<CR>",
-    set_keymap_opt
+    close_hover,
+    { buffer = bufnr, noremap = true, silent = true }
   )
 
   vim.api.nvim_buf_attach(bufnr, false, {
@@ -132,26 +134,14 @@ function M.handler(_, result)
   vim.api.nvim_win_set_option(winnr, "cursorline", true)
 
   -- run the command under the cursor
-  vim.api.nvim_buf_set_keymap(
-    bufnr,
-    "n",
-    "<CR>",
-    ":lua require'rust-tools.hover_actions'._run_command()<CR>",
-    set_keymap_opt
-  )
-  -- close on escape
-  vim.api.nvim_buf_set_keymap(
-    bufnr,
-    "n",
-    "<Esc>",
-    ":lua require'rust-tools.hover_actions'._close_hover()<CR>",
-    set_keymap_opt
-  )
+  vim.keymap.set("n", "<CR>", function()
+    run_command(ctx)
+  end, { buffer = bufnr, noremap = true, silent = true })
 end
 
 -- Sends the request to rust-analyzer to get hover actions and handle it
 function M.hover_actions()
-  utils.request(0, "textDocument/hover", get_params(), M.handler)
+  rt.utils.request(0, "textDocument/hover", get_params(), M.handler)
 end
 
 return M

@@ -1,59 +1,76 @@
-local nvim_lsp = require("lspconfig")
-local config = require("rust-tools.config")
-local utils = require("rust-tools.utils.utils")
+local rt = require("rust-tools")
+local lspconfig = require("lspconfig")
 local lspconfig_utils = require("lspconfig.util")
-local rt_dap = require("rust-tools.dap")
 local server_status = require("rust-tools.server_status")
-local lcommands = require("rust-tools/commands")
 
 local M = {}
 
+local function setup_autocmds()
+  local group = vim.api.nvim_create_augroup("RustToolsAutocmds", { clear = true })
+
+  if rt.config.options.tools.reload_workspace_from_cargo_toml then
+    vim.api.nvim_create_autocmd("BufWritePost", {
+      pattern = "*/Cargo.toml",
+      callback = require('rust-tools/workspace_refresh')._reload_workspace_from_cargo_toml,
+      group = group,
+    })
+  end
+
+  vim.api.nvim_create_autocmd("VimEnter", {
+    pattern = "*.rs",
+    callback = rt.lsp.start_standalone_if_required,
+    group = group,
+  });
+end
+
 local function setup_commands()
-  local lsp_opts = config.options.server
+  local lsp_opts = rt.config.options.server
 
   lsp_opts.commands = vim.tbl_deep_extend("force", lsp_opts.commands or {}, {
-    RustSetInlayHints = {
-      require("rust-tools.inlay_hints").set_inlay_hints,
+    RustCodeAction = {
+      rt.code_action_group.code_action_group,
     },
-    RustOpenExternalDocs= {
-      require("rust-tools.external_docs").open_external_docs,
-    },
-    RustDisableInlayHints = {
-      require("rust-tools.inlay_hints").disable_inlay_hints,
-    },
-    RustToggleInlayHints = {
-      require("rust-tools.inlay_hints").toggle_inlay_hints,
-    },
-    RustExpandMacro = { require("rust-tools.expand_macro").expand_macro },
-    RustOpenCargo = { require("rust-tools.open_cargo_toml").open_cargo_toml },
-    RustParentModule = { require("rust-tools.parent_module").parent_module },
-    RustJoinLines = { require("rust-tools.join_lines").join_lines },
-    RustRunnables = {
-      require("rust-tools.runnables").runnables,
+    RustViewCrateGraph = {
+      function(backend, output, pipe)
+        rt.crate_graph.view_crate_graph(backend, output, pipe)
+      end,
+      "-nargs=* -complete=customlist,v:lua.rust_tools_get_graphviz_backends",
+      description = "`:RustViewCrateGraph [<backend> [<output>]]` Show the crate graph",
     },
     RustDebuggables = {
-      require("rust-tools.debuggables").debuggables,
+      rt.debuggables.debuggables,
     },
-    RustHoverActions = { require("rust-tools.hover_actions").hover_actions },
-    RustHoverRange = { require("rust-tools.hover_range").hover_range },
+    RustExpandMacro = { rt.expand_macro.expand_macro },
+    RustOpenExternalDocs = {
+      rt.external_docs.open_external_docs,
+    },
+    RustHoverActions = { rt.hover_actions.hover_actions },
+    RustHoverRange = { rt.hover_range.hover_range },
+    RustEnableInlayHints = {
+      rt.inlay_hints.enable,
+    },
+    RustDisableInlayHints = {
+      rt.inlay_hints.disable,
+    },
+    RustSetInlayHints = {
+      rt.inlay_hints.set,
+    },
+    RustUnsetInlayHints = {
+      rt.inlay_hints.unset,
+    },
+    RustJoinLines = { rt.join_lines.join_lines },
     RustMoveItemDown = {
-      require("rust-tools.move_item").move_item,
+      rt.move_item.move_item,
     },
     RustMoveItemUp = {
       function()
         require("rust-tools.move_item").move_item(true)
       end,
     },
-    RustViewCrateGraph = {
-      function(backend, output, pipe)
-        require("rust-tools.crate_graph").view_crate_graph(
-          backend,
-          output,
-          pipe
-        )
-      end,
-      "-nargs=* -complete=customlist,v:lua.rust_tools_get_graphviz_backends",
-      description = "`:RustViewCrateGraph [<backend> [<output>]]` Show the crate graph",
+    RustOpenCargo = { rt.open_cargo_toml.open_cargo_toml },
+    RustParentModule = { rt.parent_module.parent_module },
+    RustRunnables = {
+      rt.runnables.runnables,
     },
     RustSSR = {
       function(query)
@@ -63,28 +80,24 @@ local function setup_commands()
       description = "`:RustSSR [query]` Structural Search Replace",
     },
     RustReloadWorkspace = {
-      require("rust-tools/workspace_refresh").reload_workspace,
-    },
-    RustCodeAction = {
-      function()
-        require("rust-tools/code_action_group").code_action_group()
-      end,
+      rt.workspace_refresh.reload_workspace,
     },
   })
 end
 
 local function setup_handlers()
-  local lsp_opts = config.options.server
-  local tool_opts = config.options.tools
+  local lsp_opts = rt.config.options.server
+  local tool_opts = rt.config.options.tools
   local custom_handlers = {}
 
   if tool_opts.hover_with_actions then
-    custom_handlers["textDocument/hover"] = utils.mk_handler(
-      require("rust-tools.hover_actions").handler
+    vim.notify(
+      "rust-tools: hover_with_actions is deprecated, please setup a keybind to :RustHoverActions in on_attach instead",
+      vim.log.levels.INFO
     )
   end
 
-  custom_handlers["experimental/serverStatus"] = utils.mk_handler(
+  custom_handlers["experimental/serverStatus"] = rt.utils.mk_handler(
     server_status.handler
   )
 
@@ -96,11 +109,11 @@ local function setup_handlers()
 end
 
 local function setup_on_init()
-  local lsp_opts = config.options.server
+  local lsp_opts = rt.config.options.server
   local old_on_init = lsp_opts.on_init
 
   lsp_opts.on_init = function(...)
-    utils.override_apply_text_edits()
+    rt.utils.override_apply_text_edits()
     if old_on_init ~= nil then
       old_on_init(...)
     end
@@ -108,7 +121,7 @@ local function setup_on_init()
 end
 
 local function setup_capabilities()
-  local lsp_opts = config.options.server
+  local lsp_opts = rt.config.options.server
   local capabilities = vim.lsp.protocol.make_client_capabilities()
 
   -- snippets
@@ -148,7 +161,7 @@ local function setup_capabilities()
 end
 
 local function setup_lsp()
-  nvim_lsp.rust_analyzer.setup(config.options.server)
+  lspconfig.rust_analyzer.setup(rt.config.options.server)
 end
 
 local function get_root_dir(filename)
@@ -182,28 +195,28 @@ local function get_root_dir(filename)
 end
 
 local function setup_root_dir()
-  local lsp_opts = config.options.server
+  local lsp_opts = rt.config.options.server
   if not lsp_opts.root_dir then
     lsp_opts.root_dir = get_root_dir
   end
 end
 
 function M.start_standalone_if_required()
-  local lsp_opts = config.options.server
+  local lsp_opts = rt.config.options.server
   local current_buf = vim.api.nvim_get_current_buf()
 
   if
     lsp_opts.standalone
-    and utils.is_bufnr_rust(current_buf)
+    and rt.utils.is_bufnr_rust(current_buf)
     and (get_root_dir() == nil)
   then
     require("rust-tools.standalone").start_standalone_client()
   end
 end
 
-function M.setup(opts)
-  config.setup(opts)
-
+function M.setup()
+  setup_autocmds()
+  -- setup capabilities
   setup_capabilities()
   -- setup on_init
   setup_on_init()
@@ -215,12 +228,6 @@ function M.setup(opts)
   setup_commands()
   -- setup rust analyzer
   setup_lsp()
-
-  lcommands.setup_lsp_commands()
-
-  if pcall(require, "dap") then
-    rt_dap.setup_adapter()
-  end
 end
 
 return M

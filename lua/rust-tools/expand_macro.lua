@@ -1,4 +1,4 @@
-local utils = require("rust-tools.utils.utils")
+local rt = require("rust-tools")
 
 local M = {}
 
@@ -44,13 +44,13 @@ local function handler(_, result)
 
   -- check if a buffer with the latest id is already open, if it is then
   -- delete it and continue
-  utils.delete_buf(latest_buf_id)
+  rt.utils.delete_buf(latest_buf_id)
 
   -- create a new buffer
   latest_buf_id = vim.api.nvim_create_buf(false, true) -- not listed and scratch
 
   -- split the window to create a new buffer and set it to our window
-  utils.split(true, latest_buf_id)
+  rt.utils.split(true, latest_buf_id)
 
   -- set filetpe to rust for syntax highlighting
   vim.api.nvim_buf_set_option(latest_buf_id, "filetype", "rust")
@@ -58,12 +58,12 @@ local function handler(_, result)
   vim.api.nvim_buf_set_lines(latest_buf_id, 0, 0, false, parse_lines(result))
 
   -- make the new buffer smaller
-  utils.resize(true, "-25")
+  rt.utils.resize(true, "-25")
 end
 
 -- Sends the request to rust-analyzer to get cargo.tomls location and open it
 function M.expand_macro()
-  utils.request(0, "rust-analyzer/expandMacro", get_params(), handler)
+  rt.utils.request(0, "rust-analyzer/expandMacro", get_params(), handler)
 end
 
 return M

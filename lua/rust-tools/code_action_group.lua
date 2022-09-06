@@ -1,3 +1,4 @@
+local utils = require("rust-tools.utils.utils")
 local M = {}
 
 ---@private
@@ -38,7 +39,7 @@ function M.on_user_choice(action_tuple, ctx)
   local client = vim.lsp.get_client_by_id(action_tuple[1])
   local action = action_tuple[2]
   local code_action_provider = nil
-  if vim.fn.has('nvim-0.8.0') then
+  if vim.fn.has("nvim-0.8.0") then
     code_action_provider = client.server_capabilities.codeActionProvider
   else
     code_action_provider = client.resolved_capabilities.code_action
@@ -78,6 +79,27 @@ local function compute_width(action_tuples, is_group)
   end
 
   return { width = width + 5 }
+end
+
+local function on_primary_enter_press()
+  if M.state.secondary.winnr then
+    vim.api.nvim_set_current_win(M.state.secondary.winnr)
+    return
+  end
+
+  local line = vim.api.nvim_win_get_cursor(M.state.secondary.winnr or 0)[1]
+
+  for _, value in ipairs(M.state.actions.ungrouped) do
+    if value[2].idx == line then
+      M.on_user_choice(value, M.state.ctx)
+    end
+  end
+
+  M.cleanup()
+end
+
+local function on_primary_quit()
+  M.cleanup()
 end
 
 local function on_code_action_results(results, ctx)
@@ -153,21 +175,15 @@ local function on_code_action_results(results, ctx)
   end
 
   vim.api.nvim_buf_set_lines(M.state.primary.bufnr, 0, 1, false, {})
-  vim.api.nvim_buf_set_keymap(
-    M.state.primary.bufnr,
+
+  vim.keymap.set(
     "n",
     "<CR>",
-    ":lua require('rust-tools/code_action_group').on_primary_enter_press()<CR>",
-    {}
+    on_primary_enter_press,
+    { buffer = M.state.primary.bufnr }
   )
 
-  vim.api.nvim_buf_set_keymap(
-    M.state.primary.bufnr,
-    "n",
-    "q",
-    ":lua require('rust-tools/code_action_group').on_primary_quit()<CR>",
-    {}
-  )
+  vim.keymap.set("n", "q", on_primary_quit, { buffer = M.state.primary.bufnr })
 
   M.codeactionify_window_buffer(M.state.primary.winnr, M.state.primary.bufnr)
 
@@ -178,20 +194,12 @@ local function on_code_action_results(results, ctx)
     end,
   })
 
-  vim.cmd(
-    [[autocmd CursorMoved <buffer> lua require('rust-tools/code_action_group').on_cursor_move()]]
-  )
-  vim.cmd([[
-        augroup RustToolsCodeActions
-            au!
-            autocmd BufEnter * lua require('rust-tools/code_action_group').on_buf_enter()
-        augroup END
-        redraw
-    ]])
-end
+  vim.api.nvim_create_autocmd("CursorMoved", {
+    buffer = M.state.primary.bufnr,
+    callback = M.on_cursor_move,
+  })
 
-function M.on_primary_quit()
-  M.cleanup()
+  vim.cmd"redraw"
 end
 
 function M.codeactionify_window_buffer(winnr, bufnr)
@@ -204,32 +212,8 @@ function M.codeactionify_window_buffer(winnr, bufnr)
   vim.api.nvim_win_set_option(winnr, "cul", true)
 end
 
-function M.on_buf_enter()
-  local curbuf = vim.api.nvim_get_current_buf()
-  if curbuf ~= M.state.primary.bufnr and curbuf ~= M.state.secondary.bufnr then
-    M.cleanup()
-  end
-end
-
-function M.on_primary_enter_press()
-  if M.state.secondary.winnr then
-    vim.api.nvim_set_current_win(M.state.secondary.winnr)
-    return
-  end
-
-  local line = vim.api.nvim_win_get_cursor(M.state.secondary.winnr or 0)[1]
-
-  for _, value in ipairs(M.state.actions.ungrouped) do
-    if value[2].idx == line then
-      M.on_user_choice(value, M.state.ctx)
-    end
-  end
-
-  M.cleanup()
-end
-
-function M.on_secondary_enter_press()
-  local line = vim.api.nvim_win_get_cursor(M.state.secondary.winnr or 0)[1]
+local function on_secondary_enter_press()
+  local line = vim.api.nvim_win_get_cursor(M.state.secondary.winnr)[1]
   local active_group = nil
 
   for _, value in pairs(M.state.actions.grouped) do
@@ -250,7 +234,7 @@ function M.on_secondary_enter_press()
   M.cleanup()
 end
 
-function M.on_secondary_quit()
+local function on_secondary_quit()
   local winnr = M.state.secondary.winnr
   -- we clear first because if we close the window first, the cursor moved
   -- autocmd of the first buffer gets called which then sees that
@@ -258,19 +242,17 @@ function M.on_secondary_quit()
   -- and errors out
   M.state.secondary.clear()
 
-  vim.api.nvim_win_close(winnr, true)
+  utils.close_win(winnr)
 end
 
 function M.cleanup()
-  vim.cmd([[autocmd! RustToolsCodeActions]])
-
   if M.state.primary.winnr then
-    vim.api.nvim_win_close(M.state.primary.winnr, true)
+    utils.close_win(M.state.primary.winnr)
     M.state.primary.clear()
   end
 
   if M.state.secondary.winnr then
-    vim.api.nvim_win_close(M.state.secondary.winnr, true)
+    utils.close_win(M.state.secondary.winnr)
     M.state.secondary.clear()
   end
 
@@ -287,9 +269,7 @@ function M.on_cursor_move()
       M.state.active_group_index = line
 
       if M.state.secondary.winnr then
-        if vim.api.nvim_win_is_valid(M.state.secondary.winnr) then
-          vim.api.nvim_win_close(M.state.secondary.winnr, true)
-        end
+        utils.close_win(M.state.secondary.winnr)
         M.state.secondary.clear()
       end
 
@@ -332,28 +312,25 @@ function M.on_cursor_move()
         M.state.secondary.bufnr
       )
 
-      vim.api.nvim_buf_set_keymap(
-        M.state.secondary.bufnr,
+      vim.keymap.set(
         "n",
         "<CR>",
-        ":lua require('rust-tools/code_action_group').on_secondary_enter_press()<CR>",
-        {}
+        on_secondary_enter_press,
+        { buffer = M.state.secondary.bufnr }
       )
 
-      vim.api.nvim_buf_set_keymap(
-        M.state.secondary.bufnr,
+      vim.keymap.set(
         "n",
         "q",
-        ":lua require('rust-tools/code_action_group').on_secondary_quit()<CR>",
-        {}
+        on_secondary_quit,
+        { buffer = M.state.secondary.bufnr }
       )
+
       return
     end
 
     if M.state.secondary.winnr then
-      if vim.api.nvim_win_is_valid(M.state.secondary.winnr) then
-        vim.api.nvim_win_close(M.state.secondary.winnr, true)
-      end
+      utils.close_win(M.state.secondary.winnr)
       M.state.secondary.clear()
     end
   end

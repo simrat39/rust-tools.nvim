@@ -9,17 +9,6 @@ end
 
 local defaults = {
   tools = { -- rust-tools options
-    -- automatically set inlay hints (type hints)
-    -- There is an issue due to which the hints are not applied on the first
-    -- opened file. For now, write to the file to trigger a reapplication of
-    -- the hints or just run :RustSetInlayHints.
-    -- default: true
-    autoSetHints = true,
-
-    -- whether to show hover actions inside the hover window
-    -- this overrides the default hover handler so something like lspsaga.nvim's hover would be overriden by this
-    -- default: true
-    hover_with_actions = true,
 
     -- how to execute terminal commands
     -- options right now: termopen / quickfix
@@ -29,26 +18,21 @@ local defaults = {
     -- The callback receives one parameter indicating the `health` of the server: "ok" | "warning" | "error"
     on_initialized = nil,
 
+    -- automatically call RustReloadWorkspace when writing to a Cargo.toml file.
+    reload_workspace_from_cargo_toml = true,
+
     -- These apply to the default RustSetInlayHints command
     inlay_hints = {
+      -- automatically set inlay hints (type hints)
+      -- default: true
+      auto = true,
 
       -- Only show inlay hints for the current line
       only_current_line = false,
 
-      -- Event which triggers a refersh of the inlay hints.
-      -- You can make this "CursorMoved" or "CursorMoved,CursorMovedI" but
-      -- not that this may cause higher CPU usage.
-      -- This option is only respected when only_current_line and
-      -- autoSetHints both are true.
-      only_current_line_autocmd = "CursorHold",
-
       -- whether to show parameter hints with the inlay hints or not
       -- default: true
       show_parameter_hints = true,
-
-      -- whether to show variable name before type hints with the inlay hints or not
-      -- default: false
-      show_variable_name = false,
 
       -- prefix for parameter hints
       -- default: "<-"
@@ -58,7 +42,7 @@ local defaults = {
       -- default: "=>"
       other_hints_prefix = "=> ",
 
-      -- whether to align to the lenght of the longest line in the file
+      -- whether to align to the length of the longest line in the file
       max_len_align = false,
 
       -- padding from the left if max_len_align is true
@@ -76,6 +60,7 @@ local defaults = {
 
     -- options same as lsp hover / vim.lsp.util.open_floating_preview()
     hover_actions = {
+
       -- the border that is used for the hover window
       -- see vim.api.nvim_open_win()
       border = {
@@ -182,7 +167,7 @@ local defaults = {
     -- standalone file support
     -- setting it to false may improve startup time
     standalone = true,
-  }, -- rust-analyer options
+  }, -- rust-analyzer options
 
   -- debugging stuff
   dap = {

@@ -1,4 +1,4 @@
-local utils = require("rust-tools.utils.utils")
+local rt = require("rust-tools")
 
 local M = {}
 
@@ -12,7 +12,7 @@ end
 
 local function handler(err, result)
   if err then
-    error("Cound not execute request to server: " .. err.message)
+    error("Could not execute request to server: " .. err.message)
     return
   end
 
@@ -27,7 +27,7 @@ function M.ssr(query)
   end
 
   if query then
-    utils.request(0, "experimental/ssr", get_opts(query), handler)
+    rt.utils.request(0, "experimental/ssr", get_opts(query), handler)
   end
 end
 

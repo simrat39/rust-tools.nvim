@@ -1,32 +1,31 @@
-local utils = require("rust-tools.utils.utils")
-local config = require("rust-tools.config")
+local rt = require("rust-tools")
 
 local M = {}
 
 local function get_opts()
-  return { full = config.options.tools.crate_graph.full }
+  return { full = rt.config.options.tools.crate_graph.full }
 end
 
 -- Creation of the correct handler depending on the initial call of the command
 -- and give the option to override global settings
 local function handler_factory(backend, output, pipe)
-  backend = backend or config.options.tools.crate_graph.backend
-  output = output or config.options.tools.crate_graph.output
-  pipe = pipe or config.options.tools.crate_graph.pipe
+  backend = backend or rt.config.options.tools.crate_graph.backend
+  output = output or rt.config.options.tools.crate_graph.output
+  pipe = pipe or rt.config.options.tools.crate_graph.pipe
 
   -- Graph is a representation of the crate graph following the graphviz format
   -- The handler processes and pipes the graph to the dot command that will
   -- visualize with the given backend
   return function(err, graph)
     if err ~= nil then
-      error("Cound not execute request to server" .. err)
+      error("Could not execute request to server" .. err)
       return
     end
 
     -- Validating backend
     if
-      not utils.contains(
-        config.options.tools.crate_graph.enabled_graphviz_backends,
+      not rt.utils.contains(
+        rt.config.options.tools.crate_graph.enabled_graphviz_backends,
         backend
       )
     then
@@ -57,7 +56,7 @@ local function handler_factory(backend, output, pipe)
 end
 
 function M.view_crate_graph(backend, output, pipe)
-  utils.request(
+  rt.utils.request(
     0,
     "rust-analyzer/viewCrateGraph",
     get_opts(),
