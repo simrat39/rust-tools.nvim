@@ -22,13 +22,28 @@ function M.setup_adapter()
   dap.adapters.rt_lldb = rt.config.options.dap.adapter
 end
 
+local function has_value(tab, val)
+    for index, value in ipairs(tab) do
+        if value == val then
+            return true
+        end
+    end
+
+    return false
+end
+
 local function get_cargo_args_from_runnables_args(runnable_args)
   local cargo_args = runnable_args.cargoArgs
 
-  table.insert(cargo_args, "--message-format=json")
+  local message_json = "--message-format=json"
+  if has_value(cargo_args, message_json) ~= true then
+    table.insert(cargo_args, message_json)
+  end
 
   for _, value in ipairs(runnable_args.cargoExtraArgs) do
-    table.insert(cargo_args, value)
+    if has_value(cargo_args, value) ~= true then
+      table.insert(cargo_args, value)
+    end
   end
 
   return cargo_args

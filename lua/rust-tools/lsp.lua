@@ -52,6 +52,12 @@ local function setup_commands()
     RustDisableInlayHints = {
       rt.inlay_hints.disable,
     },
+    RustLastDebug = {
+      rt.cached_commands.execute_last_debuggable,
+    },
+    RustLastRun = {
+      rt.cached_commands.execute_last_runnable,
+    },
     RustSetInlayHints = {
       rt.inlay_hints.set,
     },

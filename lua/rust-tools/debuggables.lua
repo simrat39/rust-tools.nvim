@@ -78,6 +78,8 @@ local function handler(_, result)
     function(_, choice)
       local args = result[choice].args
       rt.dap.start(args)
+
+      rt.cached_commands.set_last_debuggable(args)
     end
   )
 end
