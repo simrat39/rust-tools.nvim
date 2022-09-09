@@ -1,3 +1,5 @@
+local rt = require("rust-tools")
+
 local M = {}
 
 function M.is_windows()
@@ -65,10 +67,20 @@ function M.resize(vertical, amount)
 end
 
 function M.override_apply_text_edits()
+  local override = nil
+  if rt.config.options.tools.snippet_func then
+    print("here")
+    override = rt.config.options.tools.snippet_func
+  else
+    override = function(edits, bufnr, offset_encoding, old)
+      M.snippet_text_edits_to_text_edits(edits)
+      old(edits, bufnr, offset_encoding)
+    end
+  end
+
   local old_func = vim.lsp.util.apply_text_edits
   vim.lsp.util.apply_text_edits = function(edits, bufnr, offset_encoding)
-    M.snippet_text_edits_to_text_edits(edits)
-    old_func(edits, bufnr, offset_encoding)
+    override(edits, bufnr, offset_encoding, old_func)
   end
 end
 
@@ -131,7 +143,6 @@ function M.is_ra_server(client)
   return client.name == "rust_analyzer"
     or client.name == "rust_analyzer-standalone"
 end
-
 
 -- sanitize_command_for_debugging substitudes the command arguments so it can be used to run a
 -- debugger.
