@@ -164,13 +164,15 @@ local function on_code_action_results(results, ctx)
   for _, value in pairs(M.state.actions.ungrouped) do
     local action = value[2]
     value[2].idx = idx
-    vim.api.nvim_buf_set_lines(
-      M.state.primary.bufnr,
-      -1,
-      -1,
-      false,
-      { action.title }
-    )
+    for s in string.gmatch(action.title, "[^\r\n]+") do
+      vim.api.nvim_buf_set_lines(
+        M.state.primary.bufnr,
+        -1,
+        -1,
+        false,
+        { s }
+      )
+    end
     idx = idx + 1
   end
 
