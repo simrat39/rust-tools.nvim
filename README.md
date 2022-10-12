@@ -376,6 +376,7 @@ local opts = {
   -- all the opts to send to nvim-lspconfig
   -- these override the defaults set by rust-tools.nvim
   -- see https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#rust_analyzer
+  -- to skip rust-tools lsp setup set `server = nil`
   server = {
     -- standalone file support
     -- setting it to false may improve startup time
@@ -383,6 +384,7 @@ local opts = {
   }, -- rust-analyzer options
 
   -- debugging stuff
+  -- to skip rust-tools dap setup set `dap = nil`
   dap = {
     adapter = {
       type = "executable",

@@ -161,6 +161,9 @@ local function setup_capabilities()
 end
 
 local function setup_lsp()
+  if rt.config.options.server == nil then -- Skip lsp setup
+    return
+  end
   lspconfig.rust_analyzer.setup(rt.config.options.server)
 end
 

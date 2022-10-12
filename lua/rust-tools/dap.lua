@@ -18,6 +18,9 @@ function M.get_codelldb_adapter(codelldb_path, liblldb_path)
 end
 
 function M.setup_adapter()
+  if rt.config.options.dap == nil then -- Skip dap setup
+    return
+  end
   local dap = require("dap")
   dap.adapters.rt_lldb = rt.config.options.dap.adapter
 end
