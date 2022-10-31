@@ -11,7 +11,7 @@ local function setup_autocmds()
   if rt.config.options.tools.reload_workspace_from_cargo_toml then
     vim.api.nvim_create_autocmd("BufWritePost", {
       pattern = "*/Cargo.toml",
-      callback = require('rust-tools/workspace_refresh')._reload_workspace_from_cargo_toml,
+      callback = require('rust-tools.workspace_refresh')._reload_workspace_from_cargo_toml,
       group = group,
     })
   end
