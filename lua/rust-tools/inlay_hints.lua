@@ -160,6 +160,11 @@ function M.cache_render(self, bufnr)
             return
           end
 
+          if not vim.api.nvim_buf_is_valid(ctx.bufnr) then
+            self.cache[ctx.bufnr] = nil
+            return
+          end
+
           self.cache[ctx.bufnr] = parse_hints(result)
 
           M.render(self, ctx.bufnr)
