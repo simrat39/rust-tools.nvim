@@ -74,6 +74,12 @@ local defaults = {
         { "│", "FloatBorder" },
       },
 
+      -- Maximal width of the hover window. Nil means no max.
+      max_width = nil,
+
+      -- Maximal height of the hover window. Nil means no max.
+      max_height = nil,
+
       -- whether the hover action window gets automatically focused
       -- default: false
       auto_focus = false,
