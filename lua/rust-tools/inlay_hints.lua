@@ -227,6 +227,9 @@ local function render_line(line, line_hints, bufnr)
   -- set the virtual text if it is not empty
   if virt_text ~= "" then
     ---@diagnostic disable-next-line: param-type-mismatch
+    if opts.right_align then
+      virt_text = virt_text .. string.rep(" ", opts.right_align_padding)
+    end
     vim.api.nvim_buf_set_extmark(bufnr, M.namespace, line, 0, {
       virt_text_pos = opts.right_align and "right_align" or "eol",
       virt_text = {
