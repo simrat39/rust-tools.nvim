@@ -12,7 +12,7 @@ local defaults = {
 
     -- how to execute terminal commands
     -- options right now: termopen / quickfix
-    executor = require("rust-tools/executors").termopen,
+    executor = require("rust-tools.executors").termopen,
 
     -- callback to execute once rust-analyzer is done initializing the workspace
     -- The callback receives one parameter indicating the `health` of the server: "ok" | "warning" | "error"
@@ -73,6 +73,12 @@ local defaults = {
         { "╰", "FloatBorder" },
         { "│", "FloatBorder" },
       },
+
+      -- Maximal width of the hover window. Nil means no max.
+      max_width = nil,
+
+      -- Maximal height of the hover window. Nil means no max.
+      max_height = nil,
 
       -- whether the hover action window gets automatically focused
       -- default: false

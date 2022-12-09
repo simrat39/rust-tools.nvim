@@ -8,6 +8,7 @@ function M.start_standalone_client()
     ),
     capabilities = rt.config.options.server.capabilities,
     cmd = rt.config.options.server.cmd or { "rust-analyzer" },
+    filetypes = { "rust" },
     init_options = { detachedFiles = { vim.api.nvim_buf_get_name(0) } },
     name = "rust_analyzer-standalone",
     on_init = function(client)

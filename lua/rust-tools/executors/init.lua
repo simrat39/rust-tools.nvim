@@ -1,6 +1,6 @@
-local termopen = require("rust-tools/executors/termopen")
-local quickfix = require("rust-tools/executors/quickfix")
-local toggleterm = require("rust-tools/executors/toggleterm")
+local termopen = require("rust-tools.executors.termopen")
+local quickfix = require("rust-tools.executors.quickfix")
+local toggleterm = require("rust-tools.executors.toggleterm")
 
 local M = {}
 

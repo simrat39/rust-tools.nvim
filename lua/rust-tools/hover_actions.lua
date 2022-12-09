@@ -36,8 +36,7 @@ function M.execute_rust_analyzer_command(action, ctx)
   end
 end
 
-function M._close_hover()
-end
+function M._close_hover() end
 
 local function parse_commands()
   local prompt = {}
@@ -64,10 +63,8 @@ function M.handler(_, result, ctx)
     return
   end
 
-  local markdown_lines = util.convert_input_to_markdown_lines(
-    result.contents,
-    {}
-  )
+  local markdown_lines =
+    util.convert_input_to_markdown_lines(result.contents, {})
   if result.actions then
     M._state.commands = result.actions[1].commands
     local prompt = parse_commands()

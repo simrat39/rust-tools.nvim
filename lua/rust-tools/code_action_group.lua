@@ -124,6 +124,10 @@ local function on_code_action_results(results, ctx)
 
   for _, value in ipairs(action_tuples) do
     local action = value[2]
+
+    -- Some clippy lints may have newlines in them
+    action.title = string.gsub(action.title, "[\n\r]+", " ")
+
     if action.group then
       if not M.state.actions.grouped[action.group] then
         M.state.actions.grouped[action.group] = { actions = {}, idx = nil }
@@ -139,9 +143,8 @@ local function on_code_action_results(results, ctx)
   M.state.primary.winnr = vim.api.nvim_open_win(M.state.primary.bufnr, true, {
     relative = "cursor",
     width = M.state.primary.geometry.width,
-    height = vim.tbl_count(M.state.actions.grouped) + vim.tbl_count(
-      M.state.actions.ungrouped
-    ),
+    height = vim.tbl_count(M.state.actions.grouped)
+      + vim.tbl_count(M.state.actions.ungrouped),
     focusable = true,
     border = "rounded",
     row = 1,
@@ -199,7 +202,7 @@ local function on_code_action_results(results, ctx)
     callback = M.on_cursor_move,
   })
 
-  vim.cmd"redraw"
+  vim.cmd("redraw")
 end
 
 function M.codeactionify_window_buffer(winnr, bufnr)
@@ -276,10 +279,8 @@ function M.on_cursor_move()
       M.state.secondary.geometry = compute_width(value.actions, false)
 
       M.state.secondary.bufnr = vim.api.nvim_create_buf(false, true)
-      M.state.secondary.winnr = vim.api.nvim_open_win(
-        M.state.secondary.bufnr,
-        false,
-        {
+      M.state.secondary.winnr =
+        vim.api.nvim_open_win(M.state.secondary.bufnr, false, {
           relative = "win",
           win = M.state.primary.winnr,
           width = M.state.secondary.geometry.width,
@@ -288,8 +289,7 @@ function M.on_cursor_move()
           border = "rounded",
           row = line - 2,
           col = M.state.primary.geometry.width + 1,
-        }
-      )
+        })
 
       local idx = 1
       for _, inner_value in pairs(value.actions) do
