@@ -213,10 +213,18 @@ local function render_line(line, line_hints, bufnr)
   if not vim.tbl_isempty(other_hints) then
     virt_text = virt_text .. opts.other_hints_prefix
     for i, o_hint in ipairs(other_hints) do
-      if string.sub(o_hint.label, 1, 2) == ": " then
-        virt_text = virt_text .. o_hint.label:sub(3)
+      local label = o_hint.label
+      if type(label) == 'table' then
+        local parts = label
+        label = ''
+        for _, part in ipairs(parts) do
+          label = label .. part.value
+        end
+      end
+      if string.sub(label, 1, 2) == ": " then
+        virt_text = virt_text .. label:sub(3)
       else
-        virt_text = virt_text .. o_hint.label
+        virt_text = virt_text .. label
       end
       if i ~= #other_hints then
         virt_text = virt_text .. ", "
