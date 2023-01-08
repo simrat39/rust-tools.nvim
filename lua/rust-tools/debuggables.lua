@@ -76,6 +76,10 @@ local function handler(_, result)
     options,
     { prompt = "Debuggables", kind = "rust-tools/debuggables" },
     function(_, choice)
+      if choice == nil then
+        return
+      end
+
       local args = result[choice].args
       rt.dap.start(args)
     end
