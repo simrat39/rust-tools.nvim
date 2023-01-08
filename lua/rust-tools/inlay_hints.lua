@@ -175,6 +175,14 @@ function M.cache_render(self, bufnr)
   end
 end
 
+local function parse_hint_label(hint_label)
+  if type(hint_label) == "string" then
+    return hint_label
+  elseif type(hint_label) == "table" then
+    return table.concat(vim.tbl_map(function (label_part) return label_part.value end, hint_label))
+  end
+end
+
 local function render_line(line, line_hints, bufnr)
   local opts = rt.config.options.tools.inlay_hints
   local virt_text = ""
@@ -189,11 +197,11 @@ local function render_line(line, line_hints, bufnr)
   -- segregate parameter hints and other hints
   for _, hint in ipairs(line_hints) do
     if hint.kind == 2 then
-      table.insert(param_hints, hint.label)
+      table.insert(param_hints, parse_hint_label(hint.label))
     end
 
     if hint.kind == 1 then
-      table.insert(other_hints, hint)
+      table.insert(other_hints, parse_hint_label(hint.label))
     end
   end
 
@@ -213,11 +221,7 @@ local function render_line(line, line_hints, bufnr)
   if not vim.tbl_isempty(other_hints) then
     virt_text = virt_text .. opts.other_hints_prefix
     for i, o_hint in ipairs(other_hints) do
-      if string.sub(o_hint.label, 1, 2) == ": " then
-        virt_text = virt_text .. o_hint.label:sub(3)
-      else
-        virt_text = virt_text .. o_hint.label
-      end
+      virt_text = virt_text .. o_hint:gsub("^: ", "")
       if i ~= #other_hints then
         virt_text = virt_text .. ", "
       end
@@ -227,6 +231,9 @@ local function render_line(line, line_hints, bufnr)
   -- set the virtual text if it is not empty
   if virt_text ~= "" then
     ---@diagnostic disable-next-line: param-type-mismatch
+    if opts.right_align then
+      virt_text = virt_text .. string.rep(" ", opts.right_align_padding)
+    end
     vim.api.nvim_buf_set_extmark(bufnr, M.namespace, line, 0, {
       virt_text_pos = opts.right_align and "right_align" or "eol",
       virt_text = {
