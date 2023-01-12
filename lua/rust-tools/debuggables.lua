@@ -58,7 +58,7 @@ local function sanitize_results_for_debugging(result)
     return is_valid_test(value.args)
   end, result)
 
-  for i, value in ipairs(ret) do
+  for _, value in ipairs(ret) do
     rt.utils.sanitize_command_for_debugging(value.args.cargoArgs)
   end
 

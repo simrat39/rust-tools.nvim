@@ -70,40 +70,75 @@ function M.start(args)
           scheduled_error(
             "An error occurred while compiling. Please fix all compilation issues and try again."
           )
+          return
         end
-        vim.schedule(function()
-          for _, value in pairs(j:result()) do
-            local json = vim.fn.json_decode(value)
-            if
-              type(json) == "table"
-              and json.executable ~= vim.NIL
-              and json.executable ~= nil
-            then
-              local dap_config = {
-                name = "Rust tools debug",
-                type = "rt_lldb",
-                request = "launch",
-                program = json.executable,
-                args = args.executableArgs or {},
-                cwd = args.workspaceRoot,
-                stopOnEntry = false,
 
-                -- if you change `runInTerminal` to true, you might need to change the yama/ptrace_scope setting:
-                --
-                --    echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
-                --
-                -- Otherwise you might get the following error:
-                --
-                --    Error on launch: Failed to attach to the target process
-                --
-                -- But you should be aware of the implications:
-                -- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
-                runInTerminal = false,
-              }
-              dap.run(dap_config)
-              break
+        vim.schedule(function()
+          local executables = {}
+
+          for _, value in pairs(j:result()) do
+            local artifact = vim.fn.json_decode(value)
+
+            -- only process artifact if it's valid json object and it is a compiler artifact
+            if
+              type(artifact) ~= "table"
+              or artifact.reason ~= "compiler-artifact"
+            then
+              goto loop_end
             end
+
+            local is_binary =
+              rt.utils.contains(artifact.target.crate_types, "bin")
+            local is_build_script =
+              rt.utils.contains(artifact.target.kind, "custom-build")
+            local is_test = rt.utils.contains(artifact.target.kind, "test")
+
+            -- only add executable to the list if we want a binary debug and it is a binary
+            -- or if we want a test debug and it is a test
+            if
+              (cargo_args[1] == "build" and is_binary and not is_build_script)
+              or (cargo_args[1] == "test" and is_test)
+            then
+              table.insert(executables, artifact.executable)
+            end
+
+            ::loop_end::
           end
+
+          -- only 1 executable is allowed for debugging - error out if zero or many were found
+          if #executables <= 0 then
+            scheduled_error("No compilation artifacts found.")
+            return
+          end
+          if #executables > 1 then
+            scheduled_error("Multiple compilation artifacts are not supported.")
+            return
+          end
+
+          -- create debug configuration
+          local dap_config = {
+            name = "Rust tools debug",
+            type = "rt_lldb",
+            request = "launch",
+            program = executables[1],
+            args = args.executableArgs or {},
+            cwd = args.workspaceRoot,
+            stopOnEntry = false,
+
+            -- if you change `runInTerminal` to true, you might need to change the yama/ptrace_scope setting:
+            --
+            --    echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+            --
+            -- Otherwise you might get the following error:
+            --
+            --    Error on launch: Failed to attach to the target process
+            --
+            -- But you should be aware of the implications:
+            -- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
+            runInTerminal = false,
+          }
+          -- start debugging
+          dap.run(dap_config)
         end)
       end,
     })
