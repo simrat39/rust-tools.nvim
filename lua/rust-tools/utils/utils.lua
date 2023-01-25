@@ -5,6 +5,13 @@ function M.is_windows()
   return sysname == "Windows" or sysname == "Windows_NT"
 end
 
+function M.is_nushell()
+    local shell = vim.loop.os_getenv("SHELL")
+    local nu = "nu"
+    -- Check if $SHELL ends in "nu"
+    return shell:sub(-string.len(nu)) == nu
+end
+
 ---comment
 ---@param command string
 ---@param args table
@@ -22,7 +29,9 @@ end
 ---Note that a space is not added at the end of the returned command string
 ---@param commands table
 function M.chain_commands(commands)
-  local separator = M.is_windows() and " | " or " && "
+  local separator = M.is_windows() and " | "
+    or M.is_nushell() and ";"
+    or " && "
   local ret = ""
 
   for i, value in ipairs(commands) do
