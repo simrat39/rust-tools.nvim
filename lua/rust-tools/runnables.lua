@@ -59,6 +59,8 @@ local function handler(_, result)
   local options = get_options(result)
   vim.ui.select(options, { prompt = "Runnables", kind = "rust-tools/runnables" }, function(_, choice)
     M.run_command(choice, result)
+
+    rt.cached_commands.set_last_runnable(choice, result)
   end)
 end
 

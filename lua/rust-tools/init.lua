@@ -32,6 +32,9 @@ function M.setup(opts)
   local code_action_group = require("rust-tools.code_action_group")
   M.code_action_group = code_action_group
 
+  local cached_commands = require("rust-tools.cached_commands")
+  M.cached_commands = cached_commands
+
   local commands = require("rust-tools.commands")
 
   local config = require("rust-tools.config")

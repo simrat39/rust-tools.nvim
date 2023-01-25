@@ -25,10 +25,15 @@ end
 local function get_cargo_args_from_runnables_args(runnable_args)
   local cargo_args = runnable_args.cargoArgs
 
-  table.insert(cargo_args, "--message-format=json")
+  local message_json = "--message-format=json"
+  if not rt.utils.contains(cargo_args, message_json) then
+    table.insert(cargo_args, message_json)
+  end
 
   for _, value in ipairs(runnable_args.cargoExtraArgs) do
-    table.insert(cargo_args, value)
+    if not rt.utils.contains(cargo_args, value) then
+      table.insert(cargo_args, value)
+    end
   end
 
   return cargo_args
