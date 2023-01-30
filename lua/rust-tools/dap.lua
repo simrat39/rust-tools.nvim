@@ -45,6 +45,7 @@ local function scheduled_error(err)
   end)
 end
 
+
 function M.start(args)
   if not pcall(require, "dap") then
     scheduled_error("nvim-dap not found.")
@@ -65,6 +66,7 @@ function M.start(args)
     "Compiling a debug build for debugging. This might take some time..."
   )
 
+  
   Job
     :new({
       command = "cargo",
@@ -96,8 +98,7 @@ function M.start(args)
               rt.utils.contains(artifact.target.crate_types, "bin")
             local is_build_script =
               rt.utils.contains(artifact.target.kind, "custom-build")
-            local is_test = rt.utils.contains(artifact.target.kind, "test")
-
+            local is_test = ((artifact.profile.test == true) and (artifact.executable ~= nil)) or rt.utils.contains(artifact.target.kind, "test")
             -- only add executable to the list if we want a binary debug and it is a binary
             -- or if we want a test debug and it is a test
             if
