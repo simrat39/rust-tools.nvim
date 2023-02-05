@@ -51,28 +51,27 @@ end
 
 function M.enable_cache_autocmd()
   local opts = rt.config.options.tools.inlay_hints
-  vim.cmd(string.format(
-    [[
+  vim.cmd(
+    string.format(
+      [[
         augroup InlayHintsCache
         autocmd BufWritePost,BufReadPost,BufEnter,BufWinEnter,TabEnter,TextChanged,TextChangedI *.rs :lua require"rust-tools".inlay_hints.cache()
         %s
         augroup END
     ]],
-    opts.only_current_line
-        and "autocmd CursorMoved,CursorMovedI *.rs :lua require'rust-tools'.inlay_hints.render()"
-      or ""
-  ))
+      opts.only_current_line
+          and "autocmd CursorMoved,CursorMovedI *.rs :lua require'rust-tools'.inlay_hints.render()"
+        or ""
+    )
+  )
 end
 
 function M.disable_cache_autocmd()
-  vim.cmd(
-    [[
+  vim.cmd([[
     augroup InlayHintsCache
     autocmd!
     augroup END
-  ]],
-    false
-  )
+  ]])
 end
 
 local function get_params(client, bufnr)
@@ -91,12 +90,8 @@ local function get_params(client, bufnr)
   }
 
   local line_count = vim.api.nvim_buf_line_count(bufnr) - 1
-  local last_line = vim.api.nvim_buf_get_lines(
-    bufnr,
-    line_count,
-    line_count + 1,
-    true
-  )
+  local last_line =
+    vim.api.nvim_buf_get_lines(bufnr, line_count, line_count + 1, true)
 
   params["range"]["end"]["line"] = line_count
   params["range"]["end"]["character"] = vim.lsp.util.character_offset(
@@ -122,8 +117,9 @@ end
 --    } },
 -- }
 --
-local function parse_hints(result)
+local function parse_hints(result, bufnr)
   local map = {}
+  local max_line_len = 0
 
   if type(result) ~= "table" then
     return {}
@@ -142,15 +138,19 @@ local function parse_hints(result)
       end
     end
 
+    local line_len =
+      string.len(vim.api.nvim_buf_get_lines(bufnr, line, line + 1, true)[1])
+    max_line_len = math.max(max_line_len, line_len)
+
     add_line()
   end
-  return map
+  return map, max_line_len
 end
 
 function M.cache_render(self, bufnr)
   local buffer = bufnr or vim.api.nvim_get_current_buf()
 
-  for _, v in pairs(vim.lsp.buf_get_clients(buffer)) do
+  for _, v in pairs(vim.lsp.get_active_clients({ bufnr = buffer })) do
     if rt.utils.is_ra_server(v) then
       v.request(
         "textDocument/inlayHint",
@@ -165,7 +165,8 @@ function M.cache_render(self, bufnr)
             return
           end
 
-          self.cache[ctx.bufnr] = parse_hints(result)
+          local hints, max_line_len = parse_hints(result, ctx.bufnr)
+          self.cache[ctx.bufnr] = { hints = hints, max_line_len = max_line_len }
 
           M.render(self, ctx.bufnr)
         end,
@@ -179,11 +180,13 @@ local function parse_hint_label(hint_label)
   if type(hint_label) == "string" then
     return hint_label
   elseif type(hint_label) == "table" then
-    return table.concat(vim.tbl_map(function (label_part) return label_part.value end, hint_label))
+    return table.concat(vim.tbl_map(function(label_part)
+      return label_part.value
+    end, hint_label))
   end
 end
 
-local function render_line(line, line_hints, bufnr)
+local function render_line(line, line_hints, bufnr, max_line_len)
   local opts = rt.config.options.tools.inlay_hints
   local virt_text = ""
 
@@ -192,6 +195,16 @@ local function render_line(line, line_hints, bufnr)
 
   if line > vim.api.nvim_buf_line_count(bufnr) then
     return
+  end
+
+  if opts.max_len_align then
+    local line_len =
+      string.len(vim.api.nvim_buf_get_lines(bufnr, line, line + 1, true)[1])
+
+    print(max_line_len, line_len)
+
+    virt_text =
+      string.rep(" ", max_line_len - line_len + opts.max_len_align_padding)
   end
 
   -- segregate parameter hints and other hints
@@ -248,11 +261,13 @@ function M.render(self, bufnr)
   local opts = rt.config.options.tools.inlay_hints
   local buffer = bufnr or vim.api.nvim_get_current_buf()
 
-  local hints = self.cache[buffer]
+  local cached = self.cache[buffer]
 
-  if hints == nil then
+  if cached == nil then
     return
   end
+
+  local hints, max_line_len = cached.hints, cached.max_line_len
 
   clear_ns(buffer)
 
@@ -260,11 +275,11 @@ function M.render(self, bufnr)
     local curr_line = vim.api.nvim_win_get_cursor(0)[1] - 1
     local line_hints = hints[curr_line]
     if line_hints then
-      render_line(curr_line, line_hints, buffer)
+      render_line(curr_line, line_hints, buffer, max_line_len)
     end
   else
     for line, line_hints in pairs(hints) do
-      render_line(line, line_hints, buffer)
+      render_line(line, line_hints, buffer, max_line_len)
     end
   end
 end
