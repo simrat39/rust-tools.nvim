@@ -201,8 +201,6 @@ local function render_line(line, line_hints, bufnr, max_line_len)
     local line_len =
       string.len(vim.api.nvim_buf_get_lines(bufnr, line, line + 1, true)[1])
 
-    print(max_line_len, line_len)
-
     virt_text =
       string.rep(" ", max_line_len - line_len + opts.max_len_align_padding)
   end
