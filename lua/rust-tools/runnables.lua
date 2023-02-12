@@ -24,7 +24,7 @@ end
 ---@return string build command
 ---@return string|table args
 ---@return any cwd
-local function getCommand(c, results)
+local function get_command(c, results)
   local ret = " "
   local args = results[c].args
 
@@ -46,7 +46,7 @@ function M.run_command(choice, result)
 
   local opts = rt.config.options.tools
 
-  local command, args, cwd = getCommand(choice, result)
+  local command, args, cwd = get_command(choice, result)
 
   opts.executor.execute_command(command, args, cwd)
 end
