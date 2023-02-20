@@ -160,7 +160,7 @@ function M.cache_render(self, bufnr)
             return
           end
 
-          if not vim.api.nvim_buf_is_valid(ctx.bufnr) then
+          if not vim.api.nvim_buf_is_loaded(ctx.bufnr) then
             self.cache[ctx.bufnr] = nil
             return
           end
