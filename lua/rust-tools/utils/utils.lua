@@ -7,6 +7,7 @@ end
 
 function M.is_nushell()
     local shell = vim.loop.os_getenv("SHELL")
+    if shell == nil then return false end
     local nu = "nu"
     -- Check if $SHELL ends in "nu"
     return shell:sub(-string.len(nu)) == nu
