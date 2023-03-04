@@ -197,12 +197,16 @@ local function render_line(line, line_hints, bufnr, max_line_len)
     return
   end
 
-  if opts.max_len_align then
+  if opts.max_len_align or opts.left_align then
     local line_len =
       string.len(vim.api.nvim_buf_get_lines(bufnr, line, line + 1, true)[1])
 
-    virt_text =
-      string.rep(" ", max_line_len - line_len + opts.max_len_align_padding)
+    if opts.left_align then
+      virt_text = string.rep(" ", opts.left_align_column - line_len)
+    else
+      virt_text =
+        string.rep(" ", max_line_len - line_len + opts.max_len_align_padding)
+    end
   end
 
   -- segregate parameter hints and other hints
