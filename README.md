@@ -237,6 +237,13 @@ local opts = {
     -- automatically call RustReloadWorkspace when writing to a Cargo.toml file.
     reload_workspace_from_cargo_toml = true,
 
+    code_action_group = {
+      -- Function with signature of `vim.ui.select` used to display the code_actions
+      -- default: require("rust-tools.code_action_group").telescope_select(),
+      selector = require("rust-tools.code_action_group").telescope_select(),
+      -- selector = vim.ui.select,
+    },
+
     -- These apply to the default RustSetInlayHints command
     inlay_hints = {
       -- automatically set inlay hints (type hints)
