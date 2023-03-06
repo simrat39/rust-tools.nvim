@@ -1,4 +1,4 @@
-*rust-tools.txt*           For NVIM v0.8.0          Last change: 2023 March 05
+*rust-tools.txt*           For NVIM v0.8.0          Last change: 2023 March 06
 
 ==============================================================================
 Table of Contents                               *rust-tools-table-of-contents*
