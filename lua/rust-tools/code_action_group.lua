@@ -114,7 +114,7 @@ end
 
 M.code_action_submenu = function(item)
   if item.actions then
-    vim.tbl_map(function(action)
+    return vim.tbl_map(function(action)
       return " ▶" .. action.title
     end, item.actions)
   else
