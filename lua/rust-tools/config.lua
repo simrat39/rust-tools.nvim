@@ -60,8 +60,16 @@ local defaults = {
 
     -- options same as lsp hover / vim.lsp.util.open_floating_preview()
     hover_actions = {
+      -- the handler for the hover action results. Can be one of
+      -- - "rust-tools.hover_action_handlers.detailed":
+      --   A floating popup that shows all hover action information.
+      -- - "rust-tools.hover_action_handlers.builtin":
+      --   Uses the built-in `vim.ui.select` to select an action, if an action
+      --   is available. The `kind` option will be set to `"hoveraction"`.
+      -- - a require path that returns a custom handler function
+      handler = "rust-tools.hover_action_handlers.detailed",
 
-      -- the border that is used for the hover window
+      -- the border that is used for the hover window for the detailed handler.
       -- see vim.api.nvim_open_win()
       border = {
         { "╭", "FloatBorder" },
@@ -74,15 +82,20 @@ local defaults = {
         { "│", "FloatBorder" },
       },
 
-      -- Maximal width of the hover window. Nil means no max.
+      -- Maximal width of the hover window for the detailed handler.
+      -- Nil means no max.
       max_width = nil,
 
-      -- Maximal height of the hover window. Nil means no max.
+      -- Maximal height of the hover window for the detailed handler.
+      -- Nil means no max.
       max_height = nil,
 
-      -- whether the hover action window gets automatically focused
+      -- whether the detailed hover action window gets automatically focused
       -- default: false
       auto_focus = false,
+
+      -- the prompt for the built-in handler.
+      prompt = "Hover actions",
     },
 
     -- settings for showing the crate graph based on graphviz and the dot
