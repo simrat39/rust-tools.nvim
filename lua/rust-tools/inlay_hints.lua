@@ -124,25 +124,27 @@ local function parse_hints(result, bufnr)
   if type(result) ~= "table" then
     return {}
   end
+
   for _, value in pairs(result) do
     local range = value.position
     local line = value.position.line
     local label = value.label
     local kind = value.kind
 
-    local function add_line()
-      if map[line] ~= nil then
-        table.insert(map[line], { label = label, kind = kind, range = range })
-      else
-        map[line] = { { label = label, kind = kind, range = range } }
-      end
+    local status_ok, lines = pcall(vim.api.nvim_buf_get_lines, bufnr, line, line + 1, true)
+
+    if not status_ok then
+        break
     end
 
-    local line_len =
-      string.len(vim.api.nvim_buf_get_lines(bufnr, line, line + 1, true)[1])
+    local line_len = string.len(lines[1])
     max_line_len = math.max(max_line_len, line_len)
 
-    add_line()
+    if map[line] ~= nil then
+      table.insert(map[line], { label = label, kind = kind, range = range })
+    else
+      map[line] = { { label = label, kind = kind, range = range } }
+    end
   end
   return map, max_line_len
 end
