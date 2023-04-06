@@ -251,6 +251,7 @@ local function render_line(line, line_hints, bufnr, max_line_len)
         { virt_text, opts.highlight },
       },
       hl_mode = "combine",
+      priority = opts.priority
     })
   end
 end

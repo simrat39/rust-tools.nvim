@@ -272,6 +272,9 @@ local opts = {
 
       -- The color of the hints
       highlight = "Comment",
+
+      -- priority of the virtual text
+      priority = 100,
     },
 
     -- options same as lsp hover / vim.lsp.util.open_floating_preview()
