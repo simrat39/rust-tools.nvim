@@ -259,6 +259,10 @@ function M.cleanup()
     M.state.secondary.clear()
   end
 
+  if M.state.ctx.win then
+    vim.api.nvim_set_current_win(M.state.ctx.win)
+  end
+
   M.state.actions = {}
   M.state.active_group_index = nil
   M.state.ctx = {}
@@ -367,6 +371,7 @@ function M.code_action_group()
   context.diagnostics = vim.lsp.diagnostic.get_line_diagnostics()
   local params = vim.lsp.util.make_range_params()
   params.context = context
+  local win = vim.api.nvim_get_current_win()
 
   vim.lsp.buf_request_all(
     0,
@@ -375,7 +380,12 @@ function M.code_action_group()
     function(results)
       on_code_action_results(
         results,
-        { bufnr = 0, method = "textDocument/codeAction", params = params }
+        {
+          bufnr = 0,
+          method = "textDocument/codeAction",
+          params = params,
+          win = win
+        }
       )
     end
   )
