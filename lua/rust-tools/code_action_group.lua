@@ -102,6 +102,13 @@ local function on_primary_quit()
   M.cleanup()
 end
 
+local function cleanup_state(state)
+  if state.winnr then
+    utils.close_win(state.winnr)
+    state.clear()
+  end
+end
+
 local function on_code_action_results(results, ctx)
   M.state.ctx = ctx
 
@@ -116,7 +123,7 @@ local function on_code_action_results(results, ctx)
     return
   end
 
-  M.state.primary.geometry = compute_width(action_tuples, true)
+  local geometry = compute_width(action_tuples, true)
 
   M.state.actions.grouped = {}
 
@@ -139,10 +146,12 @@ local function on_code_action_results(results, ctx)
     end
   end
 
+  cleanup_state(M.state.primary)
+  M.state.primary.geometry = geometry
   M.state.primary.bufnr = vim.api.nvim_create_buf(false, true)
   M.state.primary.winnr = vim.api.nvim_open_win(M.state.primary.bufnr, true, {
     relative = "cursor",
-    width = M.state.primary.geometry.width,
+    width = geometry.width,
     height = vim.tbl_count(M.state.actions.grouped)
       + vim.tbl_count(M.state.actions.ungrouped),
     focusable = true,
@@ -249,15 +258,8 @@ local function on_secondary_quit()
 end
 
 function M.cleanup()
-  if M.state.primary.winnr then
-    utils.close_win(M.state.primary.winnr)
-    M.state.primary.clear()
-  end
-
-  if M.state.secondary.winnr then
-    utils.close_win(M.state.secondary.winnr)
-    M.state.secondary.clear()
-  end
+  cleanup_state(M.state.primary)
+  cleanup_state(M.state.secondary)
 
   M.state.actions = {}
   M.state.active_group_index = nil
@@ -276,14 +278,14 @@ function M.on_cursor_move()
         M.state.secondary.clear()
       end
 
-      M.state.secondary.geometry = compute_width(value.actions, false)
+      local geometry = compute_width(value.actions, false)
 
       M.state.secondary.bufnr = vim.api.nvim_create_buf(false, true)
       M.state.secondary.winnr =
         vim.api.nvim_open_win(M.state.secondary.bufnr, false, {
           relative = "win",
           win = M.state.primary.winnr,
-          width = M.state.secondary.geometry.width,
+          width = geometry.width,
           height = #value.actions,
           focusable = true,
           border = "rounded",
@@ -353,9 +355,7 @@ M.state = {
   secondary = {
     bufnr = nil,
     winnr = nil,
-    geometry = nil,
     clear = function()
-      M.state.secondary.geometry = nil
       M.state.secondary.bufnr = nil
       M.state.secondary.winnr = nil
     end,
