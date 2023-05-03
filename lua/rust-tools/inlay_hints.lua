@@ -44,11 +44,10 @@ end
 -- Toggles inlay hints state globally. Uses disable and enable internally
 function M.toggle(self)
   if self.is_enabled then
-    M.disabled(self)
+    M.disable(self)
   else
     M.enable(self)
   end
-  M.is_enabled = not M.is_enabled
 end
 
 -- Set inlay hints only for the current buffer
