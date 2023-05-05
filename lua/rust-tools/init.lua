@@ -90,6 +90,9 @@ function M.setup(opts)
   local lsp = require("rust-tools.lsp")
   M.lsp = lsp
 
+  local fly_check = require("rust-tools.fly_check")
+  M.fly_check = fly_check
+
   local move_item = require("rust-tools.move_item")
   M.move_item = move_item
 
