@@ -396,6 +396,21 @@ local opts = {
       name = "rt_lldb",
     },
   },
+
+  -- choice module you use to speed up setuptime
+  open = {
+    crate_graph = true,
+    expand_macro = true,
+    external_docs = true,
+    debuggables = true,
+    hover_range = true,
+    workspace_refresh = true,
+    move_item = true,
+    standalone = true,
+    dap = true,
+    parent_module = true,
+    runnables = true,
+  },
 }
 
 require('rust-tools').setup(opts)
