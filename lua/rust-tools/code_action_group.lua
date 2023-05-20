@@ -264,6 +264,7 @@ function M.cleanup()
   M.state.actions = {}
   M.state.active_group_index = nil
   M.state.ctx = {}
+  M.state.left_buf = nil
 end
 
 function M.on_cursor_move()
@@ -338,6 +339,38 @@ function M.on_cursor_move()
   end
 end
 
+-- Handles win leave and enter in order to get if any code action win needs to be closed.
+local close_on_exit_group = vim.api.nvim_create_augroup(
+  "rust-tools-code-actions-close-on-exit",
+  { clear = true }
+)
+
+vim.api.nvim_create_autocmd("WinLeave", {
+  group = close_on_exit_group,
+  callback = function(args)
+    if args.buf == M.state.primary.bufnr or args.buf == M.state.secondary.bufnr then
+      M.state.left_buf = args.buf
+    else
+      M.state.left_buf = nil
+    end
+  end
+})
+
+vim.api.nvim_create_autocmd("WinEnter", {
+  group = close_on_exit_group,
+  callback = function(args)
+    if not M.state.left_buf then
+      return
+    end
+
+    if args.buf == M.state.primary.bufnr or args.buf == M.state.secondary.bufnr then
+      return;
+    end
+
+    M.cleanup()
+  end
+})
+
 M.state = {
   ctx = {},
   actions = {},
@@ -360,6 +393,7 @@ M.state = {
       M.state.secondary.winnr = nil
     end,
   },
+  left_buf = nil,
 }
 
 function M.code_action_group()
