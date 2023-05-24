@@ -137,8 +137,8 @@ end
 
 function M.is_ra_server(client)
   local name = client.name
-  return client.name == "rust_analyzer"
-    or client.name == "rust_analyzer-standalone"
+  return name == "rust_analyzer"
+    or name == "rust_analyzer-standalone"
 end
 
 
