@@ -91,7 +91,7 @@ local function get_params(client, bufnr)
 
   local line_count = vim.api.nvim_buf_line_count(bufnr) - 1
   local last_line =
-    vim.api.nvim_buf_get_lines(bufnr, line_count, line_count + 1, true)
+      vim.api.nvim_buf_get_lines(bufnr, line_count, line_count + 1, true)
 
   params["range"]["end"]["line"] = line_count
   params["range"]["end"]["character"] = vim.lsp.util.character_offset(
@@ -117,36 +117,6 @@ end
 --    } },
 -- }
 --
-local function parse_hints(result, bufnr)
-  local map = {}
-  local max_line_len = 0
-
-  if type(result) ~= "table" then
-    return {}
-  end
-  for _, value in pairs(result) do
-    local range = value.position
-    local line = value.position.line
-    local label = value.label
-    local kind = value.kind
-
-    local function add_line()
-      if map[line] ~= nil then
-        table.insert(map[line], { label = label, kind = kind, range = range })
-      else
-        map[line] = { { label = label, kind = kind, range = range } }
-      end
-    end
-
-    local line_len =
-      string.len(vim.api.nvim_buf_get_lines(bufnr, line, line + 1, true)[1])
-    max_line_len = math.max(max_line_len, line_len)
-
-    add_line()
-  end
-  return map, max_line_len
-end
-
 function M.cache_render(self, bufnr)
   local buffer = bufnr or vim.api.nvim_get_current_buf()
 
@@ -165,8 +135,18 @@ function M.cache_render(self, bufnr)
             return
           end
 
-          local hints, max_line_len = parse_hints(result, ctx.bufnr)
-          self.cache[ctx.bufnr] = { hints = hints, max_line_len = max_line_len }
+          local lines = {}
+          for _, hint in pairs(result) do
+            local line_number = hint.position.line + 1
+            local line = lines[line_number]
+            if not line then
+              line = {}
+              lines[line_number] = line
+            end
+            table.insert(line, hint)
+          end
+
+          self.cache[ctx.bufnr] = lines
 
           M.render(self, ctx.bufnr)
         end,
@@ -186,72 +166,50 @@ local function parse_hint_label(hint_label)
   end
 end
 
-local function render_line(line, line_hints, bufnr, max_line_len)
+local function render_line(line, line_hints, bufnr, _)
+  -- print("Hints")
+  -- print(vim.inspect(line_hints))
   local opts = rt.config.options.tools.inlay_hints
-  local virt_text = ""
-
-  local param_hints = {}
-  local other_hints = {}
 
   if line > vim.api.nvim_buf_line_count(bufnr) then
     return
   end
 
-  if opts.max_len_align then
-    local line_len =
-      string.len(vim.api.nvim_buf_get_lines(bufnr, line, line + 1, true)[1])
+  local hints = {}
 
-    virt_text =
-      string.rep(" ", max_line_len - line_len + opts.max_len_align_padding)
-  end
-
-  -- segregate parameter hints and other hints
+  -- Discarded: label[].location, textEdits
   for _, hint in ipairs(line_hints) do
-    if hint.kind == 2 then
-      table.insert(param_hints, parse_hint_label(hint.label))
-    end
-
-    if hint.kind == 1 then
-      table.insert(other_hints, parse_hint_label(hint.label))
-    end
-  end
-
-  -- show parameter hints inside brackets with commas and a thin arrow
-  if not vim.tbl_isempty(param_hints) and opts.show_parameter_hints then
-    virt_text = virt_text .. opts.parameter_hints_prefix .. "("
-    for i, p_hint in ipairs(param_hints) do
-      virt_text = virt_text .. p_hint:sub(1, -2)
-      if i ~= #param_hints then
-        virt_text = virt_text .. ", "
-      end
-    end
-    virt_text = virt_text .. ") "
-  end
-
-  -- show other hints with commas and a thicc arrow
-  if not vim.tbl_isempty(other_hints) then
-    virt_text = virt_text .. opts.other_hints_prefix
-    for i, o_hint in ipairs(other_hints) do
-      virt_text = virt_text .. o_hint:gsub("^: ", "")
-      if i ~= #other_hints then
-        virt_text = virt_text .. ", "
-      end
+    if opts.show_param_hints and hint.kind == 2 or hint.kind == 1 then
+      table.insert(hints, {
+        kind = hint.kind,
+        position = hint.position,
+        label = parse_hint_label(hint.label),
+        paddingLeft = hint.paddingLeft,
+        paddingRight = hint.paddingRight,
+      })
     end
   end
 
-  -- set the virtual text if it is not empty
-  if virt_text ~= "" then
-    ---@diagnostic disable-next-line: param-type-mismatch
-    if opts.right_align then
-      virt_text = virt_text .. string.rep(" ", opts.right_align_padding)
+  for _, hint in ipairs(hints) do
+    local text = {}
+    if hint.paddingLeft then
+      table.insert(text, { " ", "NonText" })
     end
-    vim.api.nvim_buf_set_extmark(bufnr, M.namespace, line, 0, {
-      virt_text_pos = opts.right_align and "right_align" or "eol",
-      virt_text = {
-        { virt_text, opts.highlight },
-      },
-      hl_mode = "combine",
-    })
+    table.insert(text, { hint.label, opts.highlight })
+    if hint.paddingRight then
+        table.insert(text, { " ", "NonText" })
+    end
+    vim.api.nvim_buf_set_extmark(
+      bufnr,
+      M.namespace,
+      hint.position.line,
+      hint.position.character,
+      {
+        virt_text_pos = "inline",
+        virt_text = text,
+        hl_mode = "combine",
+      }
+    )
   end
 end
 
@@ -259,13 +217,11 @@ function M.render(self, bufnr)
   local opts = rt.config.options.tools.inlay_hints
   local buffer = bufnr or vim.api.nvim_get_current_buf()
 
-  local cached = self.cache[buffer]
+  local hints = self.cache[buffer]
 
-  if cached == nil then
+  if hints == nil then
     return
   end
-
-  local hints, max_line_len = cached.hints, cached.max_line_len
 
   clear_ns(buffer)
 
@@ -273,11 +229,11 @@ function M.render(self, bufnr)
     local curr_line = vim.api.nvim_win_get_cursor(0)[1] - 1
     local line_hints = hints[curr_line]
     if line_hints then
-      render_line(curr_line, line_hints, buffer, max_line_len)
+      render_line(curr_line, line_hints, buffer)
     end
   else
     for line, line_hints in pairs(hints) do
-      render_line(line, line_hints, buffer, max_line_len)
+      render_line(line, line_hints, buffer)
     end
   end
 end
