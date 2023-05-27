@@ -2,6 +2,11 @@ local rt = require("rust-tools")
 
 local M = {}
 
+local has_libs = {
+  ---@type nil|boolean
+  dap = nil,
+}
+
 ---For the heroes who want to use it
 ---@param codelldb_path string
 ---@param liblldb_path string
@@ -17,7 +22,7 @@ function M.get_codelldb_adapter(codelldb_path, liblldb_path)
   }
 end
 
-function M.setup_adapter()
+local function setup_adapter()
   local dap = require("dap")
   local opts = rt.config.options
 
@@ -50,7 +55,16 @@ local function scheduled_error(err)
 end
 
 function M.start(args)
-  if not pcall(require, "dap") then
+  if has_libs.dap == nil then
+    if pcall(require, "dap") then
+      has_libs.dap = true
+      setup_adapter()
+    else
+      has_libs.dap = false
+    end
+  end
+
+  if not has_libs.dap then
     scheduled_error("nvim-dap not found.")
     return
   end

@@ -120,10 +120,6 @@ function M.setup(opts)
   config.setup(opts)
   lsp.setup()
   commands.setup_lsp_commands()
-
-  if pcall(require, "dap") then
-    rt_dap.setup_adapter()
-  end
 end
 
 return M
