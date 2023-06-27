@@ -52,6 +52,9 @@ function M.setup(opts)
   local expand_macro = require("rust-tools.expand_macro")
   M.expand_macro = expand_macro
 
+  local syntax_tree = require("rust-tools.syntax_tree")
+  M.syntax_tree = syntax_tree
+
   local external_docs = require("rust-tools.external_docs")
   M.external_docs = external_docs
 

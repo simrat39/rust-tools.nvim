@@ -127,6 +127,9 @@ Note: Requires rust-analyzer version after 2021-08-02. Shows the type in visual 
 
 `lua   -- Command:   -- RustJoinLines     require'rust-tools'.join_lines.join_lines()`Structural Search Replace ~
 
+
+`lua   -- Command:   -- RustSyntaxTree    require'rust-tools'.syntax_tree.syntax_tree()`Show Syntax Tree ~
+
 >lua
       -- Command:
       -- RustSSR [query]
