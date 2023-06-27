@@ -12,7 +12,7 @@ local defaults = {
 
     -- how to execute terminal commands
     -- options right now: termopen / quickfix / toggleterm / vimux
-    executor = require("rust-tools.executors").termopen,
+    executor = require("rust-tools.executors").termopen,  -- or "termopen"
 
     -- callback to execute once rust-analyzer is done initializing the workspace
     -- The callback receives one parameter indicating the `health` of the server: "ok" | "warning" | "error"
