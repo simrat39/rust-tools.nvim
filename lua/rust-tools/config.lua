@@ -11,7 +11,7 @@ local defaults = {
   tools = { -- rust-tools options
 
     -- how to execute terminal commands
-    -- options right now: termopen / quickfix
+    -- options right now: termopen / quickfix / toggleterm / vimux
     executor = require("rust-tools.executors").termopen,
 
     -- callback to execute once rust-analyzer is done initializing the workspace
