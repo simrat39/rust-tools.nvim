@@ -41,6 +41,7 @@ local function setup_commands()
       rt.debuggables.debuggables,
     },
     RustExpandMacro = { rt.expand_macro.expand_macro },
+    RustSyntaxTree = { rt.syntax_tree.syntax_tree },
     RustOpenExternalDocs = {
       rt.external_docs.open_external_docs,
     },
