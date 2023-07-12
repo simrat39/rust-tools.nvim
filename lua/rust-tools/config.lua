@@ -8,7 +8,8 @@ _G.rust_tools_get_graphviz_backends = function()
 end
 
 local defaults = {
-  tools = { -- rust-tools options
+  tools = {
+    -- rust-tools options
 
     -- how to execute terminal commands
     -- options right now: termopen / quickfix / toggleterm / vimux
@@ -60,7 +61,6 @@ local defaults = {
 
     -- options same as lsp hover / vim.lsp.util.open_floating_preview()
     hover_actions = {
-
       -- the border that is used for the hover window
       -- see vim.api.nvim_open_win()
       border = {
@@ -180,12 +180,28 @@ local defaults = {
       name = "rt_lldb",
     },
   },
+
+  -- choice module you use
+  open = {
+    crate_graph = true,
+    expand_macro = true,
+    external_docs = true,
+    debuggables = true,
+    hover_range = true,
+    workspace_refresh = true,
+    move_item = true,
+    standalone = true,
+    dap = true,
+    parent_module = true,
+    runnables = true,
+  },
 }
 
 M.options = {
   tools = {},
   server = {},
   dap = {},
+  open = {},
 }
 
 function M.setup(options)

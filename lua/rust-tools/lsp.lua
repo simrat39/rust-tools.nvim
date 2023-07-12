@@ -6,12 +6,13 @@ local server_status = require("rust-tools.server_status")
 local M = {}
 
 local function setup_autocmds()
-  local group = vim.api.nvim_create_augroup("RustToolsAutocmds", { clear = true })
+  local group =
+      vim.api.nvim_create_augroup("RustToolsAutocmds", { clear = true })
 
   if rt.config.options.tools.reload_workspace_from_cargo_toml then
     vim.api.nvim_create_autocmd("BufWritePost", {
       pattern = "*/Cargo.toml",
-      callback = require('rust-tools.workspace_refresh')._reload_workspace_from_cargo_toml,
+      callback = require("rust-tools.workspace_refresh")._reload_workspace_from_cargo_toml,
       group = group,
     })
   end
@@ -20,75 +21,116 @@ local function setup_autocmds()
     pattern = "*.rs",
     callback = rt.lsp.start_standalone_if_required,
     group = group,
-  });
+  })
 end
 
 local function setup_commands()
   local lsp_opts = rt.config.options.server
+  local open = rt.config.options.open
+  local table_list = {}
 
-  lsp_opts.commands = vim.tbl_deep_extend("force", lsp_opts.commands or {}, {
-    RustCodeAction = {
-      rt.code_action_group.code_action_group,
-    },
-    RustViewCrateGraph = {
-      function(backend, output, pipe)
-        rt.crate_graph.view_crate_graph(backend, output, pipe)
-      end,
-      "-nargs=* -complete=customlist,v:lua.rust_tools_get_graphviz_backends",
-      description = "`:RustViewCrateGraph [<backend> [<output>]]` Show the crate graph",
-    },
-    RustDebuggables = {
+  if open.crate_graph then
+    table_list.RustDebuggables = {
       rt.debuggables.debuggables,
-    },
-    RustExpandMacro = { rt.expand_macro.expand_macro },
-    RustOpenExternalDocs = {
-      rt.external_docs.open_external_docs,
-    },
-    RustHoverActions = { rt.hover_actions.hover_actions },
-    RustHoverRange = { rt.hover_range.hover_range },
-    RustEnableInlayHints = {
-      rt.inlay_hints.enable,
-    },
-    RustDisableInlayHints = {
-      rt.inlay_hints.disable,
-    },
-    RustLastDebug = {
+    }
+  end
+
+  if open.RustExpandMacro then
+    table_list.RustExpandMacro = { rt.expand_macro.expand_macro }
+  end
+
+  if open.hover_range then
+    table_list.RustHoverRange = { rt.hover_range.hover_range }
+  end
+
+  if open.dap then
+    table_list.RustLastDebug = {
       rt.cached_commands.execute_last_debuggable,
-    },
-    RustLastRun = {
-      rt.cached_commands.execute_last_runnable,
-    },
-    RustSetInlayHints = {
-      rt.inlay_hints.set,
-    },
-    RustUnsetInlayHints = {
-      rt.inlay_hints.unset,
-    },
-    RustJoinLines = { rt.join_lines.join_lines },
-    RustMoveItemDown = {
+    }
+  end
+
+  if open.move_item then
+    table_list.RustMoveItemDown = {
       rt.move_item.move_item,
-    },
-    RustMoveItemUp = {
+    }
+    table_list.RustMoveItemUp = {
       function()
         require("rust-tools.move_item").move_item(true)
       end,
-    },
-    RustOpenCargo = { rt.open_cargo_toml.open_cargo_toml },
-    RustParentModule = { rt.parent_module.parent_module },
-    RustRunnables = {
+    }
+  end
+
+  if open.parent_module then
+    table_list.RustParentModule = { rt.parent_module.parent_module }
+  end
+
+  if open.runnables then
+    table_list.RustRunnables = {
       rt.runnables.runnables,
-    },
-    RustSSR = {
-      function(query)
-        require("rust-tools.ssr").ssr(query)
-      end,
-      "-nargs=?",
-      description = "`:RustSSR [query]` Structural Search Replace",
-    },
-    RustReloadWorkspace = {
+    }
+  end
+
+  if open.workspace_refresh then
+    table_list.RustReloadWorkspace = {
       rt.workspace_refresh.reload_workspace,
-    },
-  })
+    }
+  end
+
+  if open.hints then
+    table_list.RustSetInlayHints = {
+      rt.inlay_hints.set,
+    }
+    table_list.RustUnsetInlayHints = {
+      rt.inlay_hints.unset,
+    }
+    table_list.RustJoinLines = { rt.join_lines.join_lines }
+  end
+
+  table_list.RustCodeAction = {
+    rt.code_action_group.code_action_group,
+  }
+
+  table_list.RustViewCrateGraph = {
+    function(backend, output, pipe)
+      rt.crate_graph.view_crate_graph(backend, output, pipe)
+    end,
+    "-nargs=* -complete=customlist,v:lua.rust_tools_get_graphviz_backends",
+    description = "`:RustViewCrateGraph [<backend> [<output>]]` Show the crate graph",
+  }
+
+
+  table_list.RustOpenExternalDocs = {
+    rt.external_docs.open_external_docs,
+  }
+
+  table_list.RustHoverActions = { rt.hover_actions.hover_actions }
+
+  table_list.RustEnableInlayHints = {
+    rt.inlay_hints.enable,
+  }
+
+  table_list.RustDisableInlayHints = {
+    rt.inlay_hints.disable,
+  }
+
+
+
+  table_list.RustLastRun = {
+    rt.cached_commands.execute_last_runnable,
+  }
+
+
+  table_list.RustOpenCargo = { rt.open_cargo_toml.open_cargo_toml }
+
+  table_list.RustSSR = {
+    function(query)
+      require("rust-tools.ssr").ssr(query)
+    end,
+    "-nargs=?",
+    description = "`:RustSSR [query]` Structural Search Replace",
+  }
+
+  lsp_opts.commands = vim.tbl_deep_extend("force", lsp_opts.commands or {}, table_list)
 end
 
 local function setup_handlers()
@@ -103,15 +145,11 @@ local function setup_handlers()
     )
   end
 
-  custom_handlers["experimental/serverStatus"] = rt.utils.mk_handler(
-    server_status.handler
-  )
+  custom_handlers["experimental/serverStatus"] =
+      rt.utils.mk_handler(server_status.handler)
 
-  lsp_opts.handlers = vim.tbl_deep_extend(
-    "force",
-    custom_handlers,
-    lsp_opts.handlers or {}
-  )
+  lsp_opts.handlers =
+      vim.tbl_deep_extend("force", custom_handlers, lsp_opts.handlers or {})
 end
 
 local function setup_on_init()
@@ -159,11 +197,8 @@ local function setup_capabilities()
     },
   }
 
-  lsp_opts.capabilities = vim.tbl_deep_extend(
-    "force",
-    capabilities,
-    lsp_opts.capabilities or {}
-  )
+  lsp_opts.capabilities =
+      vim.tbl_deep_extend("force", capabilities, lsp_opts.capabilities or {})
 end
 
 local function setup_lsp()
@@ -195,9 +230,9 @@ local function get_root_dir(filename)
     cargo_workspace_dir = vim.fn.json_decode(cargo_metadata)["workspace_root"]
   end
   return cargo_workspace_dir
-    or cargo_crate_dir
-    or lspconfig_utils.root_pattern("rust-project.json")(fname)
-    or lspconfig_utils.find_git_ancestor(fname)
+      or cargo_crate_dir
+      or lspconfig_utils.root_pattern("rust-project.json")(fname)
+      or lspconfig_utils.find_git_ancestor(fname)
 end
 
 local function setup_root_dir()
@@ -212,9 +247,9 @@ function M.start_standalone_if_required()
   local current_buf = vim.api.nvim_get_current_buf()
 
   if
-    lsp_opts.standalone
-    and rt.utils.is_bufnr_rust(current_buf)
-    and (get_root_dir() == nil)
+      lsp_opts.standalone
+      and rt.utils.is_bufnr_rust(current_buf)
+      and (get_root_dir() == nil)
   then
     require("rust-tools.standalone").start_standalone_client()
   end
