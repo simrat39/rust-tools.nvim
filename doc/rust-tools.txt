@@ -187,7 +187,14 @@ for keys that are not provided.
     
           -- padding from the left if max_len_align is true
           max_len_align_padding = 1,
-    
+   
+      	  -- whether to show hints at a fixed column or not
+      	  left_align = false,
+
+      	  -- column to show the hints at if left_align is true
+      	  -- useful to set this to rustfmt.max_width
+      	  left_align_column = 100,
+
           -- whether to align to the extreme right or not
           right_align = false,
     
