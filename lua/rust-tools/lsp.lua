@@ -15,12 +15,16 @@ local function setup_autocmds()
       group = group,
     })
   end
-
-  vim.api.nvim_create_autocmd("VimEnter", {
-    pattern = "*.rs",
-    callback = rt.lsp.start_standalone_if_required,
-    group = group,
-  });
+  
+  if vim.v.vim_did_enter then
+    rt.lsp.start_standalone_if_required()
+  else
+    vim.api.nvim_create_autocmd("VimEnter", {
+      pattern = "*.rs",
+      callback = rt.lsp.start_standalone_if_required,
+      group = group,
+    });
+  end
 end
 
 local function setup_commands()
