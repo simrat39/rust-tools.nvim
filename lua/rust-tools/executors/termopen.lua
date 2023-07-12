@@ -27,8 +27,8 @@ function M.execute_command(command, args, cwd)
   vim.api.nvim_buf_set_keymap(
     latest_buf_id,
     "n",
-    "<Esc>",
-    ":q<CR>",
+    "q",
+    "<cmd>quit<cr>",
     { noremap = true }
   )
 
