@@ -45,10 +45,21 @@ function M.run_command(choice, result)
   end
 
   local opts = rt.config.options.tools
-
   local command, args, cwd = getCommand(choice, result)
+  local executor = opts.executor
 
-  opts.executor.execute_command(command, args, cwd)
+  if type(opts.executor) == "string" then
+    executor = require("rust-tools.executors")[opts.executor]
+  end
+
+  if executor then
+    executor.execute_command(command, args, cwd)
+  else
+    vim.notify(
+      "Invalid executor! Available: termopen / quickfix / toggleterm / vimux.",
+      vim.log.levels.ERROR
+    )
+  end
 end
 
 local function handler(_, result)
