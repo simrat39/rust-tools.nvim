@@ -11,9 +11,13 @@ function M.start_standalone_client()
     filetypes = { "rust" },
     init_options = { detachedFiles = { vim.api.nvim_buf_get_name(0) } },
     name = "rust_analyzer-standalone",
-    on_init = function(client)
+    on_init = function(client, initialize_result)
       local current_buf = vim.api.nvim_get_current_buf()
       vim.lsp.buf_attach_client(0, client.id)
+      local on_init = rt.config.options.server.on_init
+      if on_init then
+        on_init(client, initialize_result)
+      end
       local on_attach = rt.config.options.server.on_attach
       if on_attach then
         on_attach(client, current_buf)
