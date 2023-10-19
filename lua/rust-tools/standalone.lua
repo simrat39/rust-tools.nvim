@@ -19,15 +19,6 @@ function M.start_standalone_client()
         on_attach(client, current_buf)
       end
       vim.cmd(
-        "command! RustSetInlayHints :lua require('rust-tools.inlay_hints').set_inlay_hints()"
-      )
-      vim.cmd(
-        "command! RustDisableInlayHints :lua require('rust-tools.inlay_hints').disable_inlay_hints()"
-      )
-      vim.cmd(
-        "command! RustToggleInlayHints :lua require('rust-tools.inlay_hints').toggle_inlay_hints()"
-      )
-      vim.cmd(
         "command! RustExpandMacro :lua require('rust-tools.expand_macro').expand_macro()"
       )
       vim.cmd(

@@ -6,12 +6,13 @@ local server_status = require("rust-tools.server_status")
 local M = {}
 
 local function setup_autocmds()
-  local group = vim.api.nvim_create_augroup("RustToolsAutocmds", { clear = true })
+  local group =
+    vim.api.nvim_create_augroup("RustToolsAutocmds", { clear = true })
 
   if rt.config.options.tools.reload_workspace_from_cargo_toml then
     vim.api.nvim_create_autocmd("BufWritePost", {
       pattern = "*/Cargo.toml",
-      callback = require('rust-tools.workspace_refresh')._reload_workspace_from_cargo_toml,
+      callback = require("rust-tools.workspace_refresh")._reload_workspace_from_cargo_toml,
       group = group,
     })
   end
@@ -20,7 +21,7 @@ local function setup_autocmds()
     pattern = "*.rs",
     callback = rt.lsp.start_standalone_if_required,
     group = group,
-  });
+  })
 end
 
 local function setup_commands()
@@ -46,23 +47,11 @@ local function setup_commands()
     },
     RustHoverActions = { rt.hover_actions.hover_actions },
     RustHoverRange = { rt.hover_range.hover_range },
-    RustEnableInlayHints = {
-      rt.inlay_hints.enable,
-    },
-    RustDisableInlayHints = {
-      rt.inlay_hints.disable,
-    },
     RustLastDebug = {
       rt.cached_commands.execute_last_debuggable,
     },
     RustLastRun = {
       rt.cached_commands.execute_last_runnable,
-    },
-    RustSetInlayHints = {
-      rt.inlay_hints.set,
-    },
-    RustUnsetInlayHints = {
-      rt.inlay_hints.unset,
     },
     RustJoinLines = { rt.join_lines.join_lines },
     RustMoveItemDown = {
@@ -103,15 +92,11 @@ local function setup_handlers()
     )
   end
 
-  custom_handlers["experimental/serverStatus"] = rt.utils.mk_handler(
-    server_status.handler
-  )
+  custom_handlers["experimental/serverStatus"] =
+    rt.utils.mk_handler(server_status.handler)
 
-  lsp_opts.handlers = vim.tbl_deep_extend(
-    "force",
-    custom_handlers,
-    lsp_opts.handlers or {}
-  )
+  lsp_opts.handlers =
+    vim.tbl_deep_extend("force", custom_handlers, lsp_opts.handlers or {})
 end
 
 local function setup_on_init()
@@ -159,11 +144,8 @@ local function setup_capabilities()
     },
   }
 
-  lsp_opts.capabilities = vim.tbl_deep_extend(
-    "force",
-    capabilities,
-    lsp_opts.capabilities or {}
-  )
+  lsp_opts.capabilities =
+    vim.tbl_deep_extend("force", capabilities, lsp_opts.capabilities or {})
 end
 
 local function setup_lsp()

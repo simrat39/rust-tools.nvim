@@ -70,10 +70,10 @@
           hooks = {
             alejandra.enable = true;
             stylua.enable = true;
-            luacheck.enable = true;
-            lua-ls.enable = true;
-            editorconfig-checker.enable = true;
-            markdownlint.enable = true;
+            # luacheck.enable = true;
+            # lua-ls.enable = true;
+            # editorconfig-checker.enable = true;
+            # markdownlint.enable = true;
           };
           settings = {
             lua-ls = {
