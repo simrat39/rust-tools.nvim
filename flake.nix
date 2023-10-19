@@ -107,8 +107,13 @@
         devShell = pkgs.mkShell {
           name = "ferris.nvim devShell";
           inherit (pre-commit-check) shellHook;
-          buildInputs = with pkgs; [
-            zlib
+          buildInputs = with pre-commit-hooks.packages.${system}; [
+            alejandra
+            lua-language-server
+            stylua
+            luacheck
+            editorconfig-checker
+            markdownlint-cli
           ];
         };
       in {
