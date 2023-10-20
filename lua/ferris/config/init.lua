@@ -21,6 +21,9 @@
 ---     on_attach = function(client, bufnr)
 ---       -- Set keybindings, etc. here.
 ---     end,
+---     ['rust-analyzer'] = {
+---       -- ...
+---     },
 ---     -- ...
 ---   },
 ---   ---@type FerrisDapOpts

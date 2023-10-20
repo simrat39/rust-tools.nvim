@@ -1,4 +1,4 @@
-local config = require("rust-tools.config.internal")
+local config = require("ferris.config.internal")
 local lsp_util = vim.lsp.util
 
 local M = {}
@@ -10,7 +10,7 @@ end
 local _state = { winnr = nil, commands = nil }
 
 local function close_hover()
-  local ui = require("rust-tools.ui")
+  local ui = require("ferris.ui")
   ui.close_win(_state.winnr)
 end
 

@@ -10,7 +10,7 @@ function M.execute_command(command, args, cwd)
     return
   end
 
-  local shell = require("rust-tools.shell")
+  local shell = require("ferris.shell")
   term.Terminal
     :new({
       dir = cwd,

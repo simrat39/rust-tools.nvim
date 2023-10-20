@@ -1,4 +1,4 @@
-local shell = require("rust-tools.shell")
+local shell = require("ferris.shell")
 
 ---@type FerrisExecutor
 local M = {}

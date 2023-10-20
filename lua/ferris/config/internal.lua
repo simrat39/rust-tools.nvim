@@ -16,7 +16,7 @@ local FerrisDefaultConfig = {
     --- how to execute terminal commands
     --- options right now: termopen / quickfix / toggleterm / vimux
     ---@type FerrisExecutor
-    executor = require("rust-tools.executors").termopen,
+    executor = require("ferris.executors").termopen,
 
     --- callback to execute once rust-analyzer is done initializing the workspace
     --- The callback receives one parameter indicating the `health` of the server: "ok" | "warning" | "error"
@@ -191,7 +191,7 @@ if
   and type(opts.tools.executor) == "string"
 then
   opts.tools.executor = assert(
-    require("rust-tools.executors")[opts.tools.executor],
+    require("ferris.executors")[opts.tools.executor],
     "Unknown FerrisExecutor"
   )
 end

@@ -1,4 +1,4 @@
-local ui = require("rust-tools.ui")
+local ui = require("ferris.ui")
 local M = {}
 
 ---@param action table

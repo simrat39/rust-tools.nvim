@@ -5,8 +5,8 @@ local M = {}
 local latest_buf_id = nil
 
 function M.execute_command(command, args, cwd)
-  local shell = require("rust-tools.shell")
-  local ui = require("rust-tools.ui")
+  local shell = require("ferris.shell")
+  local ui = require("ferris.ui")
   local full_command = shell.chain_commands({
     shell.make_command_from_args("cd", { cwd }),
     shell.make_command_from_args(command, args),

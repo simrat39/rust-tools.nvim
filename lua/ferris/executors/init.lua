@@ -2,10 +2,10 @@
 
 ---@alias executor_alias 'termopen' | 'quickfix' | 'toggleterm' | 'vimux'
 
-local termopen = require("rust-tools.executors.termopen")
-local quickfix = require("rust-tools.executors.quickfix")
-local toggleterm = require("rust-tools.executors.toggleterm")
-local vimux = require("rust-tools.executors.vimux")
+local termopen = require("ferris.executors.termopen")
+local quickfix = require("ferris.executors.quickfix")
+local toggleterm = require("ferris.executors.toggleterm")
+local vimux = require("ferris.executors.vimux")
 
 ---@type { [executor_alias]: FerrisExecutor }
 local M = {}

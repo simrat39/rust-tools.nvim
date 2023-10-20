@@ -54,7 +54,7 @@ local function sanitize_results_for_debugging(result)
     return is_valid_test(value.args)
   end, result or {})
 
-  local overrides = require("rust-tools.overrides")
+  local overrides = require("ferris.overrides")
   for _, value in ipairs(ret) do
     overrides.sanitize_command_for_debugging(value.args.cargoArgs)
   end
@@ -81,10 +81,10 @@ local function handler(_, result)
       end
 
       local args = result[choice].args
-      local rt_dap = require("rust-tools.dap")
+      local rt_dap = require("ferris.dap")
       rt_dap.start(args)
 
-      local cached_commands = require("rust-tools.cached_commands")
+      local cached_commands = require("ferris.cached_commands")
       cached_commands.set_last_debuggable(args)
     end
   )

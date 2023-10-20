@@ -3,7 +3,7 @@ local M = {}
 local function override_apply_text_edits()
   local old_func = vim.lsp.util.apply_text_edits
   vim.lsp.util.apply_text_edits = function(edits, bufnr, offset_encoding)
-    local overrides = require("rust-tools.overrides")
+    local overrides = require("ferris.overrides")
     overrides.snippet_text_edits_to_text_edits(edits)
     old_func(edits, bufnr, offset_encoding)
   end
@@ -66,10 +66,10 @@ end
 
 -- start or attach the LSP client
 M.start_or_attach = function()
-  local config = require("rust-tools.config.internal")
+  local config = require("ferris.config.internal")
   local client_config = config.server
   local lsp_start_opts = vim.tbl_deep_extend("force", {}, client_config)
-  local types = require("rust-tools.types.internal")
+  local types = require("ferris.types.internal")
   lsp_start_opts.cmd = types.evaluate(client_config.cmd)
   lsp_start_opts.name = "rust-analyzer"
   lsp_start_opts.filetypes = { "rust" }
@@ -117,11 +117,11 @@ M.start_or_attach = function()
 
   local custom_handlers = {}
   custom_handlers["experimental/serverStatus"] =
-    require("rust-tools.server_status").handler
+    require("ferris.server_status").handler
 
   if config.tools.hover_actions.replace_builtin_hover then
     custom_handlers["textDocument/hover"] =
-      require("rust-tools.hover_actions").handler
+      require("ferris.hover_actions").handler
   end
 
   lsp_start_opts.handlers =
@@ -130,14 +130,14 @@ M.start_or_attach = function()
   local lsp_commands = {
     RustCodeAction = {
       function()
-        require("rust-tools.commands.code_action_group")()
+        require("ferris.commands.code_action_group")()
       end,
 
       {},
     },
     RustViewCrateGraph = {
       function()
-        require("rust-tools.commands.crate_graph")()
+        require("ferris.commands.crate_graph")()
       end,
       {
         nargs = "*",
@@ -146,85 +146,85 @@ M.start_or_attach = function()
     },
     RustDebuggables = {
       function()
-        require("rust-tools.commands.debuggables")()
+        require("ferris.commands.debuggables")()
       end,
       {},
     },
     RustExpandMacro = {
       function()
-        require("rust-tools.commands.expand_macro")()
+        require("ferris.commands.expand_macro")()
       end,
       {},
     },
     RustOpenExternalDocs = {
       function()
-        require("rust-tools.commands.external_docs")()
+        require("ferris.commands.external_docs")()
       end,
       {},
     },
     RustHoverActions = {
       function()
-        require("rust-tools.hover_actions").hover_actions()
+        require("ferris.hover_actions").hover_actions()
       end,
       {},
     },
     RustHoverRange = {
       function()
-        require("rust-tools.commands.hover_range")()
+        require("ferris.commands.hover_range")()
       end,
       {},
     },
     RustLastDebug = {
       function()
-        require("rust-tools.cached_commands").execute_last_debuggable()
+        require("ferris.cached_commands").execute_last_debuggable()
       end,
       {},
     },
     RustLastRun = {
       function()
-        require("rust-tools.cached_commands").execute_last_runnable()
+        require("ferris.cached_commands").execute_last_runnable()
       end,
       {},
     },
     RustJoinLines = {
       function()
-        require("rust-tools.commands.join_lines")()
+        require("ferris.commands.join_lines")()
       end,
       {},
     },
     RustMoveItemDown = {
       function()
-        require("rust-tools.commands.move_item")()
+        require("ferris.commands.move_item")()
       end,
       {},
     },
     RustMoveItemUp = {
       function()
-        require("rust-tools.commands.move_item")(true)
+        require("ferris.commands.move_item")(true)
       end,
       {},
     },
     RustOpenCargo = {
       function()
-        require("rust-tools.commands.open_cargo_toml")()
+        require("ferris.commands.open_cargo_toml")()
       end,
       {},
     },
     RustParentModule = {
       function()
-        require("rust-tools.commands.parent_module")()
+        require("ferris.commands.parent_module")()
       end,
       {},
     },
     RustRunnables = {
       function()
-        require("rust-tools.runnables").runnables()
+        require("ferris.runnables").runnables()
       end,
       {},
     },
     RustSSR = {
       function(query)
-        require("rust-tools.commands.ssr")(query)
+        require("ferris.commands.ssr")(query)
       end,
       {
         nargs = "?",
@@ -232,19 +232,19 @@ M.start_or_attach = function()
     },
     RustReloadWorkspace = {
       function()
-        require("rust-tools.commands.workspace_refresh")()
+        require("ferris.commands.workspace_refresh")()
       end,
       {},
     },
     RustSyntaxTree = {
       function()
-        require("rust-tools.commands.syntax_tree")()
+        require("ferris.commands.syntax_tree")()
       end,
       {},
     },
     RustFlyCheck = {
       function()
-        require("rust-tools.commands.fly_check")()
+        require("ferris.commands.fly_check")()
       end,
       {},
     },

@@ -1,4 +1,4 @@
-local config = require("rust-tools.config.internal")
+local config = require("ferris.config.internal")
 
 local function scheduled_error(err)
   vim.schedule(function()

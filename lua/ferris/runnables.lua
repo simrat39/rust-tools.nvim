@@ -1,4 +1,4 @@
-local config = require("rust-tools.config.internal")
+local config = require("ferris.config.internal")
 
 local M = {}
 
@@ -64,7 +64,7 @@ local function handler(_, result)
     function(_, choice)
       M.run_command(choice, result)
 
-      local cached_commands = require("rust-tools.cached_commands")
+      local cached_commands = require("ferris.cached_commands")
       cached_commands.set_last_runnable(choice, result)
     end
   )

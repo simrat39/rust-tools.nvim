@@ -17,7 +17,7 @@ local function handler(_, result, ctx)
   if result == nil or #result == 0 then
     return
   end
-  local overrides = require("rust-tools.overrides")
+  local overrides = require("ferris.overrides")
   overrides.snippet_text_edits_to_text_edits(result)
   vim.lsp.util.apply_text_edits(
     result,
