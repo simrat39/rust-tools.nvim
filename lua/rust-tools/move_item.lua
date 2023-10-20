@@ -14,7 +14,7 @@ end
 
 -- move it baby
 local function handler(_, result, ctx)
-  if result == nil then
+  if result == nil or #result == 0 then
     return
   end
   local overrides = require("rust-tools.overrides")
