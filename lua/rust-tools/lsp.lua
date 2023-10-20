@@ -135,7 +135,7 @@ M.start_or_attach = function()
       {},
     },
     RustOpenExternalDocs = {
-      rt.external_docs.open_external_docs,
+      require("rust-tools.external_docs"),
       {},
     },
     RustHoverActions = {

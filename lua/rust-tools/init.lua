@@ -1,6 +1,5 @@
 local M = {
   config = nil,
-  external_docs = nil,
   hover_actions = nil,
   hover_range = nil,
   join_lines = nil,
@@ -23,9 +22,6 @@ function M.setup(opts)
 
   local config = require("rust-tools.config")
   M.config = config
-
-  local external_docs = require("rust-tools.external_docs")
-  M.external_docs = external_docs
 
   local hover_actions = require("rust-tools.hover_actions")
   M.hover_actions = hover_actions
