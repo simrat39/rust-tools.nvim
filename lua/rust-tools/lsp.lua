@@ -182,7 +182,7 @@ M.start_or_attach = function()
       {},
     },
     RustRunnables = {
-      rt.runnables.runnables,
+      require("rust-tools.runnables").runnables,
       {},
     },
     RustSSR = {

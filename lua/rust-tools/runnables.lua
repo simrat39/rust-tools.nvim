@@ -20,17 +20,18 @@ local function get_options(result)
   return option_strings
 end
 
+---@alias CargoCmd 'cargo'
+
 ---comment
----@return string build command
+---@return CargoCmd command build command
 ---@return string|table args
----@return any cwd
+---@return string|nil dir
 local function getCommand(c, results)
-  local ret = " "
   local args = results[c].args
 
   local dir = args.workspaceRoot
 
-  ret = vim.list_extend({}, args.cargoArgs or {})
+  local ret = vim.list_extend({}, args.cargoArgs or {})
   ret = vim.list_extend(ret, args.cargoExtraArgs or {})
   table.insert(ret, "--")
   ret = vim.list_extend(ret, args.executableArgs or {})
