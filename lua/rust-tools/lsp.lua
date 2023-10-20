@@ -217,7 +217,9 @@ M.start_or_attach = function()
     if config.tools.reload_workspace_from_cargo_toml then
       vim.api.nvim_create_autocmd("BufWritePost", {
         pattern = "*/Cargo.toml",
-        callback = vim.cmd.RustReloadWorkspace,
+        callback = function()
+          vim.cmd.RustReloadWorkspace()
+        end,
         group = augroup,
       })
     end
