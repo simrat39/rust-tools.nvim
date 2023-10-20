@@ -174,7 +174,7 @@ M.start_or_attach = function()
       {},
     },
     RustOpenCargo = {
-      rt.open_cargo_toml.open_cargo_toml,
+      require("rust-tools.open_cargo_toml"),
       {},
     },
     RustParentModule = {

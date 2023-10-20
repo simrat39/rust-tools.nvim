@@ -1,5 +1,3 @@
-local rt = require("rust-tools")
-
 local M = {}
 
 local function get_params()
@@ -14,12 +12,14 @@ local function handler(_, result, ctx)
   end
 
   local client = vim.lsp.get_client_by_id(ctx.client_id)
-  vim.lsp.util.jump_to_location(result, client.offset_encoding)
+  if client then
+    vim.lsp.util.jump_to_location(result, client.offset_encoding)
+  end
 end
 
--- Sends the request to rust-analyzer to get cargo.tomls location and open it
+--- Sends the request to rust-analyzer to get cargo.toml's location and open it
 function M.open_cargo_toml()
   vim.lsp.buf_request(0, "experimental/openCargoToml", get_params(), handler)
 end
 
-return M
+return M.open_cargo_toml

@@ -1,7 +1,6 @@
 local M = {
   config = nil,
   lsp = nil,
-  open_cargo_toml = nil,
   parent_module = nil,
   runnables = nil,
   server_status = nil,
@@ -21,9 +20,6 @@ function M.setup(opts)
 
   local lsp = require("rust-tools.lsp")
   M.lsp = lsp
-
-  local open_cargo_toml = require("rust-tools.open_cargo_toml")
-  M.open_cargo_toml = open_cargo_toml
 
   local parent_module = require("rust-tools.parent_module")
   M.parent_module = parent_module
