@@ -178,7 +178,7 @@ M.start_or_attach = function()
       {},
     },
     RustParentModule = {
-      rt.parent_module.parent_module,
+      require("rust-tools.parent_module"),
       {},
     },
     RustRunnables = {

@@ -1,5 +1,3 @@
-local rt = require("rust-tools")
-
 local M = {}
 
 local function get_params()
@@ -19,12 +17,14 @@ local function handler(_, result, ctx)
   end
 
   local client = vim.lsp.get_client_by_id(ctx.client_id)
-  vim.lsp.util.jump_to_location(location, client.offset_encoding)
+  if client then
+    vim.lsp.util.jump_to_location(location, client.offset_encoding)
+  end
 end
 
--- Sends the request to rust-analyzer to get the parent modules location and open it
+--- Sends the request to rust-analyzer to get the parent modules location and open it
 function M.parent_module()
   vim.lsp.buf_request(0, "experimental/parentModule", get_params(), handler)
 end
 
-return M
+return M.parent_module()

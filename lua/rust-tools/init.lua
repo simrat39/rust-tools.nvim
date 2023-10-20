@@ -1,7 +1,6 @@
 local M = {
   config = nil,
   lsp = nil,
-  parent_module = nil,
   runnables = nil,
   server_status = nil,
   ssr = nil,
@@ -20,9 +19,6 @@ function M.setup(opts)
 
   local lsp = require("rust-tools.lsp")
   M.lsp = lsp
-
-  local parent_module = require("rust-tools.parent_module")
-  M.parent_module = parent_module
 
   local runnables = require("rust-tools.runnables")
   M.runnables = runnables
