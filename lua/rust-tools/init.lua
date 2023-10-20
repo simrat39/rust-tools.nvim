@@ -1,6 +1,5 @@
 local M = {
   config = nil,
-  expand_macro = nil,
   external_docs = nil,
   hover_actions = nil,
   hover_range = nil,
@@ -24,9 +23,6 @@ function M.setup(opts)
 
   local config = require("rust-tools.config")
   M.config = config
-
-  local expand_macro = require("rust-tools.expand_macro")
-  M.expand_macro = expand_macro
 
   local external_docs = require("rust-tools.external_docs")
   M.external_docs = external_docs

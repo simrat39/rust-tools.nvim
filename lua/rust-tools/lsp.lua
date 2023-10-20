@@ -131,7 +131,7 @@ M.start_or_attach = function()
       {},
     },
     RustExpandMacro = {
-      rt.expand_macro.expand_macro,
+      require("rust-tools.expand_macro"),
       {},
     },
     RustOpenExternalDocs = {

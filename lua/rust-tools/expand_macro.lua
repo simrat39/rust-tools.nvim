@@ -61,9 +61,9 @@ local function handler(_, result)
   rt.utils.resize(true, "-25")
 end
 
--- Sends the request to rust-analyzer to get cargo.tomls location and open it
+--- Sends the request to rust-analyzer to get cargo.tomls location and open it
 function M.expand_macro()
   vim.lsp.buf_request(0, "rust-analyzer/expandMacro", get_params(), handler)
 end
 
-return M
+return M.expand_macro
