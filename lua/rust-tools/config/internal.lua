@@ -10,7 +10,7 @@ end
 
 ---@class FerrisConfig
 local FerrisDefaultConfig = {
-  ---@class RustToolsConfig
+  ---@class FerrisToolsConfig
   tools = {
 
     --- how to execute terminal commands
@@ -20,7 +20,7 @@ local FerrisDefaultConfig = {
 
     --- callback to execute once rust-analyzer is done initializing the workspace
     --- The callback receives one parameter indicating the `health` of the server: "ok" | "warning" | "error"
-    ---@type fun(health:'ok'|'warning'|'error') | nil
+    ---@type fun(health:lsp_server_health_status) | nil
     on_initialized = nil,
 
     --- automatically call RustReloadWorkspace when writing to a Cargo.toml file.
@@ -169,16 +169,16 @@ local FerrisDefaultConfig = {
   },
 
   --- debugging stuff
-  --- @class FerrisDAPConfig
+  --- @class FerrisDapConfig
   dap = {
-    --- @class FerrisDAPAdapterConfig
+    --- @class FerrisDapAdapterConfig
     adapter = {
       ---@type string
       type = "executable",
       ---@type string
       command = "lldb-vscode",
       ---@type string
-      name = "rt_lldb",
+      name = "ferris_lldb",
     },
   },
 }
