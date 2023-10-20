@@ -185,10 +185,8 @@ rt.setup({
 	<b>View Crate Graph</b>
   </summary>
   
-  ```lua
-  -- Command:
-  -- RustViewCrateGraph [backend [output]]
-  require'rust-tools'.crate_graph.view_crate_graph(backend, output)
+  ```vimscript
+  :RustViewCrateGraph [backend [output]]
   ```
 </details>
 

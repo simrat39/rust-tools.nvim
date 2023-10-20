@@ -57,11 +57,15 @@ local function handler(_, result)
   end
   -- get the choice from the user
   local options = get_options(result)
-  vim.ui.select(options, { prompt = "Runnables", kind = "rust-tools/runnables" }, function(_, choice)
-    M.run_command(choice, result)
+  vim.ui.select(
+    options,
+    { prompt = "Runnables", kind = "rust-tools/runnables" },
+    function(_, choice)
+      M.run_command(choice, result)
 
-    rt.cached_commands.set_last_runnable(choice, result)
-  end)
+      rt.cached_commands.set_last_runnable(choice, result)
+    end
+  )
 end
 
 -- Sends the request to rust-analyzer to get the runnables and handles them
@@ -69,7 +73,7 @@ end
 -- which is used to check whether we want to use telescope or the vanilla vim
 -- way for input
 function M.runnables()
-  rt.utils.request(0, "experimental/runnables", get_params(), handler)
+  vim.lsp.buf_request(0, "experimental/runnables", get_params(), handler)
 end
 
 return M

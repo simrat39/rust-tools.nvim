@@ -95,11 +95,6 @@ function M.contains(list, item)
   return false
 end
 
--- from mfussenegger/nvim-lsp-compl@29a81f3
-function M.request(bufnr, method, params, handler)
-  return vim.lsp.buf_request(bufnr, method, params, M.mk_handler(handler))
-end
-
 -- sanitize_command_for_debugging substitutes the command arguments so it can be used to run a
 -- debugger.
 --

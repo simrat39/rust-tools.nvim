@@ -134,7 +134,7 @@ end
 
 -- Sends the request to rust-analyzer to get hover actions and handle it
 function M.hover_actions()
-  rt.utils.request(0, "textDocument/hover", get_params(), M.handler)
+  vim.lsp.buf_request(0, "textDocument/hover", get_params(), M.handler)
 end
 
 return M

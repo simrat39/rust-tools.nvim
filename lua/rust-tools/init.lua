@@ -1,6 +1,5 @@
 local M = {
   config = nil,
-  crate_graph = nil,
   dap = nil,
   debuggables = nil,
   expand_macro = nil,
@@ -27,9 +26,6 @@ function M.setup(opts)
 
   local config = require("rust-tools.config")
   M.config = config
-
-  local crate_graph = require("rust-tools.crate_graph")
-  M.crate_graph = crate_graph
 
   local rt_dap = require("rust-tools.dap")
   M.dap = rt_dap

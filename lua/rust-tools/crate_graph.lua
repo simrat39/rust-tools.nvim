@@ -6,8 +6,8 @@ local function get_opts()
   return { full = rt.config.options.tools.crate_graph.full }
 end
 
--- Creation of the correct handler depending on the initial call of the command
--- and give the option to override global settings
+--- Creation of the correct handler depending on the initial call of the command
+--- and give the option to override global settings
 local function handler_factory(backend, output, pipe)
   backend = backend or rt.config.options.tools.crate_graph.backend
   output = output or rt.config.options.tools.crate_graph.output
@@ -18,7 +18,10 @@ local function handler_factory(backend, output, pipe)
   -- visualize with the given backend
   return function(err, graph)
     if err ~= nil then
-      error("Could not execute request to server" .. err)
+      vim.notify(
+        "Could not execute request to server " .. (err or ""),
+        vim.log.levels.ERROR
+      )
       return
     end
 
@@ -29,7 +32,11 @@ local function handler_factory(backend, output, pipe)
         backend
       )
     then
-      error("Backend not recognized as valid")
+      vim.notify(
+        "crate graph backend not recognized as valid: " .. vim.inspect(backend),
+        vim.log.levels.ERROR
+      )
+      return
     end
 
     graph = string.gsub(graph, "\n", "")
@@ -45,7 +52,14 @@ local function handler_factory(backend, output, pipe)
 
     -- Execute dot command to generate the output graph
     -- Needs to be handled with care to prevent security problems
-    local handle = io.popen(cmd, "w")
+    local handle, err_ = io.popen(cmd, "w")
+    if not handle then
+      vim.notify(
+        "Could not create crate graph " .. (err_ or ""),
+        vim.log.levels.ERROR
+      )
+      return
+    end
     handle:write(graph)
 
     -- needs to be here otherwise dot may take a long time before it gets
@@ -56,7 +70,7 @@ local function handler_factory(backend, output, pipe)
 end
 
 function M.view_crate_graph(backend, output, pipe)
-  rt.utils.request(
+  vim.lsp.buf_request(
     0,
     "rust-analyzer/viewCrateGraph",
     get_opts(),
@@ -64,4 +78,4 @@ function M.view_crate_graph(backend, output, pipe)
   )
 end
 
-return M
+return M.view_crate_graph

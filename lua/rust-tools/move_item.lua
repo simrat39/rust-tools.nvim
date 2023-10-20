@@ -25,7 +25,12 @@ end
 
 -- Sends the request to rust-analyzer to move the item and handle the response
 function M.move_item(up)
-  rt.utils.request(0, "experimental/moveItem", get_params(up or false), handler)
+  vim.lsp.buf_request(
+    0,
+    "experimental/moveItem",
+    get_params(up or false),
+    handler
+  )
 end
 
 return M

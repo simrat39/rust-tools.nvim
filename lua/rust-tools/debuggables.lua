@@ -93,7 +93,7 @@ end
 -- which is used to check whether we want to use telescope or the vanilla vim
 -- way for input
 function M.debuggables()
-  rt.utils.request(0, "experimental/runnables", get_params(), handler)
+  vim.lsp.buf_request(0, "experimental/runnables", get_params(), handler)
 end
 
 return M

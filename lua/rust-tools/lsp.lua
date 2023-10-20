@@ -120,9 +120,7 @@ M.start_or_attach = function()
       {},
     },
     RustViewCrateGraph = {
-      function(backend, output, pipe)
-        rt.crate_graph.view_crate_graph(backend, output, pipe)
-      end,
+      require("rust-tools.crate_graph"),
       {
         nargs = "*",
         complete = "customlist,v:lua.rust_tools_get_graphviz_backends",

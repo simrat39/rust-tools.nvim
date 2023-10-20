@@ -27,7 +27,7 @@ function M.ssr(query)
   end
 
   if query then
-    rt.utils.request(0, "experimental/ssr", get_opts(query), handler)
+    vim.lsp.buf_request(0, "experimental/ssr", get_opts(query), handler)
   end
 end
 

@@ -23,7 +23,7 @@ end
 -- Sends the request to rust-analyzer to get the TextEdits to join the lines
 -- under the cursor and applies them
 function M.join_lines()
-  rt.utils.request(0, "experimental/joinLines", get_params(), handler)
+  vim.lsp.buf_request(0, "experimental/joinLines", get_params(), handler)
 end
 
 return M
