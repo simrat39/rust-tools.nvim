@@ -30,7 +30,7 @@ M.execute_last_runnable = function()
   local action = cache.last_runnable
   local runnables = require("rust-tools.runnables")
   if action then
-    runnables.run_command(action[0], action[1])
+    runnables.run_command(action[1], action[2])
   else
     runnables.runnables()
   end
