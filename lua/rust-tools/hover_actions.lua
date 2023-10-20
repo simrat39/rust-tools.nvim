@@ -123,7 +123,7 @@ function M.handler(_, result, ctx)
   end
 
   -- makes more sense in a dropdown-ish ui
-  vim.api.nvim_win_set_option(winnr, "cursorline", true)
+  vim.wo[winnr].cursorline = true
 
   -- run the command under the cursor
   vim.keymap.set("n", "<CR>", function()

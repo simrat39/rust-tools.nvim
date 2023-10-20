@@ -130,14 +130,14 @@ M.start_or_attach = function()
   local lsp_commands = {
     RustCodeAction = {
       function()
-        require("rust-tools.code_action_group")()
+        require("rust-tools.commands.code_action_group")()
       end,
 
       {},
     },
     RustViewCrateGraph = {
       function()
-        require("rust-tools.crate_graph")()
+        require("rust-tools.commands.crate_graph")()
       end,
       {
         nargs = "*",
@@ -146,19 +146,19 @@ M.start_or_attach = function()
     },
     RustDebuggables = {
       function()
-        require("rust-tools.debuggables")()
+        require("rust-tools.commands.debuggables")()
       end,
       {},
     },
     RustExpandMacro = {
       function()
-        require("rust-tools.expand_macro")()
+        require("rust-tools.commands.expand_macro")()
       end,
       {},
     },
     RustOpenExternalDocs = {
       function()
-        require("rust-tools.external_docs")()
+        require("rust-tools.commands.external_docs")()
       end,
       {},
     },
@@ -170,7 +170,7 @@ M.start_or_attach = function()
     },
     RustHoverRange = {
       function()
-        require("rust-tools.hover_range")()
+        require("rust-tools.commands.hover_range")()
       end,
       {},
     },
@@ -188,31 +188,31 @@ M.start_or_attach = function()
     },
     RustJoinLines = {
       function()
-        require("rust-tools.join_lines")()
+        require("rust-tools.commands.join_lines")()
       end,
       {},
     },
     RustMoveItemDown = {
       function()
-        require("rust-tools.move_item")()
+        require("rust-tools.commands.move_item")()
       end,
       {},
     },
     RustMoveItemUp = {
       function()
-        require("rust-tools.move_item")(true)
+        require("rust-tools.commands.move_item")(true)
       end,
       {},
     },
     RustOpenCargo = {
       function()
-        require("rust-tools.open_cargo_toml")()
+        require("rust-tools.commands.open_cargo_toml")()
       end,
       {},
     },
     RustParentModule = {
       function()
-        require("rust-tools.parent_module")()
+        require("rust-tools.commands.parent_module")()
       end,
       {},
     },
@@ -224,7 +224,7 @@ M.start_or_attach = function()
     },
     RustSSR = {
       function(query)
-        require("rust-tools.ssr")(query)
+        require("rust-tools.commands.ssr")(query)
       end,
       {
         nargs = "?",
@@ -232,19 +232,19 @@ M.start_or_attach = function()
     },
     RustReloadWorkspace = {
       function()
-        require("rust-tools.workspace_refresh")()
+        require("rust-tools.commands.workspace_refresh")()
       end,
       {},
     },
     RustSyntaxTree = {
       function()
-        require("rust-tools.syntax_tree")()
+        require("rust-tools.commands.syntax_tree")()
       end,
       {},
     },
     RustFlyCheck = {
       function()
-        require("rust-tools.fly_check")()
+        require("rust-tools.commands.fly_check")()
       end,
       {},
     },
