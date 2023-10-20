@@ -1,4 +1,4 @@
-local rt = require("rust-tools")
+local config = require("rust-tools.config.internal")
 
 local M = {}
 
@@ -45,7 +45,7 @@ function M.run_command(choice, result)
     return
   end
 
-  local opts = rt.config.options.tools
+  local opts = config.tools
 
   local command, args, cwd = getCommand(choice, result)
 
@@ -64,7 +64,8 @@ local function handler(_, result)
     function(_, choice)
       M.run_command(choice, result)
 
-      rt.cached_commands.set_last_runnable(choice, result)
+      local cached_commands = require("rust-tools.cached_commands")
+      cached_commands.set_last_runnable(choice, result)
     end
   )
 end

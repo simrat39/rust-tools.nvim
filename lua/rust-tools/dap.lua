@@ -1,4 +1,4 @@
-local rt = require("rust-tools")
+local config = require("rust-tools.config.internal")
 
 local function scheduled_error(err)
   vim.schedule(function()
@@ -6,18 +6,17 @@ local function scheduled_error(err)
   end)
 end
 
-local dap = pcall(require, "dap")
-if not dap then
+local ok, _ = pcall(require, "dap")
+if not ok then
   return {
     start = function(_)
       scheduled_error("nvim-dap not found.")
     end,
   }
 end
-dap = require("dap")
-local opts = rt.config.options
-if opts.dap.adapter ~= false then
-  dap.adapters.rt_lldb = opts.dap.adapter
+local dap = require("dap")
+if config.dap.adapter ~= false then
+  dap.adapters.rt_lldb = config.dap.adapter
 end
 
 local M = {}

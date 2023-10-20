@@ -1,11 +1,11 @@
-local rt = require("rust-tools")
+local config = require("rust-tools.config.internal")
 
 local M = {}
 
 function M.handler(_, result)
   if result.quiescent and not M.ran_once then
-    if rt.config.options.tools.on_initialized then
-      rt.config.options.tools.on_initialized(result)
+    if config.tools.on_initialized then
+      config.tools.on_initialized(result)
     end
     M.ran_once = true
   end

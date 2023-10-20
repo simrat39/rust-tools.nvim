@@ -66,10 +66,13 @@ end
 
 -- start or attach the LSP client
 M.start_or_attach = function()
-  local rt = require("rust-tools")
-  local lsp_opts = rt.config.options.server
-  lsp_opts.name = "rust-analyzer"
-  lsp_opts.filetypes = { "rust" }
+  local config = require("rust-tools.config.internal")
+  local client_config = config.server
+  local lsp_start_opts = vim.tbl_deep_extend("force", {}, client_config)
+  local types = require("rust-tools.types.internal")
+  lsp_start_opts.cmd = types.evaluate(client_config.cmd)
+  lsp_start_opts.name = "rust-analyzer"
+  lsp_start_opts.filetypes = { "rust" }
   local capabilities = vim.lsp.protocol.make_client_capabilities()
 
   -- snippets
@@ -101,22 +104,25 @@ M.start_or_attach = function()
     },
   }
 
-  lsp_opts.capabilities =
-    vim.tbl_deep_extend("force", capabilities, lsp_opts.capabilities or {})
+  lsp_start_opts.capabilities = vim.tbl_deep_extend(
+    "force",
+    capabilities,
+    lsp_start_opts.capabilities or {}
+  )
 
-  lsp_opts.root_dir = get_root_dir(vim.api.nvim_buf_get_name(0))
+  lsp_start_opts.root_dir = get_root_dir(vim.api.nvim_buf_get_name(0))
 
   local custom_handlers = {}
   custom_handlers["experimental/serverStatus"] =
     require("rust-tools.server_status").handler
 
-  if rt.config.options.tools.hover_actions.replace_builtin_hover then
+  if config.tools.hover_actions.replace_builtin_hover then
     custom_handlers["textDocument/hover"] =
       require("rust-tools.hover_actions").handler
   end
 
-  lsp_opts.handlers =
-    vim.tbl_deep_extend("force", custom_handlers, lsp_opts.handlers or {})
+  lsp_start_opts.handlers =
+    vim.tbl_deep_extend("force", custom_handlers, lsp_start_opts.handlers or {})
 
   local lsp_commands = {
     RustCodeAction = {
@@ -152,11 +158,11 @@ M.start_or_attach = function()
       {},
     },
     RustLastDebug = {
-      rt.cached_commands.execute_last_debuggable,
+      require("rust-tools.cached_commands").execute_last_debuggable,
       {},
     },
     RustLastRun = {
-      rt.cached_commands.execute_last_runnable,
+      require("rust-tools.cached_commands").execute_last_runnable,
       {},
     },
     RustJoinLines = {
@@ -202,13 +208,13 @@ M.start_or_attach = function()
   local augroup =
     vim.api.nvim_create_augroup("FerrisAutoCmds", { clear = true })
 
-  local old_on_init = lsp_opts.on_init
-  lsp_opts.on_init = function(...)
+  local old_on_init = lsp_start_opts.on_init
+  lsp_start_opts.on_init = function(...)
     override_apply_text_edits()
     for name, command in pairs(lsp_commands) do
       vim.api.nvim_create_user_command(name, unpack(command))
     end
-    if rt.config.options.tools.reload_workspace_from_cargo_toml then
+    if config.tools.reload_workspace_from_cargo_toml then
       vim.api.nvim_create_autocmd("BufWritePost", {
         pattern = "*/Cargo.toml",
         callback = vim.cmd.RustReloadWorkspace,
@@ -220,8 +226,8 @@ M.start_or_attach = function()
     end
   end
 
-  local old_on_exit = lsp_opts.on_exit
-  lsp_opts.on_exit = function(...)
+  local old_on_exit = lsp_start_opts.on_exit
+  lsp_start_opts.on_exit = function(...)
     override_apply_text_edits()
     for name, _ in pairs(lsp_commands) do
       if vim.cmd[name] then
@@ -234,7 +240,7 @@ M.start_or_attach = function()
     end
   end
 
-  vim.lsp.start(lsp_opts)
+  vim.lsp.start(lsp_start_opts)
 end
 
 return M

@@ -1,5 +1,3 @@
-local rt = require("rust-tools")
-
 local M = {}
 
 local function get_params()
@@ -86,7 +84,8 @@ local function handler(_, result)
       local rt_dap = require("rust-tools.dap")
       rt_dap.start(args)
 
-      rt.cached_commands.set_last_debuggable(args)
+      local cached_commands = require("rust-tools.cached_commands")
+      cached_commands.set_last_debuggable(args)
     end
   )
 end

@@ -1,4 +1,4 @@
-local utils = require("rust-tools.utils.utils")
+local ui = require("rust-tools.ui")
 local M = {}
 
 ---@param action table
@@ -258,17 +258,17 @@ local function on_secondary_quit()
   -- and errors out
   M.state.secondary.clear()
 
-  utils.close_win(winnr)
+  ui.close_win(winnr)
 end
 
 function M.cleanup()
   if M.state.primary.winnr then
-    utils.close_win(M.state.primary.winnr)
+    ui.close_win(M.state.primary.winnr)
     M.state.primary.clear()
   end
 
   if M.state.secondary.winnr then
-    utils.close_win(M.state.secondary.winnr)
+    ui.close_win(M.state.secondary.winnr)
     M.state.secondary.clear()
   end
 
@@ -285,7 +285,7 @@ function M.on_cursor_move()
       M.state.active_group_index = line
 
       if M.state.secondary.winnr then
-        utils.close_win(M.state.secondary.winnr)
+        ui.close_win(M.state.secondary.winnr)
         M.state.secondary.clear()
       end
 
@@ -343,7 +343,7 @@ function M.on_cursor_move()
     end
 
     if M.state.secondary.winnr then
-      utils.close_win(M.state.secondary.winnr)
+      ui.close_win(M.state.secondary.winnr)
       M.state.secondary.clear()
     end
   end

@@ -1,4 +1,3 @@
-local rt = require("rust-tools")
 local M = {}
 
 local cache = {
@@ -22,7 +21,8 @@ M.execute_last_debuggable = function()
     local rt_dap = require("rust-tools.dap")
     rt_dap.start(args)
   else
-    rt.debuggables.debuggables()
+    local debuggables = require("rust-tools.debuggables")
+    debuggables()
   end
 end
 

@@ -1,17 +1,17 @@
-local rt = require("rust-tools")
+local config = require("rust-tools.config.internal")
 
 local M = {}
 
 local function get_opts()
-  return { full = rt.config.options.tools.crate_graph.full }
+  return { full = config.tools.crate_graph.full }
 end
 
 --- Creation of the correct handler depending on the initial call of the command
 --- and give the option to override global settings
 local function handler_factory(backend, output, pipe)
-  backend = backend or rt.config.options.tools.crate_graph.backend
-  output = output or rt.config.options.tools.crate_graph.output
-  pipe = pipe or rt.config.options.tools.crate_graph.pipe
+  backend = backend or config.tools.crate_graph.backend
+  output = output or config.tools.crate_graph.output
+  pipe = pipe or config.tools.crate_graph.pipe
 
   -- Graph is a representation of the crate graph following the graphviz format
   -- The handler processes and pipes the graph to the dot command that will
@@ -28,7 +28,7 @@ local function handler_factory(backend, output, pipe)
     -- Validating backend
     if
       not vim.list_contains(
-        rt.config.options.tools.crate_graph.enabled_graphviz_backends,
+        config.tools.crate_graph.enabled_graphviz_backends,
         backend
       )
     then

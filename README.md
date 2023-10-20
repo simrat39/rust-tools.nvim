@@ -36,19 +36,16 @@ Put this in your init.lua or any lua file that is sourced.<br>
 For most people, the defaults are fine, but for advanced configuration, see [Configuration](#configuration).
 
 Example config:
-```lua
-local rt = require("rust-tools")
 
-rt.setup({
+```lua
+vim.g.ferris = {
   server = {
     on_attach = function(_, bufnr)
-      -- Hover actions
-      vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
       -- Code action groups
       vim.keymap.set("n", "<Leader>a", vim.cmd.RustCodeAction, { buffer = bufnr })
     end,
   },
-})
+}
 ```
 
 ## Usage
@@ -195,7 +192,7 @@ The options shown below are the defaults. You only need to pass the keys to the 
 
 ```lua
 local opts = {
-  tools = { -- rust-tools options
+  tools = { -- plugin options
 
     -- how to execute terminal commands
     -- options right now: termopen / quickfix / toggleterm / vimux

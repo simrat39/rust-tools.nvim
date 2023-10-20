@@ -1,3 +1,4 @@
+---@type FerrisExecutor
 local M = {}
 
 local latest_buf_id = nil

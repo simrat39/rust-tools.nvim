@@ -1,3 +1,4 @@
+---@type FerrisExecutor
 local M = {}
 
 local function clear_qf()

@@ -1,4 +1,4 @@
-local rt = require("rust-tools")
+local config = require("rust-tools.config.internal")
 local lsp_util = vim.lsp.util
 
 local M = {}
@@ -84,7 +84,7 @@ function M.handler(_, result, ctx)
   local bufnr, winnr = lsp_util.open_floating_preview(
     markdown_lines,
     "markdown",
-    vim.tbl_extend("keep", rt.config.options.tools.hover_actions, {
+    vim.tbl_extend("keep", config.tools.hover_actions, {
       focusable = true,
       focus_id = "rust-tools-hover-actions",
       close_events = { "CursorMoved", "BufHidden", "InsertCharPre" },
@@ -93,7 +93,7 @@ function M.handler(_, result, ctx)
 
   vim.bo[bufnr].ft = "markdown"
 
-  if rt.config.options.tools.hover_actions.auto_focus then
+  if config.tools.hover_actions.auto_focus then
     vim.api.nvim_set_current_win(winnr)
   end
 

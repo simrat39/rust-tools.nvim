@@ -1,3 +1,4 @@
+---@type FerrisExecutor
 local M = {}
 
 function M.execute_command(command, args, cwd)
