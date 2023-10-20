@@ -1,5 +1,3 @@
-local utils = require("rust-tools.utils.utils")
-
 local M = {}
 
 function M.execute_command(command, args, cwd)
@@ -11,10 +9,11 @@ function M.execute_command(command, args, cwd)
     return
   end
 
+  local shell = require("rust-tools.shell")
   term.Terminal
     :new({
       dir = cwd,
-      cmd = utils.make_command_from_args(command, args),
+      cmd = shell.make_command_from_args(command, args),
       close_on_exit = false,
       on_open = function(t)
         -- enter normal mode

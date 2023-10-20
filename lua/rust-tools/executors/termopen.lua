@@ -1,27 +1,27 @@
-local utils = require("rust-tools.utils.utils")
-
 local M = {}
 
 local latest_buf_id = nil
 
 function M.execute_command(command, args, cwd)
-  local full_command = utils.chain_commands({
-    utils.make_command_from_args("cd", { cwd }),
-    utils.make_command_from_args(command, args),
+  local shell = require("rust-tools.shell")
+  local ui = require("rust-tools.ui")
+  local full_command = shell.chain_commands({
+    shell.make_command_from_args("cd", { cwd }),
+    shell.make_command_from_args(command, args),
   })
 
   -- check if a buffer with the latest id is already open, if it is then
   -- delete it and continue
-  utils.delete_buf(latest_buf_id)
+  ui.delete_buf(latest_buf_id)
 
   -- create the new buffer
   latest_buf_id = vim.api.nvim_create_buf(false, true)
 
   -- split the window to create a new buffer and set it to our window
-  utils.split(false, latest_buf_id)
+  ui.split(false, latest_buf_id)
 
   -- make the new buffer smaller
-  utils.resize(false, "-5")
+  ui.resize(false, "-5")
 
   -- close the buffer when escape is pressed :)
   vim.api.nvim_buf_set_keymap(

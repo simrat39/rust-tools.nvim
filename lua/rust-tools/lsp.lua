@@ -1,10 +1,10 @@
 local M = {}
 
 local function override_apply_text_edits()
-  local utils = require("rust-tools").utils
   local old_func = vim.lsp.util.apply_text_edits
   vim.lsp.util.apply_text_edits = function(edits, bufnr, offset_encoding)
-    utils.snippet_text_edits_to_text_edits(edits)
+    local overrides = require("rust-tools.overrides")
+    overrides.snippet_text_edits_to_text_edits(edits)
     old_func(edits, bufnr, offset_encoding)
   end
 end

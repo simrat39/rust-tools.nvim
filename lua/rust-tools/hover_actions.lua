@@ -1,16 +1,17 @@
 local rt = require("rust-tools")
-local util = vim.lsp.util
+local lsp_util = vim.lsp.util
 
 local M = {}
 
 local function get_params()
-  return util.make_position_params(0, nil)
+  return lsp_util.make_position_params(0, nil)
 end
 
 local _state = { winnr = nil, commands = nil }
 
 local function close_hover()
-  rt.utils.close_win(_state.winnr)
+  local ui = require("rust-tools.ui")
+  ui.close_win(_state.winnr)
 end
 
 local function execute_rust_analyzer_command(action, ctx)
@@ -62,7 +63,7 @@ function M.handler(_, result, ctx)
   end
 
   local markdown_lines =
-    util.convert_input_to_markdown_lines(result.contents, {})
+    lsp_util.convert_input_to_markdown_lines(result.contents, {})
   if result.actions then
     _state.commands = result.actions[1].commands
     local prompt = parse_commands()
@@ -75,14 +76,12 @@ function M.handler(_, result, ctx)
     markdown_lines = vim.list_extend(l, markdown_lines)
   end
 
-  markdown_lines = util.trim_empty_lines(markdown_lines)
-
   if vim.tbl_isempty(markdown_lines) then
     -- return { 'No information available' }
     return
   end
 
-  local bufnr, winnr = util.open_floating_preview(
+  local bufnr, winnr = lsp_util.open_floating_preview(
     markdown_lines,
     "markdown",
     vim.tbl_extend("keep", rt.config.options.tools.hover_actions, {

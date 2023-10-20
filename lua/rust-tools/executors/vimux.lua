@@ -1,11 +1,11 @@
-local utils = require("rust-tools.utils.utils")
+local shell = require("rust-tools.shell")
 
 local M = {}
 
 function M.execute_command(command, args, cwd)
-  local full_command = utils.chain_commands({
-    utils.make_command_from_args("cd", { cwd }),
-    utils.make_command_from_args(command, args),
+  local full_command = shell.chain_commands({
+    shell.make_command_from_args("cd", { cwd }),
+    shell.make_command_from_args(command, args),
   })
 
   vim.fn.VimuxRunCommand(full_command)

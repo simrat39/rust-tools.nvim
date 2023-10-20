@@ -1,5 +1,3 @@
-local rt = require("rust-tools")
-
 local M = {}
 
 ---@alias lsp_move_items_params { textDocument: lsp_text_document, range: lsp_range, direction: 'Up' | 'Down' }
@@ -19,7 +17,8 @@ local function handler(_, result, ctx)
   if result == nil then
     return
   end
-  rt.utils.snippet_text_edits_to_text_edits(result)
+  local overrides = require("rust-tools.overrides")
+  overrides.snippet_text_edits_to_text_edits(result)
   vim.lsp.util.apply_text_edits(
     result,
     ctx.bufnr,

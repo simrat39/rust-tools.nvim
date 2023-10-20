@@ -52,14 +52,13 @@ end
 -- debugging friendly. For example, we move cargo run to cargo build, and cargo
 -- test to cargo test --no-run.
 local function sanitize_results_for_debugging(result)
-  local ret = {}
-
-  ret = vim.tbl_filter(function(value)
+  local ret = vim.tbl_filter(function(value)
     return is_valid_test(value.args)
-  end, result)
+  end, result or {})
 
+  local overrides = require("rust-tools.overrides")
   for _, value in ipairs(ret) do
-    rt.utils.sanitize_command_for_debugging(value.args.cargoArgs)
+    overrides.sanitize_command_for_debugging(value.args.cargoArgs)
   end
 
   return ret

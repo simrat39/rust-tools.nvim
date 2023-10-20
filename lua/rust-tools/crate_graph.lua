@@ -27,7 +27,7 @@ local function handler_factory(backend, output, pipe)
 
     -- Validating backend
     if
-      not rt.utils.contains(
+      not vim.list_contains(
         rt.config.options.tools.crate_graph.enabled_graphviz_backends,
         backend
       )
