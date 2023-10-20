@@ -1,8 +1,6 @@
 local M = {
   config = nil,
   lsp = nil,
-  server_status = nil,
-  ssr = nil,
   workspace_refresh = nil,
   utils = nil,
 }
@@ -18,12 +16,6 @@ function M.setup(opts)
 
   local lsp = require("rust-tools.lsp")
   M.lsp = lsp
-
-  local server_status = require("rust-tools.server_status")
-  M.server_status = server_status
-
-  local ssr = require("rust-tools.ssr")
-  M.ssr = ssr
 
   local workspace_refresh = require("rust-tools.workspace_refresh")
   M.workspace_refresh = workspace_refresh

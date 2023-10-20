@@ -1,5 +1,3 @@
-local server_status = require("rust-tools.server_status")
-
 local M = {}
 
 local function override_apply_text_edits()
@@ -109,7 +107,9 @@ M.start_or_attach = function()
   lsp_opts.root_dir = get_root_dir(vim.api.nvim_buf_get_name(0))
 
   local custom_handlers = {}
-  custom_handlers["experimental/serverStatus"] = server_status.handler
+  custom_handlers["experimental/serverStatus"] =
+    require("rust-tools.server_status").handler
+
   if rt.config.options.tools.hover_actions.replace_builtin_hover then
     custom_handlers["textDocument/hover"] =
       require("rust-tools.hover_actions").handler
@@ -187,7 +187,7 @@ M.start_or_attach = function()
     },
     RustSSR = {
       function(query)
-        require("rust-tools.ssr").ssr(query)
+        require("rust-tools.ssr")(query)
       end,
       {
         nargs = "?",

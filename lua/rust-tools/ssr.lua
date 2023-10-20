@@ -1,5 +1,3 @@
-local rt = require("rust-tools")
-
 local M = {}
 
 local function get_opts(query)
@@ -10,13 +8,16 @@ local function get_opts(query)
   return opts
 end
 
-local function handler(err, result)
+local function handler(err, result, ctx)
   if err then
     error("Could not execute request to server: " .. err.message)
     return
   end
 
-  vim.lsp.util.apply_workspace_edit(result)
+  local client = vim.lsp.get_client_by_id(ctx.client_id)
+  if client then
+    vim.lsp.util.apply_workspace_edit(result, client.offset_encoding)
+  end
 end
 
 function M.ssr(query)
@@ -31,4 +32,4 @@ function M.ssr(query)
   end
 end
 
-return M
+return M.ssr
