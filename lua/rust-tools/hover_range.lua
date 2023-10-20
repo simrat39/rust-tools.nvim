@@ -1,6 +1,6 @@
 local M = {}
 
----@return table
+---@return lsp_range_params
 local function get_opts()
   local params = vim.lsp.util.make_range_params()
   -- set start and end of selection

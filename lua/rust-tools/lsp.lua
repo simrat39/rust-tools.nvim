@@ -160,7 +160,7 @@ M.start_or_attach = function()
       {},
     },
     RustJoinLines = {
-      rt.join_lines.join_lines,
+      require("rust-tools.join_lines"),
       {},
     },
     RustMoveItemDown = {

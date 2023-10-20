@@ -1,6 +1,5 @@
 local M = {
   config = nil,
-  join_lines = nil,
   lsp = nil,
   move_item = nil,
   open_cargo_toml = nil,
@@ -20,9 +19,6 @@ function M.setup(opts)
 
   local config = require("rust-tools.config")
   M.config = config
-
-  local join_lines = require("rust-tools.join_lines")
-  M.join_lines = join_lines
 
   local lsp = require("rust-tools.lsp")
   M.lsp = lsp

@@ -1,7 +1,6 @@
-local rt = require("rust-tools")
-
 local M = {}
 
+---@return lsp_join_lines_params
 local function get_params()
   local params = vim.lsp.util.make_range_params()
   local range = params.range
@@ -20,10 +19,10 @@ local function handler(_, result, ctx)
   )
 end
 
--- Sends the request to rust-analyzer to get the TextEdits to join the lines
--- under the cursor and applies them
+--- Sends the request to rust-analyzer to get the TextEdits to join the lines
+--- under the cursor and applies them
 function M.join_lines()
   vim.lsp.buf_request(0, "experimental/joinLines", get_params(), handler)
 end
 
-return M
+return M.join_lines
