@@ -29,7 +29,7 @@ use 'mfussenegger/nvim-dap'
 <b>Look at the configuration information below to get started.</b>
 
 ## Setup
-This plugin automatically sets up nvim-lspconfig rust_analyzer for you, so don't do that manually, as it causes conflicts.
+This plugin automatically sets up nvim-lspconfig rust-analyzer for you, so don't do that manually, as it causes conflicts.
 
 Put this in your init.lua or any lua file that is sourced.<br>
 

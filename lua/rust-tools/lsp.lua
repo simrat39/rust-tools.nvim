@@ -194,16 +194,26 @@ M.start_or_attach = function()
       },
     },
     RustReloadWorkspace = {
-      rt.workspace_refresh.reload_workspace,
+      require("rust-tools.workspace_refresh"),
       {},
     },
   }
+
+  local augroup =
+    vim.api.nvim_create_augroup("FerrisAutoCmds", { clear = true })
 
   local old_on_init = lsp_opts.on_init
   lsp_opts.on_init = function(...)
     override_apply_text_edits()
     for name, command in pairs(lsp_commands) do
       vim.api.nvim_create_user_command(name, unpack(command))
+    end
+    if rt.config.options.tools.reload_workspace_from_cargo_toml then
+      vim.api.nvim_create_autocmd("BufWritePost", {
+        pattern = "*/Cargo.toml",
+        callback = vim.cmd.RustReloadWorkspace,
+        group = augroup,
+      })
     end
     if type(old_on_init) == "function" then
       old_on_init(...)
@@ -218,6 +228,7 @@ M.start_or_attach = function()
         vim.api.nvim_del_user_command(name)
       end
     end
+    vim.api.nvim_del_augroup_by_id(augroup)
     if type(old_on_exit) == "function" then
       old_on_exit(...)
     end
