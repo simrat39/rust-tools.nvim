@@ -1,4 +1,5 @@
----@alias lsp_range { start: { character: integer, line: integer } }
+---@alias lsp_position { character: integer, line: integer }
+---@alias lsp_range { start: lsp_position, end: lsp_position }
 ---@alias lsp_text_document { uri: string }
 ---@alias lsp_range_params { textDocument: lsp_text_document, range: lsp_range }
 
