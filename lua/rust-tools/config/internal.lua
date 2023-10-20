@@ -185,6 +185,12 @@ local FerrisDefaultConfig = {
 
 local ferris = vim.g.ferris or {}
 local opts = type(ferris) == "function" and ferris() or ferris
+if type(opts.tools.executor) == "string" then
+  opts.tools.executor = assert(
+    require("rust-tools.executors")[opts.tools.executor],
+    "Unknown FerrisExecutor"
+  )
+end
 FerrisConfig = vim.tbl_deep_extend("force", {}, FerrisDefaultConfig, opts)
 
 return FerrisConfig
