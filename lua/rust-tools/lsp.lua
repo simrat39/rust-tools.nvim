@@ -110,6 +110,11 @@ M.start_or_attach = function()
 
   local custom_handlers = {}
   custom_handlers["experimental/serverStatus"] = server_status.handler
+  if rt.config.options.tools.hover_actions.replace_builtin_hover then
+    custom_handlers["textDocument/hover"] =
+      require("rust-tools.hover_actions").handler
+  end
+
   lsp_opts.handlers =
     vim.tbl_deep_extend("force", custom_handlers, lsp_opts.handlers or {})
 
@@ -139,7 +144,7 @@ M.start_or_attach = function()
       {},
     },
     RustHoverActions = {
-      require("rust-tools.hover_actions"),
+      require("rust-tools.hover_actions").hover_actions,
       {},
     },
     RustHoverRange = {
@@ -200,7 +205,7 @@ M.start_or_attach = function()
     for name, command in pairs(lsp_commands) do
       vim.api.nvim_create_user_command(name, unpack(command))
     end
-    if old_on_init ~= nil then
+    if type(old_on_init) == "function" then
       old_on_init(...)
     end
   end
@@ -213,7 +218,7 @@ M.start_or_attach = function()
         vim.api.nvim_del_user_command(name)
       end
     end
-    if old_on_exit ~= nil then
+    if type(old_on_exit) == "function" then
       old_on_exit(...)
     end
   end

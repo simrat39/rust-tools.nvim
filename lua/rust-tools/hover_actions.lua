@@ -7,10 +7,17 @@ local function get_params()
   return util.make_position_params(0, nil)
 end
 
-M._state = { winnr = nil, commands = nil }
+local _state = { winnr = nil, commands = nil }
 
 local function close_hover()
-  rt.utils.close_win(M._state.winnr)
+  rt.utils.close_win(_state.winnr)
+end
+
+local function execute_rust_analyzer_command(action, ctx)
+  local fn = vim.lsp.commands[action.command]
+  if fn then
+    fn(action, ctx)
+  end
 end
 
 -- run the command under the cursor, if the thing under the cursor is not the
@@ -19,29 +26,20 @@ local function run_command(ctx)
   local winnr = vim.api.nvim_get_current_win()
   local line = vim.api.nvim_win_get_cursor(winnr)[1]
 
-  if line > #M._state.commands then
+  if line > #_state.commands then
     return
   end
 
-  local action = M._state.commands[line]
+  local action = _state.commands[line]
 
   close_hover()
-  M.execute_rust_analyzer_command(action, ctx)
+  execute_rust_analyzer_command(action, ctx)
 end
-
-function M.execute_rust_analyzer_command(action, ctx)
-  local fn = vim.lsp.commands[action.command]
-  if fn then
-    fn(action, ctx)
-  end
-end
-
-function M._close_hover() end
 
 local function parse_commands()
   local prompt = {}
 
-  for i, value in ipairs(M._state.commands) do
+  for i, value in ipairs(_state.commands) do
     if value.command == "rust-analyzer.gotoLocation" then
       table.insert(
         prompt,
@@ -66,7 +64,7 @@ function M.handler(_, result, ctx)
   local markdown_lines =
     util.convert_input_to_markdown_lines(result.contents, {})
   if result.actions then
-    M._state.commands = result.actions[1].commands
+    _state.commands = result.actions[1].commands
     local prompt = parse_commands()
     local l = {}
 
@@ -100,13 +98,13 @@ function M.handler(_, result, ctx)
     vim.api.nvim_set_current_win(winnr)
   end
 
-  if M._state.winnr ~= nil then
+  if _state.winnr ~= nil then
     return
   end
 
   -- update the window number here so that we can map escape to close even
   -- when there are no actions, update the rest of the state later
-  M._state.winnr = winnr
+  _state.winnr = winnr
   vim.keymap.set(
     "n",
     "<Esc>",
@@ -116,7 +114,7 @@ function M.handler(_, result, ctx)
 
   vim.api.nvim_buf_attach(bufnr, false, {
     on_detach = function()
-      M._state.winnr = nil
+      _state.winnr = nil
     end,
   })
 
@@ -139,4 +137,4 @@ function M.hover_actions()
   vim.lsp.buf_request(0, "textDocument/hover", get_params(), M.handler)
 end
 
-return M.hover_actions
+return M

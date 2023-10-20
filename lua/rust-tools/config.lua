@@ -24,6 +24,9 @@ local defaults = {
     -- options same as lsp hover / vim.lsp.util.open_floating_preview()
     hover_actions = {
 
+      --- Whether to replace Neovim's built-in `vim.lsp.buf.hover`
+      replace_builtin_hover = true,
+
       -- the border that is used for the hover window
       -- see vim.api.nvim_open_win()
       border = {
