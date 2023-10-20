@@ -375,7 +375,7 @@ M.state = {
   },
 }
 
-return function()
+M.code_action_group = function()
   local context = {}
   context.diagnostics = vim.lsp.diagnostic.get_line_diagnostics()
   local params = vim.lsp.util.make_range_params()
@@ -393,3 +393,5 @@ return function()
     end
   )
 end
+
+return M.code_action_group
