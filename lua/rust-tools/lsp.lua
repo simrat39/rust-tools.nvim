@@ -164,12 +164,12 @@ M.start_or_attach = function()
       {},
     },
     RustMoveItemDown = {
-      rt.move_item.move_item,
+      require("rust-tools.move_item"),
       {},
     },
     RustMoveItemUp = {
       function()
-        require("rust-tools.move_item").move_item(true)
+        require("rust-tools.move_item")(true)
       end,
       {},
     },

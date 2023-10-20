@@ -1,5 +1,7 @@
 local M = {}
 
+---@alias lsp_join_lines_params { textDocument: lsp_text_document, ranges: lsp_range[] }
+
 ---@return lsp_join_lines_params
 local function get_params()
   local params = vim.lsp.util.make_range_params()

@@ -2,6 +2,10 @@ local rt = require("rust-tools")
 
 local M = {}
 
+---@alias lsp_move_items_params { textDocument: lsp_text_document, range: lsp_range, direction: 'Up' | 'Down' }
+
+---@param up boolean
+---@return lsp_move_items_params
 local function get_params(up)
   local direction = up and "Up" or "Down"
   local params = vim.lsp.util.make_range_params()
@@ -33,4 +37,4 @@ function M.move_item(up)
   )
 end
 
-return M
+return M.move_item
