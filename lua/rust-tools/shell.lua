@@ -1,10 +1,12 @@
 local M = {}
 
+---@return boolean
 local function is_windows()
   local sysname = vim.loop.os_uname().sysname
   return sysname == "Windows" or sysname == "Windows_NT"
 end
 
+---@return boolean
 local function is_nushell()
   ---@diagnostic disable-next-line: missing-parameter
   local shell = vim.loop.os_getenv("SHELL")
@@ -15,7 +17,8 @@ end
 
 ---Get a new command which is a chain of all the old commands
 ---Note that a space is not added at the end of the returned command string
----@param commands table
+---@param commands string[]
+---@return string
 function M.chain_commands(commands)
   local separator = is_windows() and " | " or is_nushell() and ";" or " && "
   local ret = ""
@@ -33,7 +36,8 @@ function M.chain_commands(commands)
 end
 
 ---@param command string
----@param args table
+---@param args string[]
+---@return string command
 function M.make_command_from_args(command, args)
   local ret = command .. " "
 
