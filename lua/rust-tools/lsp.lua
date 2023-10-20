@@ -139,7 +139,7 @@ M.start_or_attach = function()
       {},
     },
     RustHoverActions = {
-      rt.hover_actions.hover_actions,
+      require("rust-tools.hover_actions"),
       {},
     },
     RustHoverRange = {

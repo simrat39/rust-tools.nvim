@@ -94,6 +94,8 @@ function M.handler(_, result, ctx)
     })
   )
 
+  vim.bo[bufnr].ft = "markdown"
+
   if rt.config.options.tools.hover_actions.auto_focus then
     vim.api.nvim_set_current_win(winnr)
   end
@@ -132,9 +134,9 @@ function M.handler(_, result, ctx)
   end, { buffer = bufnr, noremap = true, silent = true })
 end
 
--- Sends the request to rust-analyzer to get hover actions and handle it
+--- Sends the request to rust-analyzer to get hover actions and handle it
 function M.hover_actions()
   vim.lsp.buf_request(0, "textDocument/hover", get_params(), M.handler)
 end
 
-return M
+return M.hover_actions
