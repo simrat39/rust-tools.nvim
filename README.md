@@ -197,6 +197,23 @@ vim.g.ferris = {
   ```
 </details>
 
+<details>
+  <summary>
+	<b>Fly check</b>
+  </summary>
+
+  Run `cargo check` or another compatible command (f.x. `clippy`) 
+  in a background thread and provide LSP diagnostics based on 
+  the output of the command.
+
+  Useful in large projects where running `cargo check` on each save
+  can be costly.
+  
+  ```vimscript
+  :RustFlyCheck
+  ```
+</details>
+
 ## Configuration
 The options shown below are the defaults. You only need to pass the keys to the setup function that you want to be changed, because the defaults are applied for keys that are not provided. 
 

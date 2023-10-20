@@ -242,6 +242,12 @@ M.start_or_attach = function()
       end,
       {},
     },
+    RustFlyCheck = {
+      function()
+        require("rust-tools.fly_check")()
+      end,
+      {},
+    },
   }
 
   local augroup =
