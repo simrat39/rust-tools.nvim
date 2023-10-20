@@ -100,4 +100,4 @@ function M.debuggables()
   vim.lsp.buf_request(0, "experimental/runnables", get_params(), handler)
 end
 
-return M
+return M.debuggables

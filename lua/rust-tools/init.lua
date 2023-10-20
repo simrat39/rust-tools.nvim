@@ -1,6 +1,5 @@
 local M = {
   config = nil,
-  debuggables = nil,
   expand_macro = nil,
   external_docs = nil,
   hover_actions = nil,
@@ -25,9 +24,6 @@ function M.setup(opts)
 
   local config = require("rust-tools.config")
   M.config = config
-
-  local debuggables = require("rust-tools.debuggables")
-  M.debuggables = debuggables
 
   local expand_macro = require("rust-tools.expand_macro")
   M.expand_macro = expand_macro

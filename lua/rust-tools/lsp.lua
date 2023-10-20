@@ -127,7 +127,7 @@ M.start_or_attach = function()
       },
     },
     RustDebuggables = {
-      rt.debuggables.debuggables,
+      require("rust-tools.debuggables"),
       {},
     },
     RustExpandMacro = {
