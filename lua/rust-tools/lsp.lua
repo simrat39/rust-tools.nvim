@@ -148,7 +148,7 @@ M.start_or_attach = function()
       {},
     },
     RustHoverRange = {
-      rt.hover_range.hover_range,
+      require("rust-tools.hover_range"),
       {},
     },
     RustLastDebug = {

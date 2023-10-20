@@ -1,6 +1,5 @@
 local M = {
   config = nil,
-  hover_range = nil,
   join_lines = nil,
   lsp = nil,
   move_item = nil,
@@ -21,9 +20,6 @@ function M.setup(opts)
 
   local config = require("rust-tools.config")
   M.config = config
-
-  local hover_range = require("rust-tools.hover_range")
-  M.hover_range = hover_range
 
   local join_lines = require("rust-tools.join_lines")
   M.join_lines = join_lines
