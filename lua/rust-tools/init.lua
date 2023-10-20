@@ -1,6 +1,5 @@
 local M = {
   config = nil,
-  dap = nil,
   debuggables = nil,
   expand_macro = nil,
   external_docs = nil,
@@ -26,9 +25,6 @@ function M.setup(opts)
 
   local config = require("rust-tools.config")
   M.config = config
-
-  local rt_dap = require("rust-tools.dap")
-  M.dap = rt_dap
 
   local debuggables = require("rust-tools.debuggables")
   M.debuggables = debuggables
@@ -77,10 +73,6 @@ function M.setup(opts)
 
   config.setup(opts)
   commands.setup_lsp_commands()
-
-  if pcall(require, "dap") then
-    rt_dap.setup_adapter()
-  end
 end
 
 return M

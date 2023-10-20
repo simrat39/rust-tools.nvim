@@ -3,7 +3,7 @@
     "library": {
       "enabled": true,
       "plugins": [
-        "nvim-lspconfig",
+        "nvim-dap",
       ]
     }
   },

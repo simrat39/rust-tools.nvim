@@ -72,6 +72,9 @@ local function handler(_, result)
   result = sanitize_results_for_debugging(result)
 
   local options = get_options(result)
+  if #options == 0 then
+    return
+  end
   vim.ui.select(
     options,
     { prompt = "Debuggables", kind = "rust-tools/debuggables" },
@@ -81,7 +84,8 @@ local function handler(_, result)
       end
 
       local args = result[choice].args
-      rt.dap.start(args)
+      local rt_dap = require("rust-tools.dap")
+      rt_dap.start(args)
 
       rt.cached_commands.set_last_debuggable(args)
     end

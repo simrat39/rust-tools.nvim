@@ -1,5 +1,25 @@
 local rt = require("rust-tools")
 
+local function scheduled_error(err)
+  vim.schedule(function()
+    vim.notify(err, vim.log.levels.ERROR)
+  end)
+end
+
+local dap = pcall(require, "dap")
+if not dap then
+  return {
+    start = function(_)
+      scheduled_error("nvim-dap not found.")
+    end,
+  }
+end
+dap = require("dap")
+local opts = rt.config.options
+if opts.dap.adapter ~= false then
+  dap.adapters.rt_lldb = opts.dap.adapter
+end
+
 local M = {}
 
 ---For the heroes who want to use it
@@ -15,15 +35,6 @@ function M.get_codelldb_adapter(codelldb_path, liblldb_path)
       args = { "--liblldb", liblldb_path, "--port", "${port}" },
     },
   }
-end
-
-function M.setup_adapter()
-  local dap = require("dap")
-  local opts = rt.config.options
-
-  if opts.dap.adapter ~= false then
-    dap.adapters.rt_lldb = opts.dap.adapter
-  end
 end
 
 local function get_cargo_args_from_runnables_args(runnable_args)
@@ -43,24 +54,12 @@ local function get_cargo_args_from_runnables_args(runnable_args)
   return cargo_args
 end
 
-local function scheduled_error(err)
-  vim.schedule(function()
-    vim.notify(err, vim.log.levels.ERROR)
-  end)
-end
-
 function M.start(args)
-  if not pcall(require, "dap") then
-    scheduled_error("nvim-dap not found.")
-    return
-  end
-
   if not pcall(require, "plenary.job") then
-    scheduled_error("plenary not found.")
+    scheduled_error("plenary.nvim not found.")
     return
   end
 
-  local dap = require("dap")
   local Job = require("plenary.job")
 
   local cargo_args = get_cargo_args_from_runnables_args(args)
