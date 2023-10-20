@@ -203,6 +203,10 @@ M.start_or_attach = function()
       require("rust-tools.workspace_refresh"),
       {},
     },
+    RustSyntaxTree = {
+      require("rust-tools.syntax_tree"),
+      {},
+    },
   }
 
   local augroup =

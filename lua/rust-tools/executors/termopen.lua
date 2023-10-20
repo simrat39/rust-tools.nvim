@@ -1,6 +1,7 @@
 ---@type FerrisExecutor
 local M = {}
 
+---@type integer | nil
 local latest_buf_id = nil
 
 function M.execute_command(command, args, cwd)

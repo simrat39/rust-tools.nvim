@@ -6,6 +6,7 @@ local function get_params()
   return vim.lsp.util.make_position_params()
 end
 
+---@type integer | nil
 local latest_buf_id = nil
 
 -- parse the lines from result to get a list of the desirable output

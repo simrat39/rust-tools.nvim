@@ -187,6 +187,16 @@ vim.g.ferris = {
   ```
 </details>
 
+<details>
+  <summary>
+	<b>View Syntax Tree</b>
+  </summary>
+  
+  ```vimscript
+  :RustSyntaxTree
+  ```
+</details>
+
 ## Configuration
 The options shown below are the defaults. You only need to pass the keys to the setup function that you want to be changed, because the defaults are applied for keys that are not provided. 
 
