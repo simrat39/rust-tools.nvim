@@ -10,7 +10,7 @@ local function is_nushell()
   local shell = vim.loop.os_getenv("SHELL")
   local nu = "nu"
   -- Check if $SHELL ends in "nu"
-  return shell:sub(-string.len(nu)) == nu
+  return shell ~= nil and shell:sub(-string.len(nu)) == nu
 end
 
 ---Get a new command which is a chain of all the old commands
