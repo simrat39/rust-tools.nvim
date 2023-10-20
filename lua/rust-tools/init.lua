@@ -1,5 +1,4 @@
 local M = {
-  code_action_group = nil,
   config = nil,
   crate_graph = nil,
   dap = nil,
@@ -21,9 +20,6 @@ local M = {
 }
 
 function M.setup(opts)
-  local code_action_group = require("rust-tools.code_action_group")
-  M.code_action_group = code_action_group
-
   local cached_commands = require("rust-tools.cached_commands")
   M.cached_commands = cached_commands
 

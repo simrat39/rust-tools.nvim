@@ -115,7 +115,8 @@ M.start_or_attach = function()
 
   local lsp_commands = {
     RustCodeAction = {
-      rt.code_action_group.code_action_group,
+      require("rust-tools.code_action_group"),
+
       {},
     },
     RustViewCrateGraph = {

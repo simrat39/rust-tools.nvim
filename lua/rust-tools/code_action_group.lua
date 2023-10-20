@@ -1,7 +1,9 @@
 local utils = require("rust-tools.utils.utils")
 local M = {}
 
----@private
+---@param action table
+---@param client lsp.Client
+---@param ctx table
 function M.apply_action(action, client, ctx)
   if action.edit then
     vim.lsp.util.apply_workspace_edit(action.edit, client.offset_encoding)
@@ -19,7 +21,10 @@ function M.apply_action(action, client, ctx)
   end
 end
 
----@private
+---@alias action_tuple { [1]: number, [2]: table }
+
+---@param action_tuple action_tuple
+---@param ctx table
 function M.on_user_choice(action_tuple, ctx)
   if not action_tuple then
     return
@@ -38,15 +43,13 @@ function M.on_user_choice(action_tuple, ctx)
   --
   local client = vim.lsp.get_client_by_id(action_tuple[1])
   local action = action_tuple[2]
-  local code_action_provider = nil
-  if vim.fn.has("nvim-0.8.0") then
-    code_action_provider = client.server_capabilities.codeActionProvider
-  else
-    code_action_provider = client.resolved_capabilities.code_action
+  local code_action_provider = client
+    and client.server_capabilities.codeActionProvider
+  if not client then
+    return
   end
   if
     not action.edit
-    and client
     and type(code_action_provider) == "table"
     and code_action_provider.resolveProvider
   then
@@ -56,12 +59,15 @@ function M.on_user_choice(action_tuple, ctx)
         return
       end
       M.apply_action(resolved_action, client, ctx)
-    end)
+    end, 0)
   else
     M.apply_action(action, client, ctx)
   end
 end
 
+---@param action_tuples action_tuple[]
+---@param is_group boolean
+---@return { width: integer }
 local function compute_width(action_tuples, is_group)
   local width = 0
 
@@ -102,9 +108,15 @@ local function on_primary_quit()
   M.cleanup()
 end
 
+---@class LspCodeActionResult
+---@field result? table
+
+---@param results { [number]: LspCodeActionResult }
+---@param ctx table
 local function on_code_action_results(results, ctx)
   M.state.ctx = ctx
 
+  ---@type action_tuple[]
   local action_tuples = {}
   for client_id, result in pairs(results) do
     for _, action in pairs(result.result or {}) do
@@ -202,17 +214,18 @@ local function on_code_action_results(results, ctx)
     callback = M.on_cursor_move,
   })
 
-  vim.cmd("redraw")
+  vim.cmd.redraw()
 end
 
 function M.codeactionify_window_buffer(winnr, bufnr)
-  vim.api.nvim_buf_set_option(bufnr, "modifiable", false)
-  vim.api.nvim_buf_set_option(bufnr, "bufhidden", "delete")
-  vim.api.nvim_buf_set_option(bufnr, "buftype", "nofile")
+  vim.bo[bufnr].modifiable = false
+  vim.bo[bufnr].bufhidden = "delete"
+  vim.bo[bufnr].buftype = "nofile"
+  vim.bo[bufnr].ft = "markdown"
 
-  vim.api.nvim_win_set_option(winnr, "nu", true)
-  vim.api.nvim_win_set_option(winnr, "rnu", false)
-  vim.api.nvim_win_set_option(winnr, "cul", true)
+  vim.wo[winnr].nu = true
+  vim.wo[winnr].rnu = false
+  vim.wo[winnr].cul = true
 end
 
 local function on_secondary_enter_press()
@@ -362,7 +375,7 @@ M.state = {
   },
 }
 
-function M.code_action_group()
+return function()
   local context = {}
   context.diagnostics = vim.lsp.diagnostic.get_line_diagnostics()
   local params = vim.lsp.util.make_range_params()
@@ -380,5 +393,3 @@ function M.code_action_group()
     end
   )
 end
-
-return M
