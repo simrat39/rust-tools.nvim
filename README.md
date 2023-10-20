@@ -11,8 +11,7 @@ A plugin to improve your rust experience in neovim.
 
 ## Prerequisites
 
-- `neovim 0.7`
-- `nvim-lspconfig`
+- `neovim 0.10`
 - `rust-analyzer`
 - `dot` from `graphviz` (only for crate graph)
 
@@ -21,7 +20,6 @@ A plugin to improve your rust experience in neovim.
 using `packer.nvim`
 
 ```lua
-use 'neovim/nvim-lspconfig'
 use 'simrat39/rust-tools.nvim'
 
 -- Debugging
@@ -31,7 +29,7 @@ use 'mfussenegger/nvim-dap'
 <b>Look at the configuration information below to get started.</b>
 
 ## Setup
-This plugin automatically sets up nvim-lspconfig for rust_analyzer for you, so don't do that manually, as it causes conflicts.
+This plugin automatically sets up nvim-lspconfig rust_analyzer for you, so don't do that manually, as it causes conflicts.
 
 Put this in your init.lua or any lua file that is sourced.<br>
 
@@ -110,7 +108,7 @@ rt.setup({
   </summary>
   
  ![hover actions](https://github.com/simrat39/rust-tools-demos/raw/master/hover_actions.gif)
- Note: To activate hover actions, run the command twice (or your hover keymap if you have ```hover_with_actions``` set to true AND are using ```vim.lsp.buf.hover()```). This will move you into the window, then press enter on the selection you want. Alternatively, you can set ```auto_focus``` to true in your config and you will automatically enter the hover actions window.
+ Note: To activate hover actions, run the command twice. This will move you into the window, then press enter on the selection you want. Alternatively, you can set ```auto_focus``` to true in your config and you will automatically enter the hover actions window.
  ```lua
  -- Command:
  -- RustHoverActions 
@@ -317,9 +315,7 @@ local opts = {
     },
   },
 
-  -- all the opts to send to nvim-lspconfig
-  -- these override the defaults set by rust-tools.nvim
-  -- see https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#rust_analyzer
+  -- all the opts to send to rust-analyzer
   server = {
     -- standalone file support
     -- setting it to false may improve startup time

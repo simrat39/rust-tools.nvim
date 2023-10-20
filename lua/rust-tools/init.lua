@@ -16,7 +16,6 @@ local M = {
   runnables = nil,
   server_status = nil,
   ssr = nil,
-  standalone = nil,
   workspace_refresh = nil,
   utils = nil,
 }
@@ -78,9 +77,6 @@ function M.setup(opts)
   local ssr = require("rust-tools.ssr")
   M.ssr = ssr
 
-  local standalone = require("rust-tools.standalone")
-  M.standalone = standalone
-
   local workspace_refresh = require("rust-tools.workspace_refresh")
   M.workspace_refresh = workspace_refresh
 
@@ -88,7 +84,6 @@ function M.setup(opts)
   M.utils = utils
 
   config.setup(opts)
-  lsp.setup()
   commands.setup_lsp_commands()
 
   if pcall(require, "dap") then

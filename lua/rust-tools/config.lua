@@ -126,14 +126,18 @@ local defaults = {
     },
   },
 
-  -- all the opts to send to nvim-lspconfig
+  -- all the opts to send to the LSP client
   -- these override the defaults set by rust-tools.nvim
-  -- see https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#rust_analyzer
   server = {
+    -- TODO:
+    cmd = { "rust-analyzer" },
     -- standalone file support
     -- setting it to false may improve startup time
     standalone = true,
-  }, -- rust-analyzer options
+
+    -- options to send to rust-analyzer
+    ["rust-analyzer"] = {},
+  },
 
   -- debugging stuff
   dap = {

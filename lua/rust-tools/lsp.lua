@@ -1,118 +1,77 @@
-local rt = require("rust-tools")
-local lspconfig = require("lspconfig")
-local lspconfig_utils = require("lspconfig.util")
 local server_status = require("rust-tools.server_status")
 
 local M = {}
 
-local function setup_autocmds()
-  local group =
-    vim.api.nvim_create_augroup("RustToolsAutocmds", { clear = true })
-
-  if rt.config.options.tools.reload_workspace_from_cargo_toml then
-    vim.api.nvim_create_autocmd("BufWritePost", {
-      pattern = "*/Cargo.toml",
-      callback = require("rust-tools.workspace_refresh")._reload_workspace_from_cargo_toml,
-      group = group,
-    })
+local function override_apply_text_edits()
+  local utils = require("rust-tools").utils
+  local old_func = vim.lsp.util.apply_text_edits
+  vim.lsp.util.apply_text_edits = function(edits, bufnr, offset_encoding)
+    utils.snippet_text_edits_to_text_edits(edits)
+    old_func(edits, bufnr, offset_encoding)
   end
-
-  vim.api.nvim_create_autocmd("VimEnter", {
-    pattern = "*.rs",
-    callback = rt.lsp.start_standalone_if_required,
-    group = group,
-  })
 end
 
-local function setup_commands()
-  local lsp_opts = rt.config.options.server
+local function is_library(fname)
+  local cargo_home = os.getenv("CARGO_HOME")
+    or vim.fs.joinpath(vim.env.HOME, ".cargo")
+  local registry = vim.fs.joinpath(cargo_home, "registry", "src")
 
-  lsp_opts.commands = vim.tbl_deep_extend("force", lsp_opts.commands or {}, {
-    RustCodeAction = {
-      rt.code_action_group.code_action_group,
-    },
-    RustViewCrateGraph = {
-      function(backend, output, pipe)
-        rt.crate_graph.view_crate_graph(backend, output, pipe)
-      end,
-      "-nargs=* -complete=customlist,v:lua.rust_tools_get_graphviz_backends",
-      description = "`:RustViewCrateGraph [<backend> [<output>]]` Show the crate graph",
-    },
-    RustDebuggables = {
-      rt.debuggables.debuggables,
-    },
-    RustExpandMacro = { rt.expand_macro.expand_macro },
-    RustOpenExternalDocs = {
-      rt.external_docs.open_external_docs,
-    },
-    RustHoverActions = { rt.hover_actions.hover_actions },
-    RustHoverRange = { rt.hover_range.hover_range },
-    RustLastDebug = {
-      rt.cached_commands.execute_last_debuggable,
-    },
-    RustLastRun = {
-      rt.cached_commands.execute_last_runnable,
-    },
-    RustJoinLines = { rt.join_lines.join_lines },
-    RustMoveItemDown = {
-      rt.move_item.move_item,
-    },
-    RustMoveItemUp = {
-      function()
-        require("rust-tools.move_item").move_item(true)
-      end,
-    },
-    RustOpenCargo = { rt.open_cargo_toml.open_cargo_toml },
-    RustParentModule = { rt.parent_module.parent_module },
-    RustRunnables = {
-      rt.runnables.runnables,
-    },
-    RustSSR = {
-      function(query)
-        require("rust-tools.ssr").ssr(query)
-      end,
-      "-nargs=?",
-      description = "`:RustSSR [query]` Structural Search Replace",
-    },
-    RustReloadWorkspace = {
-      rt.workspace_refresh.reload_workspace,
-    },
-  })
-end
+  local rustup_home = os.getenv("RUSTUP_HOME")
+    or vim.fs.joinpath(vim.env.HOME, ".rustup")
+  local toolchains = vim.fs.joinpath(rustup_home, "toolchains")
 
-local function setup_handlers()
-  local lsp_opts = rt.config.options.server
-  local tool_opts = rt.config.options.tools
-  local custom_handlers = {}
-
-  if tool_opts.hover_with_actions then
-    vim.notify(
-      "rust-tools: hover_with_actions is deprecated, please setup a keybind to :RustHoverActions in on_attach instead",
-      vim.log.levels.INFO
-    )
-  end
-
-  custom_handlers["experimental/serverStatus"] =
-    rt.utils.mk_handler(server_status.handler)
-
-  lsp_opts.handlers =
-    vim.tbl_deep_extend("force", custom_handlers, lsp_opts.handlers or {})
-end
-
-local function setup_on_init()
-  local lsp_opts = rt.config.options.server
-  local old_on_init = lsp_opts.on_init
-
-  lsp_opts.on_init = function(...)
-    rt.utils.override_apply_text_edits()
-    if old_on_init ~= nil then
-      old_on_init(...)
+  for _, item in ipairs({ toolchains, registry }) do
+    if fname:sub(1, #item) == item then
+      local clients = vim.lsp.get_clients({ name = "rust-analyzer" })
+      return clients[#clients].config.root_dir
     end
   end
 end
 
-local function setup_capabilities()
+local function get_root_dir(fname)
+  local reuse_active = is_library(fname)
+  if reuse_active then
+    return reuse_active
+  end
+  local cargo_crate_dir = vim.fs.dirname(vim.fs.find({ "Cargo.toml" }, {
+    upward = true,
+    path = vim.fs.dirname(fname),
+  })[1])
+  local cmd = { "cargo", "metadata", "--no-deps", "--format-version", "1" }
+  if cargo_crate_dir ~= nil then
+    cmd[#cmd + 1] = "--manifest-path"
+    cmd[#cmd + 1] = vim.fs.joinpath(cargo_crate_dir, "Cargo.toml")
+  end
+  local cargo_metadata = ""
+  local cm = vim.fn.jobstart(cmd, {
+    on_stdout = function(_, d, _)
+      cargo_metadata = table.concat(d, "\n")
+    end,
+    stdout_buffered = true,
+  })
+  if cm > 0 then
+    cm = vim.fn.jobwait({ cm })[1]
+  else
+    cm = -1
+  end
+  local cargo_workspace_dir = nil
+  if cm == 0 then
+    cargo_workspace_dir = vim.fn.json_decode(cargo_metadata)["workspace_root"]
+  end
+  return cargo_workspace_dir
+    or cargo_crate_dir
+    or vim.fs.dirname(vim.fs.find({ "rust-project.json", ".git" }, {
+      upward = true,
+      path = vim.fs.dirname(fname),
+    })[1])
+end
+
+-- start or attach the LSP client
+M.start_or_attach = function()
+  local rt = require("rust-tools")
   local lsp_opts = rt.config.options.server
+  lsp_opts.name = "rust-analyzer"
+  lsp_opts.filetypes = { "rust" }
   local capabilities = vim.lsp.protocol.make_client_capabilities()
 
   -- snippets
@@ -146,76 +105,121 @@ local function setup_capabilities()
 
   lsp_opts.capabilities =
     vim.tbl_deep_extend("force", capabilities, lsp_opts.capabilities or {})
-end
 
-local function setup_lsp()
-  lspconfig.rust_analyzer.setup(rt.config.options.server)
-end
+  lsp_opts.root_dir = get_root_dir(vim.api.nvim_buf_get_name(0))
 
-local function get_root_dir(filename)
-  local fname = filename or vim.api.nvim_buf_get_name(0)
-  local cargo_crate_dir = lspconfig_utils.root_pattern("Cargo.toml")(fname)
-  local cmd = { "cargo", "metadata", "--no-deps", "--format-version", "1" }
-  if cargo_crate_dir ~= nil then
-    cmd[#cmd + 1] = "--manifest-path"
-    cmd[#cmd + 1] = lspconfig_utils.path.join(cargo_crate_dir, "Cargo.toml")
+  local custom_handlers = {}
+  custom_handlers["experimental/serverStatus"] = server_status.handler
+  lsp_opts.handlers =
+    vim.tbl_deep_extend("force", custom_handlers, lsp_opts.handlers or {})
+
+  local lsp_commands = {
+    RustCodeAction = {
+      rt.code_action_group.code_action_group,
+      {},
+    },
+    RustViewCrateGraph = {
+      function(backend, output, pipe)
+        rt.crate_graph.view_crate_graph(backend, output, pipe)
+      end,
+      {
+        nargs = "*",
+        complete = "customlist,v:lua.rust_tools_get_graphviz_backends",
+      },
+    },
+    RustDebuggables = {
+      rt.debuggables.debuggables,
+      {},
+    },
+    RustExpandMacro = {
+      rt.expand_macro.expand_macro,
+      {},
+    },
+    RustOpenExternalDocs = {
+      rt.external_docs.open_external_docs,
+      {},
+    },
+    RustHoverActions = {
+      rt.hover_actions.hover_actions,
+      {},
+    },
+    RustHoverRange = {
+      rt.hover_range.hover_range,
+      {},
+    },
+    RustLastDebug = {
+      rt.cached_commands.execute_last_debuggable,
+      {},
+    },
+    RustLastRun = {
+      rt.cached_commands.execute_last_runnable,
+      {},
+    },
+    RustJoinLines = {
+      rt.join_lines.join_lines,
+      {},
+    },
+    RustMoveItemDown = {
+      rt.move_item.move_item,
+      {},
+    },
+    RustMoveItemUp = {
+      function()
+        require("rust-tools.move_item").move_item(true)
+      end,
+      {},
+    },
+    RustOpenCargo = {
+      rt.open_cargo_toml.open_cargo_toml,
+      {},
+    },
+    RustParentModule = {
+      rt.parent_module.parent_module,
+      {},
+    },
+    RustRunnables = {
+      rt.runnables.runnables,
+      {},
+    },
+    RustSSR = {
+      function(query)
+        require("rust-tools.ssr").ssr(query)
+      end,
+      {
+        nargs = "?",
+      },
+    },
+    RustReloadWorkspace = {
+      rt.workspace_refresh.reload_workspace,
+      {},
+    },
+  }
+
+  local old_on_init = lsp_opts.on_init
+  lsp_opts.on_init = function(...)
+    override_apply_text_edits()
+    for name, command in pairs(lsp_commands) do
+      vim.api.nvim_create_user_command(name, unpack(command))
+    end
+    if old_on_init ~= nil then
+      old_on_init(...)
+    end
   end
-  local cargo_metadata = ""
-  local cm = vim.fn.jobstart(cmd, {
-    on_stdout = function(_, d, _)
-      cargo_metadata = table.concat(d, "\n")
-    end,
-    stdout_buffered = true,
-  })
-  if cm > 0 then
-    cm = vim.fn.jobwait({ cm })[1]
-  else
-    cm = -1
-  end
-  local cargo_workspace_dir = nil
-  if cm == 0 then
-    cargo_workspace_dir = vim.fn.json_decode(cargo_metadata)["workspace_root"]
-  end
-  return cargo_workspace_dir
-    or cargo_crate_dir
-    or lspconfig_utils.root_pattern("rust-project.json")(fname)
-    or lspconfig_utils.find_git_ancestor(fname)
-end
 
-local function setup_root_dir()
-  local lsp_opts = rt.config.options.server
-  if not lsp_opts.root_dir then
-    lsp_opts.root_dir = get_root_dir
+  local old_on_exit = lsp_opts.on_exit
+  lsp_opts.on_exit = function(...)
+    override_apply_text_edits()
+    for name, _ in pairs(lsp_commands) do
+      if vim.cmd[name] then
+        vim.api.nvim_del_user_command(name)
+      end
+    end
+    if old_on_exit ~= nil then
+      old_on_exit(...)
+    end
   end
-end
 
-function M.start_standalone_if_required()
-  local lsp_opts = rt.config.options.server
-  local current_buf = vim.api.nvim_get_current_buf()
-
-  if
-    lsp_opts.standalone
-    and rt.utils.is_bufnr_rust(current_buf)
-    and (get_root_dir() == nil)
-  then
-    require("rust-tools.standalone").start_standalone_client()
-  end
-end
-
-function M.setup()
-  setup_autocmds()
-  -- setup capabilities
-  setup_capabilities()
-  -- setup on_init
-  setup_on_init()
-  -- setup root_dir
-  setup_root_dir()
-  -- setup handlers
-  setup_handlers()
-  -- setup user commands
-  setup_commands()
-  -- setup rust analyzer
-  setup_lsp()
+  vim.lsp.start(lsp_opts)
 end
 
 return M
