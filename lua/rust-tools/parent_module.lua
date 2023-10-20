@@ -27,4 +27,4 @@ function M.parent_module()
   vim.lsp.buf_request(0, "experimental/parentModule", get_params(), handler)
 end
 
-return M.parent_module()
+return M.parent_module
