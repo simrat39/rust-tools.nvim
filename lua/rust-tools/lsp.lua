@@ -129,51 +129,73 @@ M.start_or_attach = function()
 
   local lsp_commands = {
     RustCodeAction = {
-      require("rust-tools.code_action_group"),
+      function()
+        require("rust-tools.code_action_group")()
+      end,
 
       {},
     },
     RustViewCrateGraph = {
-      require("rust-tools.crate_graph"),
+      function()
+        require("rust-tools.crate_graph")()
+      end,
       {
         nargs = "*",
         complete = "customlist,v:lua.rust_tools_get_graphviz_backends",
       },
     },
     RustDebuggables = {
-      require("rust-tools.debuggables"),
+      function()
+        require("rust-tools.debuggables")()
+      end,
       {},
     },
     RustExpandMacro = {
-      require("rust-tools.expand_macro"),
+      function()
+        require("rust-tools.expand_macro")()
+      end,
       {},
     },
     RustOpenExternalDocs = {
-      require("rust-tools.external_docs"),
+      function()
+        require("rust-tools.external_docs")()
+      end,
       {},
     },
     RustHoverActions = {
-      require("rust-tools.hover_actions").hover_actions,
+      function()
+        require("rust-tools.hover_actions").hover_actions()
+      end,
       {},
     },
     RustHoverRange = {
-      require("rust-tools.hover_range"),
+      function()
+        require("rust-tools.hover_range")()
+      end,
       {},
     },
     RustLastDebug = {
-      require("rust-tools.cached_commands").execute_last_debuggable,
+      function()
+        require("rust-tools.cached_commands").execute_last_debuggable()
+      end,
       {},
     },
     RustLastRun = {
-      require("rust-tools.cached_commands").execute_last_runnable,
+      function()
+        require("rust-tools.cached_commands").execute_last_runnable()
+      end,
       {},
     },
     RustJoinLines = {
-      require("rust-tools.join_lines"),
+      function()
+        require("rust-tools.join_lines")()
+      end,
       {},
     },
     RustMoveItemDown = {
-      require("rust-tools.move_item"),
+      function()
+        require("rust-tools.move_item")()
+      end,
       {},
     },
     RustMoveItemUp = {
@@ -183,15 +205,21 @@ M.start_or_attach = function()
       {},
     },
     RustOpenCargo = {
-      require("rust-tools.open_cargo_toml"),
+      function()
+        require("rust-tools.open_cargo_toml")()
+      end,
       {},
     },
     RustParentModule = {
-      require("rust-tools.parent_module"),
+      function()
+        require("rust-tools.parent_module")()
+      end,
       {},
     },
     RustRunnables = {
-      require("rust-tools.runnables").runnables,
+      function()
+        require("rust-tools.runnables").runnables()
+      end,
       {},
     },
     RustSSR = {
@@ -203,11 +231,15 @@ M.start_or_attach = function()
       },
     },
     RustReloadWorkspace = {
-      require("rust-tools.workspace_refresh"),
+      function()
+        require("rust-tools.workspace_refresh")()
+      end,
       {},
     },
     RustSyntaxTree = {
-      require("rust-tools.syntax_tree"),
+      function()
+        require("rust-tools.syntax_tree")()
+      end,
       {},
     },
   }

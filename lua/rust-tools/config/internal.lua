@@ -185,7 +185,11 @@ local FerrisDefaultConfig = {
 
 local ferris = vim.g.ferris or {}
 local opts = type(ferris) == "function" and ferris() or ferris
-if type(opts.tools.executor) == "string" then
+if
+  opts.tools
+  and opts.tools.executor
+  and type(opts.tools.executor) == "string"
+then
   opts.tools.executor = assert(
     require("rust-tools.executors")[opts.tools.executor],
     "Unknown FerrisExecutor"
