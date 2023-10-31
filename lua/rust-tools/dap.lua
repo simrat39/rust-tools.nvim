@@ -86,7 +86,10 @@ function M.start(args)
           local executables = {}
 
           for _, value in pairs(j:result()) do
-            local artifact = vim.fn.json_decode(value)
+            local ok, artifact = pcall(vim.fn.json_decode,value)
+            if not ok then
+               goto loop_end
+            end
 
             -- only process artifact if it's valid json object and it is a compiler artifact
             if
