@@ -21,6 +21,11 @@ local defaults = {
     -- automatically call RustReloadWorkspace when writing to a Cargo.toml file.
     reload_workspace_from_cargo_toml = true,
 
+    -- function for opening external URLs
+    open_url = function(url)
+      vim.fn["netrw#BrowseX"](url, 0)
+    end,
+
     -- These apply to the default RustSetInlayHints command
     inlay_hints = {
       -- automatically set inlay hints (type hints)
