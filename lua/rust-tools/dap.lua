@@ -91,7 +91,7 @@ function M.start(args)
             -- only process artifact if it's valid json object and it is a compiler artifact
             if
               type(artifact) == "table"
-              or artifact.reason == "compiler-artifact"
+              and artifact.reason == "compiler-artifact"
             then
               local is_binary =
                 rt.utils.contains(artifact.target.crate_types, "bin")
