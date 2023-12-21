@@ -1,4 +1,5 @@
 local rt = require("rust-tools")
+local rt_utils = require("rust-tools.utils.utils")
 
 local M = {}
 
@@ -69,7 +70,7 @@ end
 -- which is used to check whether we want to use telescope or the vanilla vim
 -- way for input
 function M.runnables()
-  rt.utils.request(0, "experimental/runnables", get_params(), handler)
+  rt_utils.request(0, "experimental/runnables", get_params(), handler)
 end
 
 return M

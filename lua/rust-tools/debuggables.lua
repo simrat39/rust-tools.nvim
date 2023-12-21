@@ -1,4 +1,5 @@
 local rt = require("rust-tools")
+local rt_utils = require("rust-tools.utils.utils")
 
 local M = {}
 
@@ -59,7 +60,7 @@ local function sanitize_results_for_debugging(result)
   end, result)
 
   for _, value in ipairs(ret) do
-    rt.utils.sanitize_command_for_debugging(value.args.cargoArgs)
+    rt_utils.sanitize_command_for_debugging(value.args.cargoArgs)
   end
 
   return ret
@@ -93,7 +94,7 @@ end
 -- which is used to check whether we want to use telescope or the vanilla vim
 -- way for input
 function M.debuggables()
-  rt.utils.request(0, "experimental/runnables", get_params(), handler)
+  rt_utils.request(0, "experimental/runnables", get_params(), handler)
 end
 
 return M

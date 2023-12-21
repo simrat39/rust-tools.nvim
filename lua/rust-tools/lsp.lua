@@ -1,4 +1,5 @@
 local rt = require("rust-tools")
+local rt_utils = require("rust-tools.utils.utils")
 local lspconfig = require("lspconfig")
 local lspconfig_utils = require("lspconfig.util")
 local server_status = require("rust-tools.server_status")
@@ -103,7 +104,7 @@ local function setup_handlers()
     )
   end
 
-  custom_handlers["experimental/serverStatus"] = rt.utils.mk_handler(
+  custom_handlers["experimental/serverStatus"] = rt_utils.mk_handler(
     server_status.handler
   )
 
@@ -119,7 +120,7 @@ local function setup_on_init()
   local old_on_init = lsp_opts.on_init
 
   lsp_opts.on_init = function(...)
-    rt.utils.override_apply_text_edits()
+    rt_utils.override_apply_text_edits()
     if old_on_init ~= nil then
       old_on_init(...)
     end
@@ -213,7 +214,7 @@ function M.start_standalone_if_required()
 
   if
     lsp_opts.standalone
-    and rt.utils.is_bufnr_rust(current_buf)
+    and rt_utils.is_bufnr_rust(current_buf)
     and (get_root_dir() == nil)
   then
     require("rust-tools.standalone").start_standalone_client()

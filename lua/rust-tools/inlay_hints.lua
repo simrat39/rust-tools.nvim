@@ -1,4 +1,5 @@
 local rt = require("rust-tools")
+local rt_utils = require("rust-tools.utils.utils")
 
 local M = {}
 
@@ -151,7 +152,7 @@ function M.cache_render(self, bufnr)
   local buffer = bufnr or vim.api.nvim_get_current_buf()
 
   for _, v in pairs(vim.lsp.get_active_clients({ bufnr = buffer })) do
-    if rt.utils.is_ra_server(v) then
+    if rt_utils.is_ra_server(v) then
       v.request(
         "textDocument/inlayHint",
         get_params(v, buffer),

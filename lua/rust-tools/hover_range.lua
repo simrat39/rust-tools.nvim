@@ -1,4 +1,4 @@
-local rt = require("rust-tools")
+local rt_utils = require("rust-tools.utils.utils")
 
 local M = {}
 
@@ -23,7 +23,7 @@ local function get_opts()
 end
 
 function M.hover_range()
-  rt.utils.request(0, "textDocument/hover", get_opts())
+  rt_utils.request(0, "textDocument/hover", get_opts())
 end
 
 return M

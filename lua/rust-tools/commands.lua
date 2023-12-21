@@ -1,4 +1,5 @@
 local rt = require("rust-tools")
+local rt_utils = require("rust-tools.utils.utils")
 
 local M = {}
 
@@ -17,7 +18,7 @@ function M.setup_lsp_commands()
   end
 
   vim.lsp.commands["rust-analyzer.debugSingle"] = function(command)
-    rt.utils.sanitize_command_for_debugging(command.arguments[1].args.cargoArgs)
+    rt_utils.sanitize_command_for_debugging(command.arguments[1].args.cargoArgs)
     rt.dap.start(command.arguments[1].args)
   end
 end
