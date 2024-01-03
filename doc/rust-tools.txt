@@ -1,4 +1,4 @@
-*rust-tools.txt*           For NVIM v0.8.0           Last change: 2023 July 10
+*rust-tools.txt*          For NVIM v0.8.0         Last change: 2024 January 03
 
 ==============================================================================
 Table of Contents                               *rust-tools-table-of-contents*
@@ -12,6 +12,9 @@ Table of Contents                               *rust-tools-table-of-contents*
   - Configuration                   |rust-tools-rust-tools.nvim-configuration|
   - Related Projects             |rust-tools-rust-tools.nvim-related-projects|
   - Inspiration                       |rust-tools-rust-tools.nvim-inspiration|
+
+  [!NOTE] Due to lack of time, this plugin has been archived. Please switch to
+  mrcjkb/rustaceanvim <https://github.com/mrcjkb/rustaceanvim>.
 
 ==============================================================================
 1. rust-tools.nvim                                *rust-tools-rust-tools.nvim*
