@@ -1,3 +1,6 @@
+> [!NOTE]
+> Due to lack of time, this plugin has been archived. Please switch to [mrcjkb/rustaceanvim](https://github.com/mrcjkb/rustaceanvim).
+
 # rust-tools.nvim
 A plugin to improve your rust experience in neovim.
 
