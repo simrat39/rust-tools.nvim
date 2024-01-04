@@ -90,29 +90,25 @@ function M.start(args)
 
             -- only process artifact if it's valid json object and it is a compiler artifact
             if
-              type(artifact) ~= "table"
-              or artifact.reason ~= "compiler-artifact"
+              type(artifact) == "table"
+              and artifact.reason == "compiler-artifact"
             then
-              goto loop_end
+              local is_binary =
+                rt.utils.contains(artifact.target.crate_types, "bin")
+              local is_build_script =
+                rt.utils.contains(artifact.target.kind, "custom-build")
+              local is_test = (
+                (artifact.profile.test == true) and (artifact.executable ~= nil)
+              ) or rt.utils.contains(artifact.target.kind, "test")
+              -- only add executable to the list if we want a binary debug and it is a binary
+              -- or if we want a test debug and it is a test
+              if
+                (cargo_args[1] == "build" and is_binary and not is_build_script)
+                or (cargo_args[1] == "test" and is_test)
+              then
+                table.insert(executables, artifact.executable)
+              end
             end
-
-            local is_binary =
-              rt.utils.contains(artifact.target.crate_types, "bin")
-            local is_build_script =
-              rt.utils.contains(artifact.target.kind, "custom-build")
-            local is_test = (
-              (artifact.profile.test == true) and (artifact.executable ~= nil)
-            ) or rt.utils.contains(artifact.target.kind, "test")
-            -- only add executable to the list if we want a binary debug and it is a binary
-            -- or if we want a test debug and it is a test
-            if
-              (cargo_args[1] == "build" and is_binary and not is_build_script)
-              or (cargo_args[1] == "test" and is_test)
-            then
-              table.insert(executables, artifact.executable)
-            end
-
-            ::loop_end::
           end
 
           -- only 1 executable is allowed for debugging - error out if zero or many were found
