@@ -1,4 +1,4 @@
-local rt = require("rust-tools")
+local rt_utils = require("rust-tools.utils.utils")
 
 local M = {}
 
@@ -27,7 +27,7 @@ function M.ssr(query)
   end
 
   if query then
-    rt.utils.request(0, "experimental/ssr", get_opts(query), handler)
+    rt_utils.request(0, "experimental/ssr", get_opts(query), handler)
   end
 end
 

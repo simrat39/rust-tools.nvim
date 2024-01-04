@@ -1,4 +1,4 @@
-local rt = require("rust-tools")
+local rt_utils = require("rust-tools.utils.utils")
 
 local M = {}
 
@@ -19,7 +19,7 @@ end
 
 -- Sends the request to rust-analyzer to get cargo.tomls location and open it
 function M.open_cargo_toml()
-  rt.utils.request(0, "experimental/openCargoToml", get_params(), handler)
+  rt_utils.request(0, "experimental/openCargoToml", get_params(), handler)
 end
 
 return M

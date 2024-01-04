@@ -1,4 +1,5 @@
 local rt = require("rust-tools")
+local rt_utils = require("rust-tools.utils.utils")
 
 local M = {}
 
@@ -30,12 +31,12 @@ local function get_cargo_args_from_runnables_args(runnable_args)
   local cargo_args = runnable_args.cargoArgs
 
   local message_json = "--message-format=json"
-  if not rt.utils.contains(cargo_args, message_json) then
+  if not rt_utils.contains(cargo_args, message_json) then
     table.insert(cargo_args, message_json)
   end
 
   for _, value in ipairs(runnable_args.cargoExtraArgs) do
-    if not rt.utils.contains(cargo_args, value) then
+    if not rt_utils.contains(cargo_args, value) then
       table.insert(cargo_args, value)
     end
   end
@@ -97,12 +98,12 @@ function M.start(args)
             end
 
             local is_binary =
-              rt.utils.contains(artifact.target.crate_types, "bin")
+              rt_utils.contains(artifact.target.crate_types, "bin")
             local is_build_script =
-              rt.utils.contains(artifact.target.kind, "custom-build")
+              rt_utils.contains(artifact.target.kind, "custom-build")
             local is_test = (
               (artifact.profile.test == true) and (artifact.executable ~= nil)
-            ) or rt.utils.contains(artifact.target.kind, "test")
+            ) or rt_utils.contains(artifact.target.kind, "test")
             -- only add executable to the list if we want a binary debug and it is a binary
             -- or if we want a test debug and it is a test
             if

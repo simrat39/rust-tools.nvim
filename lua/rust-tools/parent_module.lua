@@ -1,4 +1,4 @@
-local rt = require("rust-tools")
+local rt_utils = require("rust-tools.utils.utils")
 
 local M = {}
 
@@ -24,7 +24,7 @@ end
 
 -- Sends the request to rust-analyzer to get the parent modules location and open it
 function M.parent_module()
-  rt.utils.request(0, "experimental/parentModule", get_params(), handler)
+  rt_utils.request(0, "experimental/parentModule", get_params(), handler)
 end
 
 return M

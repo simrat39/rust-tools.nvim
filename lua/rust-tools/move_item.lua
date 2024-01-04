@@ -1,4 +1,4 @@
-local rt = require("rust-tools")
+local rt_utils = require("rust-tools.utils.utils")
 
 local M = {}
 
@@ -15,7 +15,7 @@ local function handler(_, result, ctx)
   if result == nil then
     return
   end
-  rt.utils.snippet_text_edits_to_text_edits(result)
+  rt_utils.snippet_text_edits_to_text_edits(result)
   vim.lsp.util.apply_text_edits(
     result,
     ctx.bufnr,
@@ -25,7 +25,7 @@ end
 
 -- Sends the request to rust-analyzer to move the item and handle the response
 function M.move_item(up)
-  rt.utils.request(0, "experimental/moveItem", get_params(up or false), handler)
+  rt_utils.request(0, "experimental/moveItem", get_params(up or false), handler)
 end
 
 return M

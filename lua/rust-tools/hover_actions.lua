@@ -1,4 +1,5 @@
 local rt = require("rust-tools")
+local rt_utils = require("rust-tools.utils.utils")
 local util = vim.lsp.util
 
 local M = {}
@@ -10,7 +11,7 @@ end
 M._state = { winnr = nil, commands = nil }
 
 local function close_hover()
-  rt.utils.close_win(M._state.winnr)
+  rt_utils.close_win(M._state.winnr)
 end
 
 -- run the command under the cursor, if the thing under the cursor is not the
@@ -134,7 +135,7 @@ end
 
 -- Sends the request to rust-analyzer to get hover actions and handle it
 function M.hover_actions()
-  rt.utils.request(0, "textDocument/hover", get_params(), M.handler)
+  rt_utils.request(0, "textDocument/hover", get_params(), M.handler)
 end
 
 return M

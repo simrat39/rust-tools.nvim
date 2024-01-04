@@ -1,4 +1,5 @@
 local rt = require("rust-tools")
+local rt_utils = require("rust-tools.utils.utils")
 
 local M = {}
 
@@ -24,7 +25,7 @@ local function handler_factory(backend, output, pipe)
 
     -- Validating backend
     if
-      not rt.utils.contains(
+      not rt_utils.contains(
         rt.config.options.tools.crate_graph.enabled_graphviz_backends,
         backend
       )
@@ -56,7 +57,7 @@ local function handler_factory(backend, output, pipe)
 end
 
 function M.view_crate_graph(backend, output, pipe)
-  rt.utils.request(
+  rt_utils.request(
     0,
     "rust-analyzer/viewCrateGraph",
     get_opts(),
