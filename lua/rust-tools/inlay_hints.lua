@@ -16,7 +16,7 @@ end
 
 -- Disable hints and clear all cached buffers
 function M.disable(self)
-  self.disable = false
+  self.enabled = false
   M.disable_cache_autocmd()
 
   for k, _ in pairs(self.cache) do
