@@ -76,6 +76,7 @@ rt.setup({
   -- Commands:
   -- RustEnableInlayHints
   -- RustDisableInlayHints
+  -- RustToggleInlayHints
   -- RustSetInlayHints
   -- RustUnsetInlayHints
 
@@ -88,6 +89,8 @@ rt.setup({
   require('rust-tools').inlay_hints.enable()
   -- Disable inlay hints auto update and unset them for all buffers
   require('rust-tools').inlay_hints.disable()
+  -- Toggle between enabled and disabled inlay hints states for all buffer
+  require('rust-tools').inlay_hints.toggle()
   ```
 </details>
 

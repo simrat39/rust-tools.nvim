@@ -16,7 +16,7 @@ end
 
 -- Disable hints and clear all cached buffers
 function M.disable(self)
-  self.disable = false
+  self.enabled = false
   M.disable_cache_autocmd()
 
   for k, _ in pairs(self.cache) do
@@ -39,9 +39,13 @@ function M.enable(self)
   set_all(self)
 end
 
--- Set inlay hints only for the current buffer
-function M.set(self)
-  M.cache_render(self, 0)
+-- Toggles inlay hints state globally. Uses disable and enable internally
+function M.toggle(self)
+  if self.enabled then
+    M.disable(self)
+  else
+    M.enable(self)
+  end
 end
 
 -- Clear hints only for the current buffer

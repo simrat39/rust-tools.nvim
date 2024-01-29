@@ -11,6 +11,7 @@ local M = {
   inlay_hints = {
     enable = nil,
     disable = nil,
+    toggle = nil,
     set = nil,
     unset = nil,
     cache = nil,
@@ -81,6 +82,9 @@ function M.setup(opts)
     end,
     render = function()
       inlay.render(hints)
+    end,
+    toggle = function()
+      inlay.toggle(hints)
     end,
   }
 
