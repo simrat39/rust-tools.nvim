@@ -68,6 +68,9 @@ local function setup_commands()
     RustMoveItemDown = {
       rt.move_item.move_item,
     },
+    RustFlyCheck = {
+      rt.fly_check.fly_check,
+    },
     RustMoveItemUp = {
       function()
         require("rust-tools.move_item").move_item(true)
