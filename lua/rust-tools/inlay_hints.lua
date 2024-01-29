@@ -139,7 +139,7 @@ local function parse_hints(result, bufnr)
     end
 
     local line_len =
-      string.len(vim.api.nvim_buf_get_lines(bufnr, line, line + 1, true)[1])
+      string.len(vim.api.nvim_buf_get_lines(bufnr, line, line + 1, false)[1] or "")
     max_line_len = math.max(max_line_len, line_len)
 
     add_line()
