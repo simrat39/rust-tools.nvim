@@ -9,7 +9,7 @@ function M.open_external_docs()
     vim.lsp.util.make_position_params(),
     function(_, url)
       if url then
-        vim.fn["netrw#BrowseX"](url, 0)
+        rt.config.options.tools.open_url(url)
       end
     end
   )
